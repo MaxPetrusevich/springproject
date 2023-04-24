@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>techAdd</title>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+<body>
+<form class="w3-container"  th:action="technique-add" th:method="post">
+  <label>Price</label>
+  <input class="w3-input" th:type="number" th:name="price" placeholder="Enter the price">
+  <div th:if="${categories} ne null">
+    <select class="w3-select" th:name="category">
+      <option th:each="cat, iter:${categories}"  th:value="${cat.id}">
+        <p th:text="${cat.name}"></p>
+      </option>
+    </select>
+  </div>
+  <div th:if="${models} ne null">
+    <select class="w3-select" th:name="model">
+      <option th:each="mod1, iter:${models}"  th:value="${mod1.id}">
+        <p th:text="${mod1.name}"></p>
+      </option>
+    </select>
+  </div>
+  <div th:if="${producers} ne null">
+    <select class="w3-select" th:name="producer">
+      <option th:each="prod, iter:${producers}"  th:value="${prod.id}">
+        <p th:text="${prod.name}"></p>
+        <p th:text="${prod.country}"></p>
+      </option>
+    </select>
+  </div>
+  <div th:if="${stores} ne null">
+    <div th:each="store, iter:${stores}">
+      <input class="w3-check" th:type="checkbox" th:name="storeId" th:value="${store.id}">
+      <label th:utext="${store.name}"><label th:text="${store.address}"></label> </label>
+    </div>
+  </div>
+  <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Submit</button>
+</form>
+
+<a th:href="technique-list">Previous</a>
+</body>
+</body>
+</html>

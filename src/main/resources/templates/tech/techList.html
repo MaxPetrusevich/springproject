@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>TechList</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+<div th:if="${list.size() > 0}">
+    <table class="w3-table-all">
+        <thead class="w3-light-grey">
+        <th>Id</th>
+        <th>Price</th>
+        <th>Category</th>
+        <th>Producer</th>
+        <th>ProducerCountry</th>
+        <th>Model</th>
+        <th>Types</th>
+        <th>Stores</th>
+        </thead>
+        <tbody>
+        <tr th:each="unit, iter: ${list}">
+            <td th:text="${unit.id}"></td>
+            <td th:text="${unit.price}"></td>
+            <td th:if="${unit.category ne null}" th:text="${unit.category.name}"></td>
+            <td th:if="${unit.producer ne null}" th:text="${unit.producer.name}"></td>
+            <td th:if="${unit.producer ne null}" th:text="${unit.producer.country}"></td>
+            <td th:if="${unit.model ne null}" th:text="${unit.model.name}"></td>
+            <td th:if="${unit.category ne null}" th:each="type, it:${unit.category.types}">
+                <p th:text="${type.name}"></p>
+            </td>
+            <td th:if="${unit.storeList ne null}" th:each="store, it:${unit.storeList}">
+                <p th:text="${store.name}"></p>
+                <p th:text="${store.address}"></p>
+            </td>
+            <td>
+                <form th:action="technique-edit" th:method="GET">
+                    <input th:type="hidden" th:name="techId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="technique-delete" th:method="POST">
+                    <input th:type="hidden" th:name="techId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<form th:action="technique-add" th:method="get">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new technique</button>
+</form>
+
+<a th:href="home">To home page</a>
+</body>
+</html>

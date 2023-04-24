@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Model Add</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+<form class="w3-container"  th:action="model-add" th:method="post">
+    <label>Name</label>
+    <input class="w3-input" th:type="text" th:name="name" placeholder="Enter the model name">
+    <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border">Submit</button>
+</form>
+<a th:href="model-list">Previous</a>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Model List</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+<div th:if="${list.size() > 0}">
+    <table class="w3-table-all">
+        <thead class="w3-light-grey">
+        <th>Id</th>
+        <th>Name</th>
+        </thead>
+        <tbody>
+        <tr th:each="unit, iter: ${list}">
+            <td th:text="${unit.id}"></td>
+            <td th:text="${unit.name}"></td>
+            <td>
+                <form th:action="model-edit" th:method="get">
+                    <input th:type="hidden" th:name = "modelId" th:value="${unit.id}">
+                    <button class = "w3-button w3-white w3-border" th:type="submit">Edit</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="model-delete" th:method="post">
+                    <input th:type="hidden" th:name = "modelId" th:value="${unit.id}">
+                    <button class = "w3-button w3-white w3-border" th:type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<form th:action="model-add" th:method="get">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new model</button>
+</form>
+
+<a th:href="home">To home page</a>
+</body>
+</html>
