@@ -1,6 +1,7 @@
 package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.TypeDto;
+
 import com.spring.springproject.entities.Type;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -54,5 +55,15 @@ public class TypeServiceImpl implements TypeService {
     @Override
     public void delete(Integer id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public Set<TypeDto> findByName(String name) {
+        Set<TypeDto> typeDtoSet = new HashSet<>();
+        for (Type type:
+                repository.findByNameContaining(name)) {
+            typeDtoSet.add(modelMapper.map(type, TypeDto.class));
+        }
+        return typeDtoSet;
     }
 }

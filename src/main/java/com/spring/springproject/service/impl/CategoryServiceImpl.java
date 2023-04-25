@@ -25,6 +25,16 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public Set<CategoryDto> findByName(String name) {
+        Set<CategoryDto> categoryDtoSet = new HashSet<>();
+        for (Category category:
+                repository.findByNameContaining(name)) {
+            categoryDtoSet.add(modelMapper.map(category, CategoryDto.class));
+        }
+        return categoryDtoSet;
+    }
+
+    @Override
     public Set<CategoryDto> findAll() {
         Set<CategoryDto> categoryDtoSet = new HashSet<>();
         for (Category category:

@@ -16,6 +16,7 @@ import static com.spring.springproject.controller.Constants.*;
 @Controller
 public class StoreController {
 
+
     private final StoreService storeService;
 
     @Autowired
@@ -80,5 +81,18 @@ public class StoreController {
         storeDto.setAddress(request.getParameter(ADDRESS));
         storeService.save(storeDto);
         return findAll(model);
+    }
+
+    @PostMapping(STORE_BY_NAME)
+    public String findByName(Model model, HttpServletRequest request){
+        String name = request.getParameter(NAME);
+        model.addAttribute(LIST, storeService.findByName(name));
+        return ST_LIST;
+    }
+    @PostMapping(STORE_BY_ADDRESS)
+    public String findByCountry(Model model, HttpServletRequest request){
+        String address = request.getParameter(ADDRESS);
+        model.addAttribute(LIST, storeService.findByAddress(address));
+        return ST_LIST;
     }
 }

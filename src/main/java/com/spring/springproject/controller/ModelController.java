@@ -79,4 +79,10 @@ public class ModelController {
         modelService.save(modelDto);
         return findAll(model);
     }
+    @PostMapping(MODEL_BY_NAME)
+    public String findByName(Model model, HttpServletRequest request){
+        String name = request.getParameter(NAME);
+        model.addAttribute(LIST, modelService.findByName(name));
+        return MOD_LIST;
+    }
 }

@@ -14,7 +14,7 @@
     <input class="w3-input" th:type="text" th:name="name" th:value="${unit.name}">
     <div th:if="${types.size()>0}">
         <div th:each="type, iter:${types}">
-            <input class="w3-check" th:type="checkbox" th:name="typeId" th:selected="${unit.getId() eq type.getCategory().getId()}"
+            <input class="w3-check" th:type="checkbox" th:name="typeId"
                    th:value="${type.id}">
             <label th:text="${type.name}"></label>
         </div>

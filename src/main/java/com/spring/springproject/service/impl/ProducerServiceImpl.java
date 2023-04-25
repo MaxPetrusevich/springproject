@@ -1,5 +1,6 @@
 package com.spring.springproject.service.impl;
 
+
 import com.spring.springproject.dto.ProducerDto;
 import com.spring.springproject.entities.Producer;
 import jakarta.transaction.Transactional;
@@ -55,4 +56,23 @@ public class ProducerServiceImpl implements ProducerService {
     public void delete(Integer id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public Set<ProducerDto> findByName(String name) {
+        Set<ProducerDto> producerDtoSet = new HashSet<>();
+        for (Producer producer:
+                repository.findByNameContaining(name)) {
+            producerDtoSet.add(modelMapper.map(producer, ProducerDto.class));
+        }
+        return producerDtoSet;
+    }
+
+    @Override
+    public Set<ProducerDto> findByCountry(String country) {
+        Set<ProducerDto> producerDtoSet = new HashSet<>();
+        for (Producer producer:
+                repository.findByCountryContaining(country)) {
+            producerDtoSet.add(modelMapper.map(producer, ProducerDto.class));
+        }
+        return producerDtoSet;    }
 }

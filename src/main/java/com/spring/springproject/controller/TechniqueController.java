@@ -16,6 +16,9 @@ import java.util.HashSet;
 @Controller
 public class TechniqueController {
 
+    public static final String START_PRICE = "startPrice";
+    public static final String END_PRICE = "endPrice";
+    public static final String TECHNIQUE_BY_PRICE = "/technique-by-price";
     private final TechniqueService techniqueService;
     private final CategoryService categoryService;
     private final StoreService storeService;
@@ -61,6 +64,15 @@ public class TechniqueController {
 
         techniqueService.update(techniqueDto);
         return findAll(model);
+    }
+    @PostMapping(TECHNIQUE_BY_PRICE)
+    public String findByPrice(Model model, HttpServletRequest request){
+        String startPrice = request.getParameter(START_PRICE);
+        String endPrice = request.getParameter(END_PRICE);
+        if(!StringUtils.isEmptyOrWhitespace(startPrice) && !StringUtils.isEmptyOrWhitespace(endPrice)){
+            model.addAttribute(LIST, techniqueService.findByPriceBetween(Double.parseDouble(startPrice), Double.parseDouble(endPrice)));
+        }
+        return T_LIST;
     }
 
     private void convertEditAndAddParams(HttpServletRequest request, TechniqueDto techniqueDto) {

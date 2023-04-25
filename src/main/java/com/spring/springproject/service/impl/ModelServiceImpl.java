@@ -25,6 +25,16 @@ public class ModelServiceImpl implements ModelService {
     }
 
     @Override
+    public Set<ModelDto> findByName(String name) {
+        Set<ModelDto> modelDtoSet = new HashSet<>();
+        for (Model model:
+                repository.findByNameContaining(name)) {
+            modelDtoSet.add(modelMapper.map(model, ModelDto.class));
+        }
+        return modelDtoSet;
+    }
+
+    @Override
     public Set<ModelDto> findAll() {
         Set<ModelDto> modelDtoSet = new HashSet<>();
         for (Model model:

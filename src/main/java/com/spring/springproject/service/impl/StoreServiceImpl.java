@@ -54,4 +54,24 @@ public class StoreServiceImpl implements StoreService {
     public void delete(Integer id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public Set<StoreDto> findByName(String name) {
+        Set<StoreDto> storeDtoSet = new HashSet<>();
+        for (Store store:
+                repository.findByNameContaining(name)) {
+            storeDtoSet.add(modelMapper.map(store, StoreDto.class));
+        }
+        return storeDtoSet;
+    }
+
+    @Override
+    public Set<StoreDto> findByAddress(String address) {
+        Set<StoreDto> storeDtoSet = new HashSet<>();
+        for (Store store:
+                repository.findByAddressContaining(address)) {
+            storeDtoSet.add(modelMapper.map(store, StoreDto.class));
+        }
+        return storeDtoSet;
+    }
 }

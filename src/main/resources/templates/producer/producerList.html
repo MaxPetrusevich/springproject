@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
+<form th:action="producer-by-name" method="post">
+    <input th:type="search" th:name="name" placeholder="Enter the name">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
+</form>
+<form th:action="producer-by-country" method="post">
+    <input th:type="search" th:name="country" placeholder="Enter the address">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
+</form>
+<div th:if="${list.size() eq 0}">
+    <p>Founded nothing</p>
+</div>
 <div th:if="${list.size() > 0}">
     <table class="w3-table-all">
         <thead class="w3-light-grey">

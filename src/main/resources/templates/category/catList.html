@@ -3,47 +3,55 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Categories</title>
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
 </head>
 <body>
-  <div th:if="${list.size() > 0}">
+<form th:action="find-by-name" method="post">
+    <input th:type="search" th:name="name" placeholder="Enter the name">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
+</form>
+<div th:if="${list.size() eq 0}">
+    <p>Founded nothing</p>
+</div>
+<div th:if="${list.size() > 0}">
+
     <table class="w3-table-all">
-      <thead class="w3-light-grey">
+        <thead class="w3-light-grey">
         <th>Id</th>
         <th>Name</th>
         <th>Types</th>
-      </thead>
-      <tbody>
-      <tr th:each="unit, iter: ${list}">
-        <td th:text="${unit.id}"></td>
-        <td th:text="${unit.name}"></td>
-        <td th:if="${unit.types ne null}">
-          <div th:each="type, it:${unit.types}">
-            <p th:text="${type.name}"></p>
-          </div>
-        </td>
-        <td>
-          <form th:action="category-edit" th:method="get">
-            <input th:type="hidden" th:name = "catId" th:value="${unit.id}">
-            <button class = "w3-button w3-white w3-border" th:type="submit">Edit</button>
-          </form>
-        </td>
-        <td>
-          <form th:action="category-delete" th:method="post">
-            <input th:type="hidden" th:name = "catId" th:value="${unit.id}">
-            <button class = "w3-button w3-white w3-border" th:type="submit">Delete</button>
-          </form>
-        </td>
-      </tr>
-      </tbody>
+        </thead>
+        <tbody>
+        <tr th:each="unit, iter: ${list}">
+            <td th:text="${unit.id}"></td>
+            <td th:text="${unit.name}"></td>
+            <td th:if="${unit.types ne null}">
+                <div th:each="type, it:${unit.types}">
+                    <p th:text="${type.name}"></p>
+                </div>
+            </td>
+            <td>
+                <form th:action="category-edit" th:method="get">
+                    <input th:type="hidden" th:name="catId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="category-delete" th:method="post">
+                    <input th:type="hidden" th:name="catId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
     </table>
-  </div>
-  <form th:action="category-add" th:method="get">
+</div>
+<form th:action="category-add" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new category</button>
-  </form>
+</form>
 
 <a th:href="home">To home page</a>
 </body>

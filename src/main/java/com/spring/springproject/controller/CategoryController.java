@@ -27,7 +27,12 @@ public class CategoryController {
         this.categoryService = categoryService;
         this.typeService = typeService;
     }
-
+    @PostMapping(CATEGORY_BY_NAME)
+    public String findByName(Model model, HttpServletRequest request){
+        String name = request.getParameter(NAME);
+        model.addAttribute(LIST, categoryService.findByName(name));
+        return CATEGORY_LIST;
+    }
     @GetMapping(CATEGORY_LIST_MAP)
     public String findAll(Model model) {
         model.addAttribute(LIST, categoryService.findAll());
@@ -56,9 +61,7 @@ public class CategoryController {
             categoryDto = categoryService.findById(id);
         }
         if (categoryDto != null) {
-            if (categoryDto.getTypes() != null) {
-                categoryDto.getTypes().removeAll(categoryDto.getTypes());
-            }
+
             setEditParams(request, categoryDto);
             categoryService.update(categoryDto);
         }
@@ -70,6 +73,11 @@ public class CategoryController {
         String catId = request.getParameter(CAT_ID);
         if (!StringUtils.isEmptyOrWhitespace(catId)) {
             Integer id = Integer.parseInt(catId);
+            for (TypeDto type:
+                    categoryService.findById(id).getTypes()) {
+                type.setCategory(null);
+                typeService.update(type);
+            }
             categoryService.delete(id);
         }
         return findAll(model);
@@ -93,6 +101,14 @@ public class CategoryController {
 
     private void setEditParams(HttpServletRequest request, CategoryDto categoryDto) {
         categoryDto.setName(request.getParameter(NAME));
+        for (TypeDto type:
+                categoryDto.getTypes()) {
+            type.setCategory(null);
+            typeService.update(type);
+        }
+        if (categoryDto.getTypes() != null) {
+            categoryDto.getTypes().removeAll(categoryDto.getTypes());
+        }
         String[] typeIdes = request.getParameterValues(TYPE_ID);
         if (typeIdes != null) {
             for (String typeId :

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <include file="createTables/createCategory.xml" relativeToChangelogFile="true"/>
+    <include file="createTables/createModel.xml" relativeToChangelogFile="true"/>
+    <include file="createTables/createProducer.xml" relativeToChangelogFile="true"/>
+    <include file="createTables/createStore.xml" relativeToChangelogFile="true"/>
+    <include file="createTables/createTechnique.xml" relativeToChangelogFile="true"/>
+    <include file="createTables/createTechStore.xml" relativeToChangelogFile="true"/>
+    <include file="createTables/createType.xml" relativeToChangelogFile="true"/>
+    <include file="createTables/createUser.xml" relativeToChangelogFile="true"/>
+    <include file="addForeignKeys/addCategoryTypeConstraint.xml" relativeToChangelogFile="true"/>
+    <include file="addForeignKeys/addTechConstraints.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

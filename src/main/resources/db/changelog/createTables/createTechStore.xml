@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+<changeSet id="create-tech-store" author="Maks">
+    <createTable tableName="tech_store">
+        <column name="tech_id" type="bigint">
+            <constraints unique="false" nullable="false"></constraints>
+        </column>
+        <column name="store_id" type="bigint">
+            <constraints unique="false" nullable="false"></constraints>
+        </column>
+   </createTable>
+    <addPrimaryKey tableName="tech_store" columnNames="store_id, tech_id"></addPrimaryKey>
+</changeSet>
+
+
+</databaseChangeLog>

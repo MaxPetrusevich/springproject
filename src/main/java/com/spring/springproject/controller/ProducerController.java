@@ -16,6 +16,7 @@ import static com.spring.springproject.controller.Constants.*;
 public class ProducerController {
 
 
+
     private final ProducerService producerService;
 
     @Autowired
@@ -80,5 +81,18 @@ public class ProducerController {
         producerDto.setCountry(request.getParameter(COUNTRY));
         producerService.save(producerDto);
         return findAll(model);
+    }
+
+    @PostMapping(PRODUCER_BY_NAME)
+    public String findByName(Model model, HttpServletRequest request){
+        String name = request.getParameter(NAME);
+        model.addAttribute(LIST, producerService.findByName(name));
+        return PROD_LIST;
+    }
+    @PostMapping(PRODUCER_BY_COUNTRY)
+    public String findByCountry(Model model, HttpServletRequest request){
+        String country = request.getParameter(COUNTRY);
+        model.addAttribute(LIST, producerService.findByCountry(country));
+        return PROD_LIST;
     }
 }

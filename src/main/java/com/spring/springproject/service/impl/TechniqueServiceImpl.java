@@ -56,4 +56,14 @@ public class TechniqueServiceImpl implements TechniqueService {
     public void delete(Integer id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public Set<TechniqueDto> findByPriceBetween(Double startPrice, Double endPrice) {
+        Set<TechniqueDto> techniqueDtoSet = new HashSet<>();
+        for (Technique technique:
+             repository.findByPriceBetween(startPrice, endPrice)) {
+            techniqueDtoSet.add(modelMapper.map(technique, TechniqueDto.class));
+        }
+        return techniqueDtoSet;
+    }
 }

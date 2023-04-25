@@ -78,4 +78,11 @@ public class TypeController {
         typeService.save(typeDto);
         return findAll(model);
     }
+
+    @PostMapping(TYPE_BY_NAME)
+    public String findByName(Model model, HttpServletRequest request){
+        String name = request.getParameter(NAME);
+        model.addAttribute(LIST, typeService.findByName(name));
+        return TY_LIST;
+    }
 }
