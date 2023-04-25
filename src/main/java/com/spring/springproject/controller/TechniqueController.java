@@ -8,12 +8,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
+import static com.spring.springproject.controller.Constants.*;
 
 import java.util.HashSet;
 
 
 @Controller
 public class TechniqueController {
+
     private final TechniqueService techniqueService;
     private final CategoryService categoryService;
     private final StoreService storeService;
@@ -30,26 +32,26 @@ public class TechniqueController {
         this.producerService = producerService;
     }
 
-    @GetMapping("/technique-list")
+    @GetMapping(TECHNIQUE_LIST)
     public String findAll(Model model) {
-        model.addAttribute("list", techniqueService.findAll());
-        return "tech/techList";
+        model.addAttribute(LIST, techniqueService.findAll());
+        return T_LIST;
     }
 
-    @GetMapping ("/technique-edit")
+    @GetMapping (TECHNIQUE_EDIT)
     public String editRedirect(Model model, HttpServletRequest request) {
-        String techId = request.getParameter("techId");
+        String techId = request.getParameter(TECH_ID);
         if (techId != null) {
             Integer id = Integer.parseInt(techId);
-            model.addAttribute("unit", techniqueService.findById(id));
+            model.addAttribute(UNIT, techniqueService.findById(id));
         }
-        addAllAttibutes(model);
-        return "tech/techEdit";
+        addAllAttributes(model);
+        return T_EDIT;
     }
 
-    @PostMapping( "/technique-edit")
+    @PostMapping(TECHNIQUE_EDIT)
     public String edit(Model model, HttpServletRequest request) {
-        String techId = request.getParameter("techId");
+        String techId = request.getParameter(TECH_ID);
         TechniqueDto techniqueDto = null;
         if (!StringUtils.isEmptyOrWhitespace(techId)) {
             Integer id = Integer.parseInt(techId);
@@ -62,26 +64,26 @@ public class TechniqueController {
     }
 
     private void convertEditAndAddParams(HttpServletRequest request, TechniqueDto techniqueDto) {
-        String producerId = request.getParameter("producer");
+        String producerId = request.getParameter(PRODUCER);
         if (!StringUtils.isEmptyOrWhitespace(producerId)) {
             Integer id = Integer.parseInt(producerId);
             techniqueDto.setProducer(producerService.findById(id));
         }
-        String modelId = request.getParameter("model");
+        String modelId = request.getParameter(MODEL);
         if (!StringUtils.isEmptyOrWhitespace(modelId)) {
             Integer id = Integer.parseInt(modelId);
             techniqueDto.setModel(modelService.findById(id));
         }
-        String categoryId = request.getParameter("category");
+        String categoryId = request.getParameter(CATEGORY);
         if (!StringUtils.isEmptyOrWhitespace(categoryId)) {
             Integer id = Integer.parseInt(categoryId);
             techniqueDto.setCategory(categoryService.findById(id));
         }
-        String price = request.getParameter("price");
+        String price = request.getParameter(PRICE);
         if (!StringUtils.isEmptyOrWhitespace(price)) {
             techniqueDto.setPrice(Double.parseDouble(price));
         }
-        String[] storeIdes = request.getParameterValues("storeId");
+        String[] storeIdes = request.getParameterValues(STORE_ID);
         techniqueDto.getStoreList().removeAll(techniqueDto.getStoreList());
         if (storeIdes != null) {
             for (String storeId :
@@ -94,9 +96,9 @@ public class TechniqueController {
         }
     }
 
-    @RequestMapping(value = "/technique-delete", method = RequestMethod.POST)
+    @RequestMapping(value = TECHNIQUE_DELETE, method = RequestMethod.POST)
     public String delete(Model model, HttpServletRequest request) {
-        String techId = request.getParameter("techId");
+        String techId = request.getParameter(TECH_ID);
         if (!StringUtils.isEmptyOrWhitespace(techId)) {
             Integer id = Integer.parseInt(techId);
             techniqueService.delete(id);
@@ -104,26 +106,26 @@ public class TechniqueController {
         return findAll(model);
     }
 
-    @PostMapping("/technique-add")
+    @PostMapping(TECHNIQUE_ADD)
     public String add(Model model, HttpServletRequest request) {
         TechniqueDto techniqueDto = new TechniqueDto();
         techniqueDto.setStoreList(new HashSet<>());
         convertEditAndAddParams(request, techniqueDto);
-        techniqueDto = techniqueService.save(techniqueDto);
+         techniqueService.save(techniqueDto);
         return findAll(model);
     }
 
-    @GetMapping("/technique-add")
+    @GetMapping(TECHNIQUE_ADD)
     public String add(Model model) {
-        addAllAttibutes(model);
-        return "tech/techAdd";
+        addAllAttributes(model);
+        return T_ADD;
     }
 
-    private void addAllAttibutes(Model model) {
-        model.addAttribute("categories", categoryService.findAll());
-        model.addAttribute("models", modelService.findAll());
-        model.addAttribute("producers", producerService.findAll());
-        model.addAttribute("stores", storeService.findAll());
+    private void addAllAttributes(Model model) {
+        model.addAttribute(CATEGORIES, categoryService.findAll());
+        model.addAttribute(MODELS, modelService.findAll());
+        model.addAttribute(PRODUCERS, producerService.findAll());
+        model.addAttribute(STORES, storeService.findAll());
     }
 
 

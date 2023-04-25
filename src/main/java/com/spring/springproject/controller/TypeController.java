@@ -10,48 +10,54 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.thymeleaf.util.StringUtils;
 
+import static com.spring.springproject.controller.Constants.*;
+
 @Controller
 public class TypeController {
+
     private final TypeService typeService;
 
     @Autowired
     public TypeController(TypeService typeService) {
         this.typeService = typeService;
     }
-    @GetMapping("/type-list")
+
+    @GetMapping(TYPE_LIST)
     public String findAll(Model model) {
-        model.addAttribute("list", typeService.findAll());
-        return "type/typeList";
+        model.addAttribute(LIST, typeService.findAll());
+        return TY_LIST;
     }
 
-    @GetMapping("/type-edit")
-    public String typeirect(Model model, HttpServletRequest request) {
-        String typeId = request.getParameter("typeId");
+    @GetMapping(TYPE_EDIT)
+    public String typeRedirect(Model model, HttpServletRequest request) {
+        String typeId = request.getParameter(TYPE_ID);
         TypeDto typeDto = null;
         if (!StringUtils.isEmptyOrWhitespace(typeId)) {
             Integer id = Integer.parseInt(typeId);
             typeDto = typeService.findById(id);
         }
-        model.addAttribute("unit", typeDto);
-        return "type/typeEdit";
+        model.addAttribute(UNIT, typeDto);
+        return TY_EDIT;
     }
 
-    @PostMapping("/type-edit")
+    @PostMapping(TYPE_EDIT)
     public String edit(HttpServletRequest request, Model model) {
-        String typeId = request.getParameter("typeId");
+        String typeId = request.getParameter(TYPE_ID);
         TypeDto typeDto = null;
         if (!StringUtils.isEmptyOrWhitespace(typeId)) {
             Integer id = Integer.parseInt(typeId);
             typeDto = typeService.findById(id);
         }
-        typeDto.setName(request.getParameter("name"));
-        typeService.update(typeDto);
+        if (typeDto != null) {
+            typeDto.setName(request.getParameter(NAME));
+            typeService.update(typeDto);
+        }
         return findAll(model);
     }
 
-    @PostMapping("/type-delete")
-    public String delete(HttpServletRequest request, Model model){
-        String typeId = request.getParameter("typeId");
+    @PostMapping(TYPE_DELETE)
+    public String delete(HttpServletRequest request, Model model) {
+        String typeId = request.getParameter(TYPE_ID);
 
         if (!StringUtils.isEmptyOrWhitespace(typeId)) {
             Integer id = Integer.parseInt(typeId);
@@ -60,15 +66,16 @@ public class TypeController {
         return findAll(model);
     }
 
-    @GetMapping("/type-add")
-    public String add(){
-        return "/type/typeAdd";
+    @GetMapping(TYPE_ADD)
+    public String add() {
+        return TY_ADD;
     }
-    @PostMapping("/type-add")
-    public String add(HttpServletRequest request, Model model){
+
+    @PostMapping(TYPE_ADD)
+    public String add(HttpServletRequest request, Model model) {
         TypeDto typeDto = new TypeDto();
-        typeDto.setName(request.getParameter("name"));
-        typeDto = typeService.save(typeDto);
+        typeDto.setName(request.getParameter(NAME));
+        typeService.save(typeDto);
         return findAll(model);
     }
 }

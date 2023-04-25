@@ -10,8 +10,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.thymeleaf.util.StringUtils;
 
+import static com.spring.springproject.controller.Constants.*;
+
 @Controller
 public class ProducerController {
+
+
     private final ProducerService producerService;
 
     @Autowired
@@ -19,41 +23,43 @@ public class ProducerController {
         this.producerService = producerService;
     }
 
-    @GetMapping("/producer-list")
+    @GetMapping(PRODUCER_LIST)
     public String findAll(Model model) {
-        model.addAttribute("list", producerService.findAll());
-        return "producer/producerList";
+        model.addAttribute(LIST, producerService.findAll());
+        return PROD_LIST;
     }
 
-    @GetMapping("/producer-edit")
+    @GetMapping(PRODUCER_EDIT)
     public String editRedirect(Model model, HttpServletRequest request) {
-        String producerId = request.getParameter("producerId");
+        String producerId = request.getParameter(PRODUCER_ID);
         ProducerDto producerDto = null;
         if (!StringUtils.isEmptyOrWhitespace(producerId)) {
             Integer id = Integer.parseInt(producerId);
             producerDto = producerService.findById(id);
         }
-        model.addAttribute("unit", producerDto);
-        return "producer/producerEdit";
+        model.addAttribute(UNIT, producerDto);
+        return PROD_EDIT;
     }
 
-    @PostMapping("/producer-edit")
+    @PostMapping(PRODUCER_EDIT)
     public String edit(HttpServletRequest request, Model model) {
-        String producerId = request.getParameter("producerId");
+        String producerId = request.getParameter(PRODUCER_ID);
         ProducerDto producerDto = null;
         if (!StringUtils.isEmptyOrWhitespace(producerId)) {
             Integer id = Integer.parseInt(producerId);
             producerDto = producerService.findById(id);
         }
-        producerDto.setName(request.getParameter("name"));
-        producerDto.setCountry(request.getParameter("country"));
-        producerService.update(producerDto);
+        if (producerDto != null) {
+            producerDto.setName(request.getParameter(NAME));
+            producerDto.setCountry(request.getParameter(COUNTRY));
+            producerService.update(producerDto);
+        }
         return findAll(model);
     }
 
-    @PostMapping("/producer-delete")
-    public String delete(HttpServletRequest request, Model model){
-        String producerId = request.getParameter("producerId");
+    @PostMapping(PRODUCER_DELETE)
+    public String delete(HttpServletRequest request, Model model) {
+        String producerId = request.getParameter(PRODUCER_ID);
 
         if (!StringUtils.isEmptyOrWhitespace(producerId)) {
             Integer id = Integer.parseInt(producerId);
@@ -62,16 +68,17 @@ public class ProducerController {
         return findAll(model);
     }
 
-    @GetMapping("/producer-add")
-    public String add(){
-        return "/producer/producerAdd";
+    @GetMapping(PRODUCER_ADD)
+    public String add() {
+        return PROD_ADD;
     }
-    @PostMapping("/producer-add")
-    public String add(HttpServletRequest request, Model model){
+
+    @PostMapping(PRODUCER_ADD)
+    public String add(HttpServletRequest request, Model model) {
         ProducerDto producerDto = new ProducerDto();
-        producerDto.setName(request.getParameter("name"));
-        producerDto.setCountry(request.getParameter("country"));
-        producerDto = producerService.save(producerDto);
+        producerDto.setName(request.getParameter(NAME));
+        producerDto.setCountry(request.getParameter(COUNTRY));
+        producerService.save(producerDto);
         return findAll(model);
     }
 }

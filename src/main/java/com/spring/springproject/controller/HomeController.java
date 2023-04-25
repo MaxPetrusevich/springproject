@@ -6,8 +6,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import static com.spring.springproject.controller.Constants.*;
+
 @Controller
 public class HomeController {
+
     private final CategoryController categoryController;
     private final ModelController modelController;
     private final ProducerController producerController;
@@ -25,19 +28,19 @@ public class HomeController {
         this.typeController = typeController;
     }
 
-    @GetMapping("/")
+    @GetMapping(START_PAGE)
     public String home() {
-        return "homePage.html";
+        return HOME_PAGE;
     }
 
-    @GetMapping("/home")
+    @GetMapping(HOME)
     public String goHome() {
-        return "homePage.html";
+        return HOME_PAGE;
     }
 
-    @GetMapping("/homeView")
+    @GetMapping(HOME_VIEW)
     public String view(HttpServletRequest request, Model model) {
-        Integer choose = Integer.parseInt(request.getParameter("listName"));
+        int choose = Integer.parseInt(request.getParameter(LIST_NAME));
         String address = null;
         switch (choose) {
             case 1:

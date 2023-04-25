@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.thymeleaf.util.StringUtils;
 
 import java.util.HashSet;
-import java.util.Set;
+
+import static com.spring.springproject.controller.Constants.*;
 
 @Controller
 public class CategoryController {
+
     private final CategoryService categoryService;
     private final TypeService typeService;
 
@@ -26,46 +28,46 @@ public class CategoryController {
         this.typeService = typeService;
     }
 
-    @GetMapping("/category-list")
+    @GetMapping(CATEGORY_LIST_MAP)
     public String findAll(Model model) {
-        model.addAttribute("list", categoryService.findAll());
-        return "category/catList";
+        model.addAttribute(LIST, categoryService.findAll());
+        return CATEGORY_LIST;
     }
 
-    @GetMapping("/category-edit")
+    @GetMapping(CATEGORY_EDIT)
     public String editRedirect(Model model, HttpServletRequest request) {
-        String catId = request.getParameter("catId");
+        String catId = request.getParameter(CAT_ID);
         CategoryDto categoryDto = null;
         if (!StringUtils.isEmptyOrWhitespace(catId)) {
             Integer id = Integer.parseInt(catId);
             categoryDto = categoryService.findById(id);
         }
-        model.addAttribute("unit", categoryDto);
-        Set<TypeDto> set = typeService.findAll();
-        model.addAttribute("types", typeService.findAll());
-        return "category/catEdit";
+        model.addAttribute(UNIT, categoryDto);
+        model.addAttribute(TYPES, typeService.findAll());
+        return CAT_EDIT;
     }
 
-    @PostMapping("/category-edit")
+    @PostMapping(CATEGORY_EDIT)
     public String edit(HttpServletRequest request, Model model) {
-        String catId = request.getParameter("catId");
+        String catId = request.getParameter(CAT_ID);
         CategoryDto categoryDto = null;
         if (!StringUtils.isEmptyOrWhitespace(catId)) {
             Integer id = Integer.parseInt(catId);
             categoryDto = categoryService.findById(id);
         }
-        if (categoryDto.getTypes() != null) {
-            categoryDto.getTypes().removeAll(categoryDto.getTypes());
+        if (categoryDto != null) {
+            if (categoryDto.getTypes() != null) {
+                categoryDto.getTypes().removeAll(categoryDto.getTypes());
+            }
+            setEditParams(request, categoryDto);
+            categoryService.update(categoryDto);
         }
-        setEditParams(request, categoryDto);
-        categoryService.update(categoryDto);
         return findAll(model);
     }
 
-    @PostMapping("/category-delete")
-    public String delete(HttpServletRequest request, Model model){
-        String catId = request.getParameter("catId");
-
+    @PostMapping(CATEGORY_DELETE)
+    public String delete(HttpServletRequest request, Model model) {
+        String catId = request.getParameter(CAT_ID);
         if (!StringUtils.isEmptyOrWhitespace(catId)) {
             Integer id = Integer.parseInt(catId);
             categoryService.delete(id);
@@ -73,13 +75,14 @@ public class CategoryController {
         return findAll(model);
     }
 
-    @GetMapping("/category-add")
-    public String add(Model model){
-        model.addAttribute("types", typeService.findAll());
-        return "/category/catAdd";
+    @GetMapping(CATEGORY_ADD)
+    public String add(Model model) {
+        model.addAttribute(TYPES, typeService.findAll());
+        return CAT_ADD;
     }
-    @PostMapping("/category-add")
-    public String add(HttpServletRequest request, Model model){
+
+    @PostMapping(CATEGORY_ADD)
+    public String add(HttpServletRequest request, Model model) {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setTypes(new HashSet<>());
         categoryDto = categoryService.save(categoryDto);
@@ -89,14 +92,14 @@ public class CategoryController {
     }
 
     private void setEditParams(HttpServletRequest request, CategoryDto categoryDto) {
-        categoryDto.setName(request.getParameter("name"));
-        String[] typeIdes = request.getParameterValues("typeId");
+        categoryDto.setName(request.getParameter(NAME));
+        String[] typeIdes = request.getParameterValues(TYPE_ID);
         if (typeIdes != null) {
             for (String typeId :
                     typeIdes) {
                 if (!StringUtils.isEmptyOrWhitespace(typeId)) {
                     Integer id = Integer.parseInt(typeId);
-                    TypeDto typeDto =typeService.findById(id);
+                    TypeDto typeDto = typeService.findById(id);
                     typeDto.setCategory(categoryDto);
                     typeService.update(typeDto);
                     categoryDto.getTypes().add(typeDto);

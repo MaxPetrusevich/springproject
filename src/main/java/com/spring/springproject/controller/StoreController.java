@@ -10,49 +10,56 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.thymeleaf.util.StringUtils;
 
+import static com.spring.springproject.controller.Constants.*;
+
+
 @Controller
 public class StoreController {
+
     private final StoreService storeService;
 
     @Autowired
     public StoreController(StoreService storeService) {
         this.storeService = storeService;
     }
-    @GetMapping("/store-list")
+
+    @GetMapping(STORE_LIST)
     public String findAll(Model model) {
-        model.addAttribute("list", storeService.findAll());
-        return "store/storeList";
+        model.addAttribute(LIST, storeService.findAll());
+        return ST_LIST;
     }
 
-    @GetMapping("/store-edit")
+    @GetMapping(STORE_EDIT)
     public String typeRedirect(Model model, HttpServletRequest request) {
-        String storeId = request.getParameter("storeId");
+        String storeId = request.getParameter(STORE_EDIT);
         StoreDto storeDto = null;
         if (!StringUtils.isEmptyOrWhitespace(storeId)) {
             Integer id = Integer.parseInt(storeId);
             storeDto = storeService.findById(id);
         }
-        model.addAttribute("unit", storeDto);
-        return "store/storeEdit";
+        model.addAttribute(UNIT, storeDto);
+        return ST_EDIT;
     }
 
-    @PostMapping("/store-edit")
+    @PostMapping(STORE_EDIT)
     public String edit(HttpServletRequest request, Model model) {
-        String storeId = request.getParameter("storeId");
+        String storeId = request.getParameter(STORE_ID);
         StoreDto storeDto = null;
         if (!StringUtils.isEmptyOrWhitespace(storeId)) {
             Integer id = Integer.parseInt(storeId);
             storeDto = storeService.findById(id);
         }
-        storeDto.setName(request.getParameter("name"));
-        storeDto.setAddress(request.getParameter("address"));
-        storeService.update(storeDto);
+        if (storeDto != null) {
+            storeDto.setName(request.getParameter(NAME));
+            storeDto.setAddress(request.getParameter(ADDRESS));
+            storeService.update(storeDto);
+        }
         return findAll(model);
     }
 
-    @PostMapping("/store-delete")
-    public String delete(HttpServletRequest request, Model model){
-        String storeId = request.getParameter("storeId");
+    @PostMapping(STORE_DELETE)
+    public String delete(HttpServletRequest request, Model model) {
+        String storeId = request.getParameter(STORE_ID);
 
         if (!StringUtils.isEmptyOrWhitespace(storeId)) {
             Integer id = Integer.parseInt(storeId);
@@ -61,16 +68,17 @@ public class StoreController {
         return findAll(model);
     }
 
-    @GetMapping("/store-add")
-    public String add(){
-        return "/store/storeAdd";
+    @GetMapping(STORE_ADD)
+    public String add() {
+        return ST_ADD;
     }
-    @PostMapping("/store-add")
-    public String add(HttpServletRequest request, Model model){
+
+    @PostMapping(STORE_ADD)
+    public String add(HttpServletRequest request, Model model) {
         StoreDto storeDto = new StoreDto();
-        storeDto.setName(request.getParameter("name"));
-        storeDto.setAddress(request.getParameter("address"));
-        storeDto = storeService.save(storeDto);
+        storeDto.setName(request.getParameter(NAME));
+        storeDto.setAddress(request.getParameter(ADDRESS));
+        storeService.save(storeDto);
         return findAll(model);
     }
 }
