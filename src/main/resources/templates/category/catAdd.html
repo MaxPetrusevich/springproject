@@ -10,10 +10,10 @@
 <body>
 <form class="w3-container" th:action="category-add" th:method="post">
     <label>Name</label>
-    <input class="w3-input" th:type="text" th:name="name" placeholder="Enter the category name">
+    <input class="w3-input" required th:type="text" th:name="name" placeholder="Enter the category name">
     <div th:if="${types.size()>0}">
         <div th:each="type, iter:${types}">
-            <input class="w3-check" th:type="checkbox" th:name ="typeId"  th:value="${type.id}">
+            <input class="w3-check"  th:type="checkbox" th:name ="typeId"  th:value="${type.id}">
             <label th:text="${type.name}"></label>
         </div>
     </div>

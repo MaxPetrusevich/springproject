@@ -11,23 +11,23 @@
 <body>
 <form class="w3-container"  th:action="technique-add" th:method="post">
   <label>Price</label>
-  <input class="w3-input" th:type="number" th:name="price" placeholder="Enter the price">
+  <input class="w3-input" required th:type="number" th:name="price" placeholder="Enter the price">
   <div th:if="${categories} ne null">
-    <select class="w3-select" th:name="category">
+    <select class="w3-select" required th:name="category">
       <option th:each="cat, iter:${categories}"  th:value="${cat.id}">
         <p th:text="${cat.name}"></p>
       </option>
     </select>
   </div>
   <div th:if="${models} ne null">
-    <select class="w3-select" th:name="model">
+    <select class="w3-select" required th:name="model">
       <option th:each="mod1, iter:${models}"  th:value="${mod1.id}">
         <p th:text="${mod1.name}"></p>
       </option>
     </select>
   </div>
   <div th:if="${producers} ne null">
-    <select class="w3-select" th:name="producer">
+    <select class="w3-select" required th:name="producer">
       <option th:each="prod, iter:${producers}"  th:value="${prod.id}">
         <p th:text="${prod.name}"></p>
         <p th:text="${prod.country}"></p>
