@@ -2,12 +2,12 @@ package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.UserDto;
 import com.spring.springproject.entities.User;
-import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.spring.springproject.repositories.UserRepository;
 import com.spring.springproject.service.interfaces.UserService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;

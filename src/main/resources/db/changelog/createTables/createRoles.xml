@@ -3,25 +3,22 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
-
-    <changeSet id="user-create" author="Maks">
-        <createTable tableName="users">
+    <changeSet id="create-roles" author="Maks">
+        <createTable tableName="roles">
             <column autoIncrement="true" name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="user_name" type="varchar(30)"></column>
-            <column name="password" type="varchar(255)"></column>
-
+            <column name="name" type="varchar(30)"></column>
         </createTable>
-        <insert tableName="users">
+        <insert tableName="roles">
             <column name="id" value="1"></column>
-            <column name="user_name" value="ADMIN"></column>
-            <column name="password" value="$2y$12$kjBEvSNH8oN9508Vi8gpLOxzxsfc7H/HLRTQatlR4z3JOzrC4YXB6"></column>
+            <column name="name" value="ADMIN"></column>
         </insert>
-        <insert tableName="users">
+        <insert tableName="roles">
             <column name="id" value="2"></column>
-            <column name="user_name" value="USER"></column>
-            <column name="password" value="$2y$12$kjBEvSNH8oN9508Vi8gpLOxzxsfc7H/HLRTQatlR4z3JOzrC4YXB6"></column>
+            <column name="name" value="USER"></column>
         </insert>
     </changeSet>
+
+
 </databaseChangeLog>

@@ -6,8 +6,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(of = {"id"})
 public class ModelDto {
+    @EqualsAndHashCode.Include
     private Integer id;
     private String name;
 }

@@ -8,10 +8,10 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(of = {"id"})
-@ToString(exclude = {"types"})
 public class CategoryDto {
+    @EqualsAndHashCode.Include
     private Integer id;
     private String name;
+    @ToString.Exclude
     private Set<TypeDto> types;
 }

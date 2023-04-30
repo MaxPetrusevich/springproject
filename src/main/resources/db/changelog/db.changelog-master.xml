@@ -12,6 +12,9 @@
     <include file="createTables/createTechStore.xml" relativeToChangelogFile="true"/>
     <include file="createTables/createType.xml" relativeToChangelogFile="true"/>
     <include file="createTables/createUser.xml" relativeToChangelogFile="true"/>
+    <include file="createTables/createRoles.xml" relativeToChangelogFile="true"/>
+    <include file="createTables/createUsersRoles.xml" relativeToChangelogFile="true"/>
     <include file="addForeignKeys/addCategoryTypeConstraint.xml" relativeToChangelogFile="true"/>
     <include file="addForeignKeys/addTechConstraints.xml" relativeToChangelogFile="true"/>
+    <include file="addForeignKeys/addUserRoleConstraint.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -1,6 +1,6 @@
 package com.spring.springproject.entities;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
@@ -9,8 +9,6 @@ import java.util.Set;
 
 @Data
 
-@EqualsAndHashCode(of = {"id"})
-@ToString(exclude = {"techniques"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,6 +16,7 @@ import java.util.Set;
 @Table
 public class Producer implements Serializable {
     @Id
+    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "producer_id")
     private Integer id;
@@ -27,7 +26,7 @@ public class Producer implements Serializable {
 
     @Column(name = "producer_country")
     private String country;
-
+    @ToString.Exclude
     @OneToMany(mappedBy = "producer")
     private Set<Technique> techniques = new HashSet<Technique>();
 }

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/schema/security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Producer List</title>
@@ -30,13 +31,13 @@
             <td th:text="${unit.id}"></td>
             <td th:text="${unit.name}"></td>
             <td th:text="${unit.country}"></td>
-            <td>
+            <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="producer-edit" th:method="get">
                     <input th:type="hidden" th:name = "producerId" th:value="${unit.id}">
                     <button class = "w3-button w3-white w3-border" th:type="submit">Edit</button>
                 </form>
             </td>
-            <td>
+            <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="producer-delete" th:method="post">
                     <input th:type="hidden" th:name = "producerId" th:value="${unit.id}">
                     <button class = "w3-button w3-white w3-border" th:type="submit">Delete</button>
@@ -46,7 +47,7 @@
         </tbody>
     </table>
 </div>
-<form th:action="producer-add" th:method="get">
+<form sec:authorize="hasAuthority('ADMIN')" th:action="producer-add" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new producer</button>
 </form>
 

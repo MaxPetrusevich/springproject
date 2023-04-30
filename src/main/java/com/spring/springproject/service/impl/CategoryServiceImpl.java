@@ -2,12 +2,12 @@ package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.CategoryDto;
 import com.spring.springproject.entities.Category;
-import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.spring.springproject.repositories.CategoryRepository;
 import com.spring.springproject.service.interfaces.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/schema/security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Categories</title>
@@ -33,13 +34,13 @@
                     <p th:text="${type.name}"></p>
                 </div>
             </td>
-            <td>
+            <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="category-edit" th:method="get">
                     <input th:type="hidden" th:name="catId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
                 </form>
             </td>
-            <td>
+            <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="category-delete" th:method="post">
                     <input th:type="hidden" th:name="catId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
@@ -49,7 +50,7 @@
         </tbody>
     </table>
 </div>
-<form th:action="category-add" th:method="get">
+<form th:action="category-add" th:method="get" sec:authorize="hasAuthority('ADMIN')">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new category</button>
 </form>
 

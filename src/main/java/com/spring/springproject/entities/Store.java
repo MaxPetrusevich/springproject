@@ -1,6 +1,6 @@
 package com.spring.springproject.entities;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
@@ -8,8 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@EqualsAndHashCode(of = {"id"})
-@ToString(exclude = {"techniques"})
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,6 +17,7 @@ import java.util.Set;
 public class Store implements Serializable {
 
     @Id
+    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_id")
     private Integer id;
@@ -27,7 +27,7 @@ public class Store implements Serializable {
 
     @Column(name = "store_address")
     private String address;
-
+    @ToString.Exclude
     @ManyToMany(mappedBy = "storeList")
     private Set<Technique> techniques = new HashSet<Technique>();
 }

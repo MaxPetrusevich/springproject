@@ -2,12 +2,11 @@ package com.spring.springproject.controller;
 
 import com.spring.springproject.dto.TechniqueDto;
 import com.spring.springproject.service.interfaces.*;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.util.StringUtils;
+
 import static com.spring.springproject.controller.Constants.*;
 
 import java.util.HashSet;
@@ -41,89 +40,64 @@ public class TechniqueController {
         return T_LIST;
     }
 
-    @GetMapping (TECHNIQUE_EDIT)
-    public String editRedirect(Model model, HttpServletRequest request) {
-        String techId = request.getParameter(TECH_ID);
-        if (techId != null) {
-            Integer id = Integer.parseInt(techId);
-            model.addAttribute(UNIT, techniqueService.findById(id));
-        }
+    @GetMapping(TECHNIQUE_EDIT)
+    public String editRedirect(Model model, @RequestParam(TECH_ID) Integer id) {
+        model.addAttribute(UNIT, techniqueService.findById(id));
         addAllAttributes(model);
         return T_EDIT;
     }
 
     @PostMapping(TECHNIQUE_EDIT)
-    public String edit(Model model, HttpServletRequest request) {
-        String techId = request.getParameter(TECH_ID);
-        TechniqueDto techniqueDto = null;
-        if (!StringUtils.isEmptyOrWhitespace(techId)) {
-            Integer id = Integer.parseInt(techId);
-            techniqueDto = techniqueService.findById(id);
-        }
-        convertEditAndAddParams(request, techniqueDto);
-
+    public String edit(Model model, @RequestParam(TECH_ID) Integer id,
+                       @RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
+                       @RequestParam(CATEGORY) Integer categoryId, @RequestParam(PRICE) Double price,
+                       @RequestParam(STORE_ID) Integer[] storeIdes) {
+        TechniqueDto techniqueDto = techniqueService.findById(id);
+        convertEditAndAddParams(producerId, modelId, categoryId, price, storeIdes, techniqueDto);
         techniqueService.update(techniqueDto);
-        return findAll(model);
+        return
+
+                findAll(model);
+
     }
+
     @PostMapping(TECHNIQUE_BY_PRICE)
-    public String findByPrice(Model model, HttpServletRequest request){
-        String startPrice = request.getParameter(START_PRICE);
-        String endPrice = request.getParameter(END_PRICE);
-        if(!StringUtils.isEmptyOrWhitespace(startPrice) && !StringUtils.isEmptyOrWhitespace(endPrice)){
-            model.addAttribute(LIST, techniqueService.findByPriceBetween(Double.parseDouble(startPrice), Double.parseDouble(endPrice)));
-        }
+    public String findByPrice(Model model, @RequestParam(START_PRICE) Double startPrice,
+                              @RequestParam(END_PRICE) Double endPrice) {
+        model.addAttribute(LIST, techniqueService.findByPriceBetween(startPrice, endPrice));
         return T_LIST;
     }
 
-    private void convertEditAndAddParams(HttpServletRequest request, TechniqueDto techniqueDto) {
-        String producerId = request.getParameter(PRODUCER);
-        if (!StringUtils.isEmptyOrWhitespace(producerId)) {
-            Integer id = Integer.parseInt(producerId);
-            techniqueDto.setProducer(producerService.findById(id));
-        }
-        String modelId = request.getParameter(MODEL);
-        if (!StringUtils.isEmptyOrWhitespace(modelId)) {
-            Integer id = Integer.parseInt(modelId);
-            techniqueDto.setModel(modelService.findById(id));
-        }
-        String categoryId = request.getParameter(CATEGORY);
-        if (!StringUtils.isEmptyOrWhitespace(categoryId)) {
-            Integer id = Integer.parseInt(categoryId);
-            techniqueDto.setCategory(categoryService.findById(id));
-        }
-        String price = request.getParameter(PRICE);
-        if (!StringUtils.isEmptyOrWhitespace(price)) {
-            techniqueDto.setPrice(Double.parseDouble(price));
-        }
-        String[] storeIdes = request.getParameterValues(STORE_ID);
+    private void convertEditAndAddParams(Integer producerId, Integer modelId, Integer categoryId,
+                                         Double price, Integer[] storeIdes, TechniqueDto techniqueDto) {
+
+        techniqueDto.setProducer(producerService.findById(producerId));
+        techniqueDto.setModel(modelService.findById(modelId));
+        techniqueDto.setCategory(categoryService.findById(categoryId));
+        techniqueDto.setPrice(price);
         techniqueDto.getStoreList().removeAll(techniqueDto.getStoreList());
-        if (storeIdes != null) {
-            for (String storeId :
-                    storeIdes) {
-                if (!StringUtils.isEmptyOrWhitespace(storeId)) {
-                    Integer id = Integer.parseInt(storeId);
-                    techniqueDto.getStoreList().add(storeService.findById(id));
-                }
-            }
+        for (Integer storeId :
+                storeIdes) {
+            techniqueDto.getStoreList().add(storeService.findById(storeId));
         }
     }
 
+
     @RequestMapping(value = TECHNIQUE_DELETE, method = RequestMethod.POST)
-    public String delete(Model model, HttpServletRequest request) {
-        String techId = request.getParameter(TECH_ID);
-        if (!StringUtils.isEmptyOrWhitespace(techId)) {
-            Integer id = Integer.parseInt(techId);
-            techniqueService.delete(id);
-        }
+    public String delete(Model model, @RequestParam(TECH_ID) Integer id) {
+        techniqueService.delete(id);
         return findAll(model);
     }
 
     @PostMapping(TECHNIQUE_ADD)
-    public String add(Model model, HttpServletRequest request) {
+    public String add(Model model,
+                      @RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
+                      @RequestParam(CATEGORY) Integer categoryId, @RequestParam(PRICE) Double price,
+                      @RequestParam(STORE_ID) Integer[] storeIdes) {
         TechniqueDto techniqueDto = new TechniqueDto();
         techniqueDto.setStoreList(new HashSet<>());
-        convertEditAndAddParams(request, techniqueDto);
-         techniqueService.save(techniqueDto);
+        convertEditAndAddParams(producerId, modelId, categoryId, price, storeIdes, techniqueDto);
+        techniqueService.save(techniqueDto);
         return findAll(model);
     }
 

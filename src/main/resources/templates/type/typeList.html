@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/schema/security">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <title>Type List</title>
@@ -26,13 +27,13 @@
       <td th:text="${unit.id}"></td>
       <td th:text="${unit.name}"></td>
       <td>
-        <form th:action="type-edit" th:method="get">
+        <form sec:authorize="hasAuthority('ADMIN')" th:action="type-edit" th:method="get">
           <input th:type="hidden" th:name = "typeId" th:value="${unit.id}">
           <button class = "w3-button w3-white w3-border" th:type="submit">Edit</button>
         </form>
       </td>
       <td>
-        <form th:action="type-delete" th:method="post">
+        <form sec:authorize="hasAuthority('ADMIN')" th:action="type-delete" th:method="post">
           <input th:type="hidden" th:name = "typeId" th:value="${unit.id}">
           <button class = "w3-button w3-white w3-border" th:type="submit">Delete</button>
         </form>
@@ -41,7 +42,7 @@
     </tbody>
   </table>
 </div>
-<form th:action="type-add" th:method="get">
+<form sec:authorize="hasAuthority('ADMIN')" th:action="type-add" th:method="get">
   <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new type</button>
 </form>
 

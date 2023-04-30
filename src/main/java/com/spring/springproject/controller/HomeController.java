@@ -1,10 +1,10 @@
 package com.spring.springproject.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import static com.spring.springproject.controller.Constants.*;
 
@@ -39,8 +39,8 @@ public class HomeController {
     }
 
     @GetMapping(HOME_VIEW)
-    public String view(HttpServletRequest request, Model model) {
-        int choose = Integer.parseInt(request.getParameter(LIST_NAME));
+    public String view(@RequestParam(LIST_NAME) String listName, Model model) {
+        int choose = Integer.parseInt(listName);
         String address = null;
         switch (choose) {
             case 1:

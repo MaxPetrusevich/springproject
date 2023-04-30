@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/schema/security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>TechList</title>
@@ -43,13 +44,13 @@
                 <p th:text="${store.name}"></p>
                 <p th:text="${store.address}"></p>
             </td>
-            <td>
+            <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="technique-edit" th:method="GET">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
                 </form>
             </td>
-            <td>
+            <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="technique-delete" th:method="POST">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
@@ -59,7 +60,7 @@
         </tbody>
     </table>
 </div>
-<form th:action="technique-add" th:method="get">
+<form sec:authorize="hasAuthority('ADMIN')" th:action="technique-add" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new technique</button>
 </form>
 

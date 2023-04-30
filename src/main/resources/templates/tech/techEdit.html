@@ -36,7 +36,7 @@
     <div th:if="${stores} ne null">
         <div th:each="store, iter:${stores}">
             <input class="w3-check" th:type="checkbox" th:name="storeId" th:value="${store.id}">
-            <label th:utext="${store.name}"><label th:text="${store.address}"></label> </label>
+            <label th:utext="${store.name + store.address}"> </label>
         </div>
     </div>
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Submit</button>

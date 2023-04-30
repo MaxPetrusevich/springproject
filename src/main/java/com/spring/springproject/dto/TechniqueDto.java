@@ -8,12 +8,16 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(of = {"id"})
 public class TechniqueDto {
+    @EqualsAndHashCode.Include
     private Integer id;
     private Double price;
+    @ToString.Exclude
     private ModelDto model;
+    @ToString.Exclude
     private Set<StoreDto> storeList;
+    @ToString.Exclude
     private ProducerDto producer;
+    @ToString.Exclude
     private CategoryDto category;
 }

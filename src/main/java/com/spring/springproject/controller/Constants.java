@@ -1,5 +1,7 @@
 package com.spring.springproject.controller;
 
+import org.springframework.security.core.userdetails.UserDetailsService;
+
 public class Constants {
     public static final String TYPE_BY_NAME = "/type-by-name";
     public static final String MODEL_BY_NAME = "/model-by-name";
@@ -8,7 +10,10 @@ public class Constants {
     public static final String STORE_BY_ADDRESS = "/store-by-address";
     public static final String STORE_BY_NAME = "/store-by-name";
     public static final String CATEGORY_BY_NAME = "/category-by-name";
-
+    public static final String LOGIN = "/login";
+    public static final String ADMIN = "ADMIN";
+    public static final String USER = "USER";
+    public static final String CONFIG_MATCHER = "/*";
     public static final String CATEGORY_LIST = "category/catList";
     public static final String LIST = "list";
     public static final String CATEGORY_LIST_MAP = "/category-list";

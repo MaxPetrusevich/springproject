@@ -2,13 +2,15 @@ package com.spring.springproject.controller;
 
 import com.spring.springproject.dto.ModelDto;
 import com.spring.springproject.service.interfaces.ModelService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.thymeleaf.util.StringUtils;
+
+import javax.servlet.http.*;
 
 import static com.spring.springproject.controller.Constants.*;
 
@@ -30,40 +32,28 @@ public class ModelController {
     }
 
     @GetMapping(MODEL_EDIT)
-    public String editRedirect(Model model, HttpServletRequest request) {
-        String modelId = request.getParameter(MODEL_ID);
-        ModelDto modelDto = null;
-        if (!StringUtils.isEmptyOrWhitespace(modelId)) {
-            Integer id = Integer.parseInt(modelId);
-            modelDto = modelService.findById(id);
-        }
+    public String editRedirect(Model model, @RequestParam(MODEL_ID) Integer id) {
+        ModelDto modelDto = modelService.findById(id);
+
         model.addAttribute(UNIT, modelDto);
         return MOD_EDIT;
     }
 
     @PostMapping(MODEL_EDIT)
-    public String edit(HttpServletRequest request, Model model) {
-        String modelId = request.getParameter(MODEL_ID);
-        ModelDto modelDto = null;
-        if (!StringUtils.isEmptyOrWhitespace(modelId)) {
-            Integer id = Integer.parseInt(modelId);
-            modelDto = modelService.findById(id);
-        }
+    public String edit(@RequestParam(MODEL_ID) Integer id, @RequestParam(NAME) String name, Model model) {
+        ModelDto modelDto = modelService.findById(id);
         if (modelDto != null) {
-            modelDto.setName(request.getParameter(NAME));
+            modelDto.setName(name);
             modelService.update(modelDto);
         }
         return findAll(model);
     }
 
     @PostMapping(MODEL_DELETE)
-    public String delete(HttpServletRequest request, Model model) {
-        String modelId = request.getParameter(MODEL_ID);
+    public String delete(@RequestParam(MODEL_ID) Integer id, Model model) {
 
-        if (!StringUtils.isEmptyOrWhitespace(modelId)) {
-            Integer id = Integer.parseInt(modelId);
-            modelService.delete(id);
-        }
+        modelService.delete(id);
+
         return findAll(model);
     }
 
@@ -73,15 +63,15 @@ public class ModelController {
     }
 
     @PostMapping(MODEL_ADD)
-    public String add(HttpServletRequest request, Model model) {
+    public String add(@RequestParam(NAME) String name, Model model) {
         ModelDto modelDto = new ModelDto();
-        modelDto.setName(request.getParameter(NAME));
+        modelDto.setName(name);
         modelService.save(modelDto);
         return findAll(model);
     }
+
     @PostMapping(MODEL_BY_NAME)
-    public String findByName(Model model, HttpServletRequest request){
-        String name = request.getParameter(NAME);
+    public String findByName(Model model, @RequestParam(NAME) String name) {
         model.addAttribute(LIST, modelService.findByName(name));
         return MOD_LIST;
     }

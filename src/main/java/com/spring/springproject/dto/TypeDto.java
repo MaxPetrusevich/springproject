@@ -6,10 +6,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(of = {"id"})
-@ToString(exclude = {"category "})
 public class TypeDto {
+    @EqualsAndHashCode.Include
     private Integer id;
     private String name;
+    @ToString.Exclude
     private CategoryDto category;
 }

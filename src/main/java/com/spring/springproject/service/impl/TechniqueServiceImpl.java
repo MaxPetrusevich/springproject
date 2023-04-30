@@ -2,7 +2,7 @@ package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.TechniqueDto;
 import com.spring.springproject.entities.Technique;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
