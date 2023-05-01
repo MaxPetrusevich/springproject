@@ -21,11 +21,14 @@ public class Category implements Serializable {
     private Integer id;
 
     @Column(name = "category_name")
+    @EqualsAndHashCode.Exclude
     private String name;
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "category")
     private Set<Type> types = new HashSet<Type>();
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "category")
     private Set<Technique> techniques = new HashSet<Technique>();
 }

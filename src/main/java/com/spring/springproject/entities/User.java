@@ -27,8 +27,10 @@ public class User implements Serializable {
     @Size(min = 3, max = 16, message = "Длина username должна быть от 3 до 16 символов")
     @Pattern(regexp = "[a-zA-Z]*", message = "Только латинские буквы")
     @Column(name = "user_name")
+    @EqualsAndHashCode.Exclude
     private String userName;
 
+    @EqualsAndHashCode.Exclude
     @Column
     private String password;
 

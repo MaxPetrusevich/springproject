@@ -28,8 +28,8 @@ public class TechniqueServiceImpl implements TechniqueService {
     @Override
     public Set<TechniqueDto> findAll() {
         Set<TechniqueDto> techniqueDtoSet = new HashSet<>();
-        for (Technique technique:
-             repository.findAll()) {
+        for (Technique technique :
+                repository.findAll()) {
             techniqueDtoSet.add(modelMapper.map(technique, TechniqueDto.class));
         }
         return techniqueDtoSet;
@@ -43,7 +43,7 @@ public class TechniqueServiceImpl implements TechniqueService {
     @Override
     public TechniqueDto save(TechniqueDto object) {
         Technique technique = modelMapper.map(object, Technique.class);
-        technique =repository.save(technique);
+        technique = repository.save(technique);
         return modelMapper.map(technique, TechniqueDto.class);
     }
 
@@ -60,8 +60,8 @@ public class TechniqueServiceImpl implements TechniqueService {
     @Override
     public Set<TechniqueDto> findByPriceBetween(Double startPrice, Double endPrice) {
         Set<TechniqueDto> techniqueDtoSet = new HashSet<>();
-        for (Technique technique:
-             repository.findByPriceBetween(startPrice, endPrice)) {
+        for (Technique technique :
+                repository.findByPriceBetween(startPrice, endPrice)) {
             techniqueDtoSet.add(modelMapper.map(technique, TechniqueDto.class));
         }
         return techniqueDtoSet;

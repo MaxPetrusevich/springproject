@@ -1,9 +1,6 @@
 package com.spring.springproject.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,9 +29,11 @@ public class Role implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "name")
     private String name;
 
+    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     private Set<User> users;
 }

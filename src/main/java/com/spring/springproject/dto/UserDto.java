@@ -9,6 +9,7 @@ import lombok.*;
 public class UserDto {
     @EqualsAndHashCode.Include
     private Integer id;
+    @EqualsAndHashCode.Exclude
     private String name;
-    private String email;
+
 }

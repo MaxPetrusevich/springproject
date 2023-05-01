@@ -1,6 +1,7 @@
 package com.spring.springproject.entities;
 
 import javax.persistence.*;
+
 import lombok.*;
 
 import java.io.Serializable;
@@ -21,11 +22,14 @@ public class Producer implements Serializable {
     @Column(name = "producer_id")
     private Integer id;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "producer_name")
     private String name;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "producer_country")
     private String country;
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "producer")
     private Set<Technique> techniques = new HashSet<Technique>();

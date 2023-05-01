@@ -22,12 +22,15 @@ public class Store implements Serializable {
     @Column(name = "store_id")
     private Integer id;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "store_name")
     private String name;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "store_address")
     private String address;
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "storeList")
     private Set<Technique> techniques = new HashSet<Technique>();
 }

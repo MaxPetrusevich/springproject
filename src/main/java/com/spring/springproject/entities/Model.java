@@ -1,6 +1,7 @@
 package com.spring.springproject.entities;
 
 import javax.persistence.*;
+
 import lombok.*;
 
 import java.io.Serializable;
@@ -22,8 +23,10 @@ public class Model implements Serializable {
     @Column(name = "model_id")
     private Integer id;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "model_name")
     private String name;
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "model")
     private Set<Technique> techniques = new HashSet<Technique>();

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<form class="w3-container"  th:action="technique-edit" th:method="post">
+<form class="w3-container"  th:action="technique" th:method="post">
     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
     <label>Price</label>
     <input class="w3-input" th:type="number" th:name="price" th:value="${unit.price}">
@@ -42,6 +42,6 @@
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Submit</button>
 </form>
 
-<a th:href="technique-list">Previous</a>
+<a th:href="techniques">Previous</a>
 </body>
 </html>

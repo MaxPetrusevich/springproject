@@ -15,9 +15,7 @@ import java.util.HashSet;
 @Controller
 public class TechniqueController {
 
-    public static final String START_PRICE = "startPrice";
-    public static final String END_PRICE = "endPrice";
-    public static final String TECHNIQUE_BY_PRICE = "/technique-by-price";
+
     private final TechniqueService techniqueService;
     private final CategoryService categoryService;
     private final StoreService storeService;
@@ -34,20 +32,20 @@ public class TechniqueController {
         this.producerService = producerService;
     }
 
-    @GetMapping(TECHNIQUE_LIST)
+    @GetMapping(TECHNIQUES)
     public String findAll(Model model) {
         model.addAttribute(LIST, techniqueService.findAll());
         return T_LIST;
     }
 
-    @GetMapping(TECHNIQUE_EDIT)
+    @GetMapping(TECHNIQUE)
     public String editRedirect(Model model, @RequestParam(TECH_ID) Integer id) {
         model.addAttribute(UNIT, techniqueService.findById(id));
         addAllAttributes(model);
         return T_EDIT;
     }
 
-    @PostMapping(TECHNIQUE_EDIT)
+    @PostMapping(TECHNIQUE)
     public String edit(Model model, @RequestParam(TECH_ID) Integer id,
                        @RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
                        @RequestParam(CATEGORY) Integer categoryId, @RequestParam(PRICE) Double price,
@@ -55,9 +53,7 @@ public class TechniqueController {
         TechniqueDto techniqueDto = techniqueService.findById(id);
         convertEditAndAddParams(producerId, modelId, categoryId, price, storeIdes, techniqueDto);
         techniqueService.update(techniqueDto);
-        return
-
-                findAll(model);
+        return findAll(model);
 
     }
 
@@ -83,13 +79,13 @@ public class TechniqueController {
     }
 
 
-    @RequestMapping(value = TECHNIQUE_DELETE, method = RequestMethod.POST)
+    @PostMapping(value = DEL_TECHNIQUE)
     public String delete(Model model, @RequestParam(TECH_ID) Integer id) {
         techniqueService.delete(id);
         return findAll(model);
     }
 
-    @PostMapping(TECHNIQUE_ADD)
+    @PostMapping(NEW_TECHNIQUE)
     public String add(Model model,
                       @RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
                       @RequestParam(CATEGORY) Integer categoryId, @RequestParam(PRICE) Double price,
@@ -101,7 +97,7 @@ public class TechniqueController {
         return findAll(model);
     }
 
-    @GetMapping(TECHNIQUE_ADD)
+    @GetMapping(NEW_TECHNIQUE)
     public String add(Model model) {
         addAllAttributes(model);
         return T_ADD;

@@ -9,5 +9,7 @@ import lombok.*;
 public class ModelDto {
     @EqualsAndHashCode.Include
     private Integer id;
+    @EqualsAndHashCode.Exclude
+
     private String name;
 }

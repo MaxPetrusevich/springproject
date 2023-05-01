@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<form th:action="technique-by-price" method="post">
+<form th:action="techniqueByPrice" method="post">
     <input th:type="number" th:name="startPrice" placeholder="Enter the start price">
     <input th:type="number" th:name="endPrice" placeholder="Enter the end price">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
@@ -45,13 +45,13 @@
                 <p th:text="${store.address}"></p>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="technique-edit" th:method="GET">
+                <form th:action="technique" th:method="GET">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="technique-delete" th:method="POST">
+                <form th:action="delTechnique" th:method="POST">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
                 </form>
@@ -60,7 +60,7 @@
         </tbody>
     </table>
 </div>
-<form sec:authorize="hasAuthority('ADMIN')" th:action="technique-add" th:method="get">
+<form sec:authorize="hasAuthority('ADMIN')" th:action="newTechnique" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new technique</button>
 </form>
 

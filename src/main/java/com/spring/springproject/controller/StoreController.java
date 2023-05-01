@@ -23,20 +23,20 @@ public class StoreController {
         this.storeService = storeService;
     }
 
-    @GetMapping(STORE_LIST)
+    @GetMapping(STORES_URL)
     public String findAll(Model model) {
         model.addAttribute(LIST, storeService.findAll());
         return ST_LIST;
     }
 
-    @GetMapping(STORE_EDIT)
+    @GetMapping(STORE)
     public String typeRedirect(Model model, @RequestParam(STORE_ID) Integer id) {
         StoreDto storeDto = storeService.findById(id);
         model.addAttribute(UNIT, storeDto);
         return ST_EDIT;
     }
 
-    @PostMapping(STORE_EDIT)
+    @PostMapping(STORE)
     public String edit(@RequestParam(STORE_ID) Integer id, @RequestParam(NAME) String name,
                        @RequestParam(ADDRESS) String address, Model model) {
         StoreDto storeDto = storeService.findById(id);
@@ -48,18 +48,18 @@ public class StoreController {
         return findAll(model);
     }
 
-    @PostMapping(STORE_DELETE)
+    @PostMapping(DEL_STORE)
     public String delete(@RequestParam(STORE_ID) Integer id, Model model) {
         storeService.delete(id);
         return findAll(model);
     }
 
-    @GetMapping(STORE_ADD)
+    @GetMapping(NEW_STORE)
     public String add() {
         return ST_ADD;
     }
 
-    @PostMapping(STORE_ADD)
+    @PostMapping(NEW_STORE)
     public String add(@RequestParam(NAME) String name,
                       @RequestParam(ADDRESS) String address, Model model) {
         StoreDto storeDto = new StoreDto();

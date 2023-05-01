@@ -10,7 +10,7 @@
 
 </head>
 <body>
-<form th:action="category-by-name" method="post">
+<form th:action="categoryByName" method="post">
     <input th:type="search" th:name="name" placeholder="Enter the name">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
 </form>
@@ -35,13 +35,13 @@
                 </div>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="category-edit" th:method="get">
+                <form th:action="category" th:method="get">
                     <input th:type="hidden" th:name="catId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="category-delete" th:method="post">
+                <form th:action="delCategory" th:method="post">
                     <input th:type="hidden" th:name="catId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
                 </form>
@@ -50,7 +50,7 @@
         </tbody>
     </table>
 </div>
-<form th:action="category-add" th:method="get" sec:authorize="hasAuthority('ADMIN')">
+<form th:action="newCategory" th:method="get" sec:authorize="hasAuthority('ADMIN')">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new category</button>
 </form>
 

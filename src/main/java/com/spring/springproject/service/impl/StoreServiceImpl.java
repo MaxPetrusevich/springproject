@@ -11,12 +11,14 @@ import com.spring.springproject.service.interfaces.StoreService;
 
 import java.util.HashSet;
 import java.util.Set;
+
 @Service
 @Transactional
 public class StoreServiceImpl implements StoreService {
 
     private final ModelMapper modelMapper;
     private final StoreRepository repository;
+
     @Autowired
     public StoreServiceImpl(ModelMapper modelMapper, StoreRepository repository) {
         this.modelMapper = modelMapper;
@@ -26,7 +28,7 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public Set<StoreDto> findAll() {
         Set<StoreDto> storeDtoSet = new HashSet<>();
-        for (Store store:
+        for (Store store :
                 repository.findAll()) {
             storeDtoSet.add(modelMapper.map(store, StoreDto.class));
         }
@@ -58,7 +60,7 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public Set<StoreDto> findByName(String name) {
         Set<StoreDto> storeDtoSet = new HashSet<>();
-        for (Store store:
+        for (Store store :
                 repository.findByNameContaining(name)) {
             storeDtoSet.add(modelMapper.map(store, StoreDto.class));
         }
@@ -68,7 +70,7 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public Set<StoreDto> findByAddress(String address) {
         Set<StoreDto> storeDtoSet = new HashSet<>();
-        for (Store store:
+        for (Store store :
                 repository.findByAddressContaining(address)) {
             storeDtoSet.add(modelMapper.map(store, StoreDto.class));
         }

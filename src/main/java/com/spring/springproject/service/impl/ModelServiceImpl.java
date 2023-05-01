@@ -18,6 +18,7 @@ public class ModelServiceImpl implements ModelService {
 
     private final ModelRepository repository;
     private final ModelMapper modelMapper;
+
     @Autowired
     public ModelServiceImpl(ModelRepository repository, ModelMapper modelMapper) {
         this.repository = repository;
@@ -27,7 +28,7 @@ public class ModelServiceImpl implements ModelService {
     @Override
     public Set<ModelDto> findByName(String name) {
         Set<ModelDto> modelDtoSet = new HashSet<>();
-        for (Model model:
+        for (Model model :
                 repository.findByNameContaining(name)) {
             modelDtoSet.add(modelMapper.map(model, ModelDto.class));
         }
@@ -37,7 +38,7 @@ public class ModelServiceImpl implements ModelService {
     @Override
     public Set<ModelDto> findAll() {
         Set<ModelDto> modelDtoSet = new HashSet<>();
-        for (Model model:
+        for (Model model :
                 repository.findAll()) {
             modelDtoSet.add(modelMapper.map(model, ModelDto.class));
         }

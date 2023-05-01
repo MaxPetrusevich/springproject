@@ -11,7 +11,10 @@ import java.util.Set;
 public class CategoryDto {
     @EqualsAndHashCode.Include
     private Integer id;
+    @EqualsAndHashCode.Exclude
+
     private String name;
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<TypeDto> types;
 }

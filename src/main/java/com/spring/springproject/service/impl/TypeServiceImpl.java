@@ -28,8 +28,8 @@ public class TypeServiceImpl implements TypeService {
     @Override
     public Set<TypeDto> findAll() {
         Set<TypeDto> typeDtoSet = new HashSet<>();
-        for (Type type:
-             repository.findAll()) {
+        for (Type type :
+                repository.findAll()) {
             typeDtoSet.add(modelMapper.map(type, TypeDto.class));
         }
         return typeDtoSet;
@@ -60,7 +60,7 @@ public class TypeServiceImpl implements TypeService {
     @Override
     public Set<TypeDto> findByName(String name) {
         Set<TypeDto> typeDtoSet = new HashSet<>();
-        for (Type type:
+        for (Type type :
                 repository.findByNameContaining(name)) {
             typeDtoSet.add(modelMapper.map(type, TypeDto.class));
         }

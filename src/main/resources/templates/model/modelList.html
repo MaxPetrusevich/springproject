@@ -8,7 +8,7 @@
     <title>Model List</title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
-<body><form th:action="model-by-name" method="post">
+<body><form th:action="modelByName" method="post">
     <input th:type="search" th:name="name" placeholder="Enter the name">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
 </form>
@@ -26,13 +26,13 @@
             <td th:text="${unit.id}"></td>
             <td th:text="${unit.name}"></td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="model-edit" th:method="get">
+                <form th:action="model" th:method="get">
                     <input th:type="hidden" th:name = "modelId" th:value="${unit.id}">
                     <button class = "w3-button w3-white w3-border" th:type="submit">Edit</button>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="model-delete" th:method="post">
+                <form th:action="delModel" th:method="post">
                     <input th:type="hidden" th:name = "modelId" th:value="${unit.id}">
                     <button class = "w3-button w3-white w3-border" th:type="submit">Delete</button>
                 </form>
@@ -41,7 +41,7 @@
         </tbody>
     </table>
 </div>
-<form sec:authorize="hasAuthority('ADMIN')" th:action="model-add" th:method="get">
+<form sec:authorize="hasAuthority('ADMIN')" th:action="newModel" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new model</button>
 </form>
 

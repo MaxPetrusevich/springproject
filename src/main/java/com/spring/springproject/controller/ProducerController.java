@@ -22,20 +22,20 @@ public class ProducerController {
         this.producerService = producerService;
     }
 
-    @GetMapping(PRODUCER_LIST)
+    @GetMapping(PRODUCERS_URL)
     public String findAll(Model model) {
         model.addAttribute(LIST, producerService.findAll());
         return PROD_LIST;
     }
 
-    @GetMapping(PRODUCER_EDIT)
+    @GetMapping(PRODUCER_URL)
     public String editRedirect(Model model, @RequestParam(PRODUCER_ID) Integer id) {
         ProducerDto producerDto = producerService.findById(id);
         model.addAttribute(UNIT, producerDto);
         return PROD_EDIT;
     }
 
-    @PostMapping(PRODUCER_EDIT)
+    @PostMapping(PRODUCER_URL)
     public String edit(@RequestParam(PRODUCER_ID) Integer id, @RequestParam(NAME) String name,
                        @RequestParam(COUNTRY) String country, Model model) {
         ProducerDto producerDto = producerService.findById(id);
@@ -48,18 +48,18 @@ public class ProducerController {
         return findAll(model);
     }
 
-    @PostMapping(PRODUCER_DELETE)
+    @PostMapping(DEL_PRODUCER)
     public String delete(@RequestParam(PRODUCER_ID) Integer id, Model model) {
         producerService.delete(id);
         return findAll(model);
     }
 
-    @GetMapping(PRODUCER_ADD)
+    @GetMapping(NEW_PRODUCER)
     public String add() {
         return PROD_ADD;
     }
 
-    @PostMapping(PRODUCER_ADD)
+    @PostMapping(NEW_PRODUCER)
     public String add(@RequestParam(NAME) String name, @RequestParam(COUNTRY) String country, Model model) {
         ProducerDto producerDto = new ProducerDto();
         producerDto.setName(name);

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashSet;
@@ -33,13 +34,13 @@ public class CategoryController {
         return CATEGORY_LIST;
     }
 
-    @GetMapping(CATEGORY_LIST_MAP)
+    @GetMapping(CATEGORIES_URL)
     public String findAll(Model model) {
         model.addAttribute(LIST, categoryService.findAll());
         return CATEGORY_LIST;
     }
 
-    @GetMapping(CATEGORY_EDIT)
+    @GetMapping(CATEGORY_URL)
     public String editRedirect(Model model, @RequestParam(CAT_ID) Integer id) {
         CategoryDto categoryDto = categoryService.findById(id);
         model.addAttribute(UNIT, categoryDto);
@@ -47,60 +48,33 @@ public class CategoryController {
         return CAT_EDIT;
     }
 
-    @PostMapping(CATEGORY_EDIT)
+    @PostMapping(CATEGORY_URL)
     public String edit(@RequestParam(CAT_ID) Integer id, @RequestParam(TYPE_ID) Integer[] typeIdes, @RequestParam(NAME) String name, Model model) {
         CategoryDto categoryDto = categoryService.findById(id);
         if (categoryDto != null) {
-            setEditParams(name, typeIdes, categoryDto);
-            categoryService.update(categoryDto);
+            categoryService.save(name, typeIdes, categoryDto);
         }
         return findAll(model);
     }
 
-    @PostMapping(CATEGORY_DELETE)
+    @PostMapping(DEL_CATEGORY)
     public String delete(@RequestParam(CAT_ID) Integer id, Model model) {
-         for (TypeDto type :
-                    categoryService.findById(id).getTypes()) {
-                type.setCategory(null);
-                typeService.update(type);
-            }
-            categoryService.delete(id);
+        categoryService.delete(id);
         return findAll(model);
     }
 
-    @GetMapping(CATEGORY_ADD)
+    @GetMapping(NEW_CATEGORY)
     public String add(Model model) {
         model.addAttribute(TYPES, typeService.findAll());
         return CAT_ADD;
     }
 
-    @PostMapping(CATEGORY_ADD)
+    @PostMapping(NEW_CATEGORY)
     public String add(@RequestParam(NAME) String name, Model model, @RequestParam(TYPE_ID) Integer[] typeIdes) {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setTypes(new HashSet<>());
-        categoryDto = categoryService.save(categoryDto);
-        setEditParams(name, typeIdes, categoryDto);
-        categoryService.update(categoryDto);
+        categoryService.save(name, typeIdes, categoryDto);
         return findAll(model);
-    }
-
-    private void setEditParams(String name, Integer[] typeIdes, CategoryDto categoryDto) {
-        categoryDto.setName(name);
-        for (TypeDto type :
-                categoryDto.getTypes()) {
-            type.setCategory(null);
-            typeService.update(type);
-        }
-        if (categoryDto.getTypes() != null) {
-            categoryDto.getTypes().removeAll(categoryDto.getTypes());
-        }
-        for (Integer typeId :
-                typeIdes) {
-            TypeDto typeDto = typeService.findById(typeId);
-            typeDto.setCategory(categoryDto);
-            typeService.update(typeDto);
-            categoryDto.getTypes().add(typeDto);
-        }
     }
 }
 

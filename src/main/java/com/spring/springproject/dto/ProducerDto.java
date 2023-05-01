@@ -9,6 +9,10 @@ import lombok.*;
 public class ProducerDto {
     @EqualsAndHashCode.Include
     private Integer id;
+    @EqualsAndHashCode.Exclude
+
     private String name;
+    @EqualsAndHashCode.Exclude
+
     private String country;
 }

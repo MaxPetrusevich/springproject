@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<form class="w3-container"  th:action="store-add" th:method="post">
+<form class="w3-container"  th:action="newStore" th:method="post">
     <label>Name</label>
     <input class="w3-input" required th:type="text" th:name="name" placeholder="Enter the store name">
     <label>Address</label>
     <input class="w3-input" required th:type="text" th:name="address" placeholder="Enter the store address">
     <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border">Submit</button>
 </form>
-<a th:href="store-list">Previous</a>
+<a th:href="stores">Previous</a>
 </body>
 </html>

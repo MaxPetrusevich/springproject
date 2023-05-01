@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<form th:action="type-by-name" method="post">
+<form th:action="typeByName" method="post">
   <input th:type="search" th:name="name" placeholder="Enter the name">
   <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
 </form>
@@ -27,13 +27,13 @@
       <td th:text="${unit.id}"></td>
       <td th:text="${unit.name}"></td>
       <td>
-        <form sec:authorize="hasAuthority('ADMIN')" th:action="type-edit" th:method="get">
+        <form sec:authorize="hasAuthority('ADMIN')" th:action="type" th:method="get">
           <input th:type="hidden" th:name = "typeId" th:value="${unit.id}">
           <button class = "w3-button w3-white w3-border" th:type="submit">Edit</button>
         </form>
       </td>
       <td>
-        <form sec:authorize="hasAuthority('ADMIN')" th:action="type-delete" th:method="post">
+        <form sec:authorize="hasAuthority('ADMIN')" th:action="delType" th:method="post">
           <input th:type="hidden" th:name = "typeId" th:value="${unit.id}">
           <button class = "w3-button w3-white w3-border" th:type="submit">Delete</button>
         </form>
@@ -42,7 +42,7 @@
     </tbody>
   </table>
 </div>
-<form sec:authorize="hasAuthority('ADMIN')" th:action="type-add" th:method="get">
+<form sec:authorize="hasAuthority('ADMIN')" th:action="newType" th:method="get">
   <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new type</button>
 </form>
 

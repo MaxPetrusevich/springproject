@@ -11,13 +11,18 @@ import java.util.Set;
 public class TechniqueDto {
     @EqualsAndHashCode.Include
     private Integer id;
+    @EqualsAndHashCode.Exclude
     private Double price;
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private ModelDto model;
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<StoreDto> storeList;
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private ProducerDto producer;
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private CategoryDto category;
 }

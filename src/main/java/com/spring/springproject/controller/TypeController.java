@@ -15,6 +15,7 @@ import static com.spring.springproject.controller.Constants.*;
 @Controller
 public class TypeController {
 
+
     private final TypeService typeService;
 
     @Autowired
@@ -22,20 +23,20 @@ public class TypeController {
         this.typeService = typeService;
     }
 
-    @GetMapping(TYPE_LIST)
+    @GetMapping(TYPES_URL)
     public String findAll(Model model) {
         model.addAttribute(LIST, typeService.findAll());
         return TY_LIST;
     }
 
-    @GetMapping(TYPE_EDIT)
+    @GetMapping(TYPE)
     public String typeRedirect(Model model, @RequestParam(TYPE_ID) Integer id) {
         TypeDto typeDto = typeService.findById(id);
         model.addAttribute(UNIT, typeDto);
         return TY_EDIT;
     }
 
-    @PostMapping(TYPE_EDIT)
+    @PostMapping(TYPE)
     public String edit(@RequestParam(TYPE_ID) Integer id, @RequestParam(NAME) String name, Model model) {
         TypeDto typeDto = typeService.findById(id);
         if (typeDto != null) {
@@ -45,18 +46,18 @@ public class TypeController {
         return findAll(model);
     }
 
-    @PostMapping(TYPE_DELETE)
+    @PostMapping(DEL_TYPE)
     public String delete(@RequestParam(TYPE_ID) Integer id, Model model) {
         typeService.delete(id);
         return findAll(model);
     }
 
-    @GetMapping(TYPE_ADD)
+    @GetMapping(NEW_TYPE)
     public String add() {
         return TY_ADD;
     }
 
-    @PostMapping(TYPE_ADD)
+    @PostMapping(NEW_TYPE)
     public String add(@RequestParam(NAME) String name, Model model) {
         TypeDto typeDto = new TypeDto();
         typeDto.setName(name);

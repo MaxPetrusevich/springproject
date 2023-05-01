@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Set<UserDto> findAll() {
         Set<UserDto> userDtoSet = new HashSet<>();
-        for (User user:
+        for (User user :
                 repository.findAll()) {
             userDtoSet.add(modelMapper.map(user, UserDto.class));
         }

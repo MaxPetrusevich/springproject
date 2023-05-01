@@ -1,6 +1,7 @@
 package com.spring.springproject.entities;
 
 import javax.persistence.*;
+
 import lombok.*;
 
 import java.io.Serializable;
@@ -19,6 +20,7 @@ public class Type implements Serializable {
     @Column(name = "type_id")
     private Integer id;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "type_name")
     private String name;
     @EqualsAndHashCode.Exclude

@@ -8,15 +8,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.thymeleaf.util.StringUtils;
 
-import javax.servlet.http.*;
 
 import static com.spring.springproject.controller.Constants.*;
 
 
 @Controller
 public class ModelController {
+
 
     private final ModelService modelService;
 
@@ -25,13 +24,13 @@ public class ModelController {
         this.modelService = modelService;
     }
 
-    @GetMapping(MODEL_LIST)
+    @GetMapping(MODELS_URL)
     public String findAll(Model model) {
         model.addAttribute(LIST, modelService.findAll());
         return MOD_LIST;
     }
 
-    @GetMapping(MODEL_EDIT)
+    @GetMapping(MODEL_URL)
     public String editRedirect(Model model, @RequestParam(MODEL_ID) Integer id) {
         ModelDto modelDto = modelService.findById(id);
 
@@ -39,7 +38,7 @@ public class ModelController {
         return MOD_EDIT;
     }
 
-    @PostMapping(MODEL_EDIT)
+    @PostMapping(MODEL_URL)
     public String edit(@RequestParam(MODEL_ID) Integer id, @RequestParam(NAME) String name, Model model) {
         ModelDto modelDto = modelService.findById(id);
         if (modelDto != null) {
@@ -49,7 +48,7 @@ public class ModelController {
         return findAll(model);
     }
 
-    @PostMapping(MODEL_DELETE)
+    @PostMapping(DEL_MODEL)
     public String delete(@RequestParam(MODEL_ID) Integer id, Model model) {
 
         modelService.delete(id);
@@ -57,12 +56,12 @@ public class ModelController {
         return findAll(model);
     }
 
-    @GetMapping(MODEL_ADD)
+    @GetMapping(NEW_MODEL)
     public String add() {
         return MODEL_MODEL_ADD;
     }
 
-    @PostMapping(MODEL_ADD)
+    @PostMapping(NEW_MODEL)
     public String add(@RequestParam(NAME) String name, Model model) {
         ModelDto modelDto = new ModelDto();
         modelDto.setName(name);

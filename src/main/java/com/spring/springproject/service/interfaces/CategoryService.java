@@ -4,6 +4,8 @@ import com.spring.springproject.dto.CategoryDto;
 
 import java.util.Set;
 
-public interface CategoryService extends Service<CategoryDto>{
+public interface CategoryService extends Service<CategoryDto> {
     Set<CategoryDto> findByName(String name);
+
+    CategoryDto save(String name, Integer[] typeIdes, CategoryDto categoryDto);
 }

@@ -12,6 +12,7 @@ import com.spring.springproject.service.interfaces.ProducerService;
 
 import java.util.HashSet;
 import java.util.Set;
+
 @Service
 @Transactional
 public class ProducerServiceImpl implements ProducerService {
@@ -28,7 +29,7 @@ public class ProducerServiceImpl implements ProducerService {
     @Override
     public Set<ProducerDto> findAll() {
         Set<ProducerDto> producerDtoSet = new HashSet<>();
-        for (Producer producer:
+        for (Producer producer :
                 repository.findAll()) {
             producerDtoSet.add(modelMapper.map(producer, ProducerDto.class));
         }
@@ -60,7 +61,7 @@ public class ProducerServiceImpl implements ProducerService {
     @Override
     public Set<ProducerDto> findByName(String name) {
         Set<ProducerDto> producerDtoSet = new HashSet<>();
-        for (Producer producer:
+        for (Producer producer :
                 repository.findByNameContaining(name)) {
             producerDtoSet.add(modelMapper.map(producer, ProducerDto.class));
         }
@@ -70,9 +71,10 @@ public class ProducerServiceImpl implements ProducerService {
     @Override
     public Set<ProducerDto> findByCountry(String country) {
         Set<ProducerDto> producerDtoSet = new HashSet<>();
-        for (Producer producer:
+        for (Producer producer :
                 repository.findByCountryContaining(country)) {
             producerDtoSet.add(modelMapper.map(producer, ProducerDto.class));
         }
-        return producerDtoSet;    }
+        return producerDtoSet;
+    }
 }
