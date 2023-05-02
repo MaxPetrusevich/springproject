@@ -76,4 +76,23 @@ public class StoreServiceImpl implements StoreService {
         }
         return storeDtoSet;
     }
+
+    @Override
+    public void update(Integer id, String name, String address) {
+        Store store = repository.findById(id).orElse(null);
+        if (store != null) {
+            store.setName(name);
+            store.setAddress(address);
+            repository.save(store);
+        }
+    }
+
+    @Override
+    public StoreDto save(String name, String address) {
+        Store store = new Store();
+        store.setName(name);
+        store.setAddress(address);
+        store = repository.save(store);
+        return modelMapper.map(store, StoreDto.class);
+    }
 }

@@ -39,12 +39,7 @@ public class StoreController {
     @PostMapping(STORE)
     public String edit(@RequestParam(STORE_ID) Integer id, @RequestParam(NAME) String name,
                        @RequestParam(ADDRESS) String address, Model model) {
-        StoreDto storeDto = storeService.findById(id);
-        if (storeDto != null) {
-            storeDto.setName(name);
-            storeDto.setAddress(address);
-            storeService.update(storeDto);
-        }
+        storeService.update(id,name,address);
         return findAll(model);
     }
 
@@ -62,10 +57,8 @@ public class StoreController {
     @PostMapping(NEW_STORE)
     public String add(@RequestParam(NAME) String name,
                       @RequestParam(ADDRESS) String address, Model model) {
-        StoreDto storeDto = new StoreDto();
-        storeDto.setName(name);
-        storeDto.setAddress(address);
-        storeService.save(storeDto);
+
+        storeService.save(name,address);
         return findAll(model);
     }
 

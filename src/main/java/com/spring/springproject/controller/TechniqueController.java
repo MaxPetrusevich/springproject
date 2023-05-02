@@ -50,9 +50,7 @@ public class TechniqueController {
                        @RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
                        @RequestParam(CATEGORY) Integer categoryId, @RequestParam(PRICE) Double price,
                        @RequestParam(STORE_ID) Integer[] storeIdes) {
-        TechniqueDto techniqueDto = techniqueService.findById(id);
-        convertEditAndAddParams(producerId, modelId, categoryId, price, storeIdes, techniqueDto);
-        techniqueService.update(techniqueDto);
+        techniqueService.update(producerId, modelId, categoryId, price, storeIdes, id);
         return findAll(model);
 
     }
@@ -64,19 +62,6 @@ public class TechniqueController {
         return T_LIST;
     }
 
-    private void convertEditAndAddParams(Integer producerId, Integer modelId, Integer categoryId,
-                                         Double price, Integer[] storeIdes, TechniqueDto techniqueDto) {
-
-        techniqueDto.setProducer(producerService.findById(producerId));
-        techniqueDto.setModel(modelService.findById(modelId));
-        techniqueDto.setCategory(categoryService.findById(categoryId));
-        techniqueDto.setPrice(price);
-        techniqueDto.getStoreList().removeAll(techniqueDto.getStoreList());
-        for (Integer storeId :
-                storeIdes) {
-            techniqueDto.getStoreList().add(storeService.findById(storeId));
-        }
-    }
 
 
     @PostMapping(value = DEL_TECHNIQUE)
@@ -90,10 +75,7 @@ public class TechniqueController {
                       @RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
                       @RequestParam(CATEGORY) Integer categoryId, @RequestParam(PRICE) Double price,
                       @RequestParam(STORE_ID) Integer[] storeIdes) {
-        TechniqueDto techniqueDto = new TechniqueDto();
-        techniqueDto.setStoreList(new HashSet<>());
-        convertEditAndAddParams(producerId, modelId, categoryId, price, storeIdes, techniqueDto);
-        techniqueService.save(techniqueDto);
+        techniqueService.save(producerId, modelId, categoryId, price, storeIdes);
         return findAll(model);
     }
 

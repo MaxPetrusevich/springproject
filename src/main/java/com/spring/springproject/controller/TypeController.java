@@ -38,11 +38,7 @@ public class TypeController {
 
     @PostMapping(TYPE)
     public String edit(@RequestParam(TYPE_ID) Integer id, @RequestParam(NAME) String name, Model model) {
-        TypeDto typeDto = typeService.findById(id);
-        if (typeDto != null) {
-            typeDto.setName(name);
-            typeService.update(typeDto);
-        }
+        typeService.update(id, name);
         return findAll(model);
     }
 
@@ -59,9 +55,7 @@ public class TypeController {
 
     @PostMapping(NEW_TYPE)
     public String add(@RequestParam(NAME) String name, Model model) {
-        TypeDto typeDto = new TypeDto();
-        typeDto.setName(name);
-        typeService.save(typeDto);
+        typeService.save(name);
         return findAll(model);
     }
 

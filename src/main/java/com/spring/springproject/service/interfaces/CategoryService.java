@@ -1,6 +1,7 @@
 package com.spring.springproject.service.interfaces;
 
 import com.spring.springproject.dto.CategoryDto;
+import com.spring.springproject.dto.TypeDto;
 
 import java.util.Set;
 
@@ -8,4 +9,5 @@ public interface CategoryService extends Service<CategoryDto> {
     Set<CategoryDto> findByName(String name);
 
     CategoryDto save(String name, Integer[] typeIdes, CategoryDto categoryDto);
+
 }

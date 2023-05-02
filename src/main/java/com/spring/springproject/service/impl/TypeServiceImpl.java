@@ -66,4 +66,21 @@ public class TypeServiceImpl implements TypeService {
         }
         return typeDtoSet;
     }
+
+    @Override
+    public void update(Integer id, String name) {
+        Type type = repository.findById(id).orElse(null);
+        if (type != null) {
+            type.setName(name);
+            repository.save(type);
+        }
+    }
+
+    @Override
+    public TypeDto save(String name) {
+        Type type = new Type();
+        type.setName(name);
+        type = repository.save(type);
+        return modelMapper.map(type, TypeDto.class);
+    }
 }

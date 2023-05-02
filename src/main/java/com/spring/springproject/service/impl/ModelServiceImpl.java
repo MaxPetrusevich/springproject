@@ -1,7 +1,9 @@
 package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.ModelDto;
+import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.entities.Model;
+import com.spring.springproject.entities.Type;
 import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,23 @@ public class ModelServiceImpl implements ModelService {
             modelDtoSet.add(modelMapper.map(model, ModelDto.class));
         }
         return modelDtoSet;
+    }
+
+    @Override
+    public void update(Integer id, String name) {
+        Model model = repository.findById(id).orElse(null);
+        if (model != null) {
+            model.setName(name);
+            repository.save(model);
+        }
+    }
+
+    @Override
+    public ModelDto save(String name) {
+        Model model = new Model();
+        model.setName(name);
+        model = repository.save(model);
+        return modelMapper.map(model, ModelDto.class);
     }
 
     @Override

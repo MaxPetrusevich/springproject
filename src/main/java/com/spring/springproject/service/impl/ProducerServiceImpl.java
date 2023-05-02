@@ -77,4 +77,19 @@ public class ProducerServiceImpl implements ProducerService {
         }
         return producerDtoSet;
     }
+
+    @Override
+    public void update(Integer id, String name, String country) {
+        Producer producer = repository.findById(id).orElse(null);
+        if (producer != null) {
+            producer.setName(name);
+            producer.setCountry(country);
+            repository.save(producer);
+        }
+    }
+
+    @Override
+    public ProducerDto save(String name, String country) {
+        return null;
+    }
 }

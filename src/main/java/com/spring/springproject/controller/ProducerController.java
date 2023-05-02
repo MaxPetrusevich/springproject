@@ -38,13 +38,7 @@ public class ProducerController {
     @PostMapping(PRODUCER_URL)
     public String edit(@RequestParam(PRODUCER_ID) Integer id, @RequestParam(NAME) String name,
                        @RequestParam(COUNTRY) String country, Model model) {
-        ProducerDto producerDto = producerService.findById(id);
-
-        if (producerDto != null) {
-            producerDto.setName(name);
-            producerDto.setCountry(country);
-            producerService.update(producerDto);
-        }
+        producerService.update(id, name, country);
         return findAll(model);
     }
 
@@ -61,10 +55,7 @@ public class ProducerController {
 
     @PostMapping(NEW_PRODUCER)
     public String add(@RequestParam(NAME) String name, @RequestParam(COUNTRY) String country, Model model) {
-        ProducerDto producerDto = new ProducerDto();
-        producerDto.setName(name);
-        producerDto.setCountry(country);
-        producerService.save(producerDto);
+        producerService.save(name, country);
         return findAll(model);
     }
 

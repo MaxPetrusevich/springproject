@@ -40,11 +40,7 @@ public class ModelController {
 
     @PostMapping(MODEL_URL)
     public String edit(@RequestParam(MODEL_ID) Integer id, @RequestParam(NAME) String name, Model model) {
-        ModelDto modelDto = modelService.findById(id);
-        if (modelDto != null) {
-            modelDto.setName(name);
-            modelService.update(modelDto);
-        }
+        modelService.update(id, name);
         return findAll(model);
     }
 
@@ -63,9 +59,7 @@ public class ModelController {
 
     @PostMapping(NEW_MODEL)
     public String add(@RequestParam(NAME) String name, Model model) {
-        ModelDto modelDto = new ModelDto();
-        modelDto.setName(name);
-        modelService.save(modelDto);
+        modelService.save(name);
         return findAll(model);
     }
 

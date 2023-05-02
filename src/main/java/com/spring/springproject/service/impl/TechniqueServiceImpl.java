@@ -2,13 +2,14 @@ package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.TechniqueDto;
 import com.spring.springproject.entities.Technique;
+import com.spring.springproject.service.interfaces.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.spring.springproject.repositories.TechniqueRepository;
-import com.spring.springproject.service.interfaces.TechniqueService;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,11 +19,20 @@ public class TechniqueServiceImpl implements TechniqueService {
 
     private final ModelMapper modelMapper;
     private final TechniqueRepository repository;
+    private final CategoryService categoryService;
+    private final StoreService storeService;
+    private final ModelService modelService;
+    private final ProducerService producerService;
+
 
     @Autowired
-    public TechniqueServiceImpl(ModelMapper modelMapper, TechniqueRepository repository) {
+    public TechniqueServiceImpl(ModelMapper modelMapper, TechniqueRepository repository, CategoryService categoryService, StoreService storeService, ModelService modelService, ProducerService producerService) {
         this.modelMapper = modelMapper;
         this.repository = repository;
+        this.categoryService = categoryService;
+        this.storeService = storeService;
+        this.modelService = modelService;
+        this.producerService = producerService;
     }
 
     @Override
@@ -65,5 +75,32 @@ public class TechniqueServiceImpl implements TechniqueService {
             techniqueDtoSet.add(modelMapper.map(technique, TechniqueDto.class));
         }
         return techniqueDtoSet;
+    }
+
+    @Override
+    public void update(Integer producerId, Integer modelId, Integer categoryId, Double price, Integer[] storeIdes, Integer id) {
+        TechniqueDto techniqueDto = findById(id);
+        if (techniqueDto != null) {
+            setParams(producerId, modelId, categoryId, price, storeIdes, techniqueDto);
+        }
+
+    }
+
+    @Override
+    public TechniqueDto save(Integer producerId, Integer modelId, Integer categoryId, Double price, Integer[] storeIdes) {
+        TechniqueDto techniqueDto = new TechniqueDto();
+        techniqueDto.setStoreList(new HashSet<>());
+        setParams(producerId, modelId, categoryId, price, storeIdes, techniqueDto);
+        Technique technique = repository.save(modelMapper.map(techniqueDto, Technique.class));
+        return modelMapper.map(technique, TechniqueDto.class);
+    }
+
+    private void setParams(Integer producerId, Integer modelId, Integer categoryId, Double price, Integer[] storeIdes, TechniqueDto techniqueDto) {
+        techniqueDto.setProducer(producerService.findById(producerId));
+        techniqueDto.setModel(modelService.findById(modelId));
+        techniqueDto.setCategory(categoryService.findById(categoryId));
+        techniqueDto.setPrice(price);
+        techniqueDto.getStoreList().removeAll(techniqueDto.getStoreList());
+        Arrays.stream(storeIdes).forEach(storeId -> techniqueDto.getStoreList().add(storeService.findById(storeId)));
     }
 }
