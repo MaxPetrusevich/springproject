@@ -83,6 +83,7 @@ public class TechniqueServiceImpl implements TechniqueService {
         if (techniqueDto != null) {
             setParams(producerId, modelId, categoryId, price, storeIdes, techniqueDto);
         }
+        repository.save(modelMapper.map(techniqueDto, Technique.class));
 
     }
 
