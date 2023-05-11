@@ -1,9 +1,7 @@
 package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.CategoryDto;
-import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.entities.Category;
-import com.spring.springproject.repositories.TypeRepository;
 import com.spring.springproject.service.interfaces.TypeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +11,8 @@ import com.spring.springproject.service.interfaces.CategoryService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,29 +29,28 @@ public class CategoryServiceImpl implements CategoryService {
         this.modelMapper = modelMapper;
     }
 
+
     @Override
     public Set<CategoryDto> findByName(String name) {
-        Set<CategoryDto> categoryDtoSet = new HashSet<>();
-        for (Category category :
-                repository.findByNameContaining(name)) {
-            categoryDtoSet.add(modelMapper.map(category, CategoryDto.class));
-        }
-        return categoryDtoSet;
+        return repository.findByNameContaining(name).stream()
+                .map(category -> modelMapper.map(category, CategoryDto.class))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public Set<CategoryDto> findAll() {
-        Set<CategoryDto> categoryDtoSet = new HashSet<>();
-        for (Category category :
-                repository.findAll()) {
-            categoryDtoSet.add(modelMapper.map(category, CategoryDto.class));
-        }
-        return categoryDtoSet;
+        return repository.findAll().stream()
+                .map(category -> modelMapper.map(category, CategoryDto.class))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public CategoryDto findById(Integer id) {
-        return modelMapper.map(repository.findById(id).orElse(null), CategoryDto.class);
+        return repository.findById(id)
+                .stream()
+                .map(category -> modelMapper.map(category, CategoryDto.class))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -85,7 +82,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryDto.setName(name);
         Category category = repository.save(modelMapper.map(categoryDto, Category.class));
         categoryDto = modelMapper.map(category, CategoryDto.class);
-        categoryDto.getTypes().stream()
+        categoryDto.getTypes()
                 .forEach(typeDto -> {
                     typeDto.setCategory(null);
                     typeService.update(typeDto);
@@ -95,7 +92,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         CategoryDto finalCategoryDto = categoryDto;
         Arrays.stream(typeIdes)
-                .map(id -> typeService.findById(id))
+                .map(typeService::findById)
                 .forEach(typeDto -> {
                     typeDto.setCategory(finalCategoryDto);
                     typeService.update(typeDto);
@@ -103,6 +100,7 @@ public class CategoryServiceImpl implements CategoryService {
                 });
         category = repository.save(modelMapper.map(categoryDto, Category.class));
         return modelMapper.map(category, CategoryDto.class);
-
     }
+
+
 }

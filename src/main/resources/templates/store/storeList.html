@@ -9,13 +9,15 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<form th:action="storeByName" method="post">
+<form th:action="stores" method="get">
     <input th:type="search" th:name="name" placeholder="Enter the name">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
-</form>
-<form th:action="storeByAddress" method="post">
     <input th:type="search" th:name="address" placeholder="Enter the address">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
+</form>
+<form th:action="stores" th:method="get">
+    <input th:type="hidden" th:name="name" th:value="${null}">
+    <input th:type="hidden" th:name="address" th:value="${null}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Clear filter</button>
 </form>
 <div th:if="${list.size() eq 0}">
     <p>Founded nothing</p>
@@ -34,14 +36,14 @@
             <td th:text="${unit.address}"></td>
             <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="store" th:method="get">
-                    <input th:type="hidden" th:name = "storeId" th:value="${unit.id}">
-                    <button class = "w3-button w3-white w3-border" th:type="submit">Edit</button>
+                    <input th:type="hidden" th:name="storeId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="store" th:method="post">
-                    <input th:type="hidden" th:name = "storeId" th:value="${unit.id}">
-                    <button class = "w3-button w3-white w3-border" th:type="submit">Delete</button>
+                    <input th:type="hidden" th:name="storeId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
                 </form>
             </td>
         </tr>
@@ -51,7 +53,30 @@
 <form sec:authorize="hasAuthority('ADMIN')" th:action="newStore" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new store</button>
 </form>
+<div th:if="${list.size()>0}">
+    <ul class="pagination">
+        <li th:if="${page} ne 1">
+            <a th:href="@{/stores(page=${page}-1,size=${size}, name=${name}, address=${address})}">предыдущая</a>
+        </li>
 
+        <li th:each="i : ${#numbers.sequence( 1, totalPage)}">
+            <a th:text="${i}"
+               th:if="${page} eq ${i}">
+                ${i}
+            </a>
+
+            <a th:href="@{/stores(page=${i},size=${size}, name=${name}, address=${address})}"
+               th:text="${i}"
+               th:if="${page} ne ${i}">
+                ${i}
+            </a>
+        </li>
+
+        <li th:if="${page} lt ${totalPage}">
+            <a th:href="@{/stores(page=${page}+1,size=${size}, name=${name}, address=${address})}">следующая</a>
+        </li>
+    </ul>
+</div>
 <a th:href="home">To home page</a>
 </body>
 </html>

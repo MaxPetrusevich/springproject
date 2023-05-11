@@ -53,7 +53,30 @@
 <form th:action="newCategory" th:method="get" sec:authorize="hasAuthority('ADMIN')">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new category</button>
 </form>
+<ul class="pagination">
 
+    <li th:if="${page} ne 1">
+        <a th:href="@{/categories(page=${page}-1,size=${size})}">предыдущая</a>
+    </li>
+
+    <li th:each="i : ${#numbers.sequence( 1, totalPage)}">
+        <a th:text="${i}"
+           th:if="${page} eq ${i}">
+            ${i}
+        </a>
+
+        <a th:href="@{/categories(page=${i},size=${size})}"
+           th:text="${i}"
+           th:if="${page} ne ${i}">
+            ${i}
+        </a>
+    </li>
+
+    <li th:if="${page} lt ${totalPage}">
+        <a th:href="@{/categories(page=${page}+1,size=${size})}">следующая</a>
+    </li>
+
+</ul>
 <a th:href="home">To home page</a>
 </body>
 </html>

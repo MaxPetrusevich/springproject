@@ -44,7 +44,7 @@ public class HomeController {
         String address = null;
         switch (choose) {
             case 1:
-                address = techniqueController.findAll(model);
+                address = "redirect:" + TECHNIQUES;
                 break;
             case 2:
                 address = categoryController.findAll(model);
@@ -56,10 +56,10 @@ public class HomeController {
                 address = producerController.findAll(model);
                 break;
             case 5:
-                address = typeController.findAll(model);
+                address = "redirect:" + TYPES_URL;
                 break;
             case 6:
-                address = storeController.findAll(model);
+                address = "redirect:" + STORES_URL;
                 break;
         }
         return address;

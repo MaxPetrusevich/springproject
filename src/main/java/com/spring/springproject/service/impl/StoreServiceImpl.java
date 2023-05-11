@@ -1,16 +1,25 @@
 package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.StoreDto;
+import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.entities.Store;
+import com.spring.springproject.entities.Type;
+import com.spring.springproject.specifications.StoreSpecification;
+import com.spring.springproject.specifications.TypeSpecification;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.spring.springproject.repositories.StoreRepository;
 import com.spring.springproject.service.interfaces.StoreService;
+import org.thymeleaf.util.StringUtils;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -25,19 +34,22 @@ public class StoreServiceImpl implements StoreService {
         this.repository = repository;
     }
 
+
     @Override
     public Set<StoreDto> findAll() {
-        Set<StoreDto> storeDtoSet = new HashSet<>();
-        for (Store store :
-                repository.findAll()) {
-            storeDtoSet.add(modelMapper.map(store, StoreDto.class));
-        }
-        return storeDtoSet;
+        return repository.findAll()
+                .stream()
+                .map(store -> modelMapper.map(store, StoreDto.class))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public StoreDto findById(Integer id) {
-        return modelMapper.map(repository.findById(id).orElse(null), StoreDto.class);
+        return repository.findById(id)
+                .stream()
+                .map(store -> modelMapper.map(store, StoreDto.class))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -57,25 +69,6 @@ public class StoreServiceImpl implements StoreService {
         repository.deleteById(id);
     }
 
-    @Override
-    public Set<StoreDto> findByName(String name) {
-        Set<StoreDto> storeDtoSet = new HashSet<>();
-        for (Store store :
-                repository.findByNameContaining(name)) {
-            storeDtoSet.add(modelMapper.map(store, StoreDto.class));
-        }
-        return storeDtoSet;
-    }
-
-    @Override
-    public Set<StoreDto> findByAddress(String address) {
-        Set<StoreDto> storeDtoSet = new HashSet<>();
-        for (Store store :
-                repository.findByAddressContaining(address)) {
-            storeDtoSet.add(modelMapper.map(store, StoreDto.class));
-        }
-        return storeDtoSet;
-    }
 
     @Override
     public void update(Integer id, String name, String address) {
@@ -94,5 +87,24 @@ public class StoreServiceImpl implements StoreService {
         store.setAddress(address);
         store = repository.save(store);
         return modelMapper.map(store, StoreDto.class);
+    }
+
+    @Override
+    public Page<StoreDto> findAll(Pageable pageable, String name, String address) {
+        if (!StringUtils.isEmptyOrWhitespace(name) || !StringUtils.isEmptyOrWhitespace(address)) {
+            Page<Store> stores = repository.findAll(StoreSpecification.searchStore(name, address), pageable);
+            List<StoreDto> storeDtoList = stores
+                    .stream()
+                    .map(store -> modelMapper.map(store, StoreDto.class))
+                    .toList();
+            return new PageImpl<>(storeDtoList, pageable, stores.getTotalElements());
+        } else {
+            Page<Store> stores = repository.findAll(pageable);
+            List<StoreDto> storeDtoList = stores
+                    .stream()
+                    .map(store -> modelMapper.map(store, StoreDto.class))
+                    .toList();
+            return new PageImpl<>(storeDtoList, pageable, stores.getTotalElements());
+        }
     }
 }

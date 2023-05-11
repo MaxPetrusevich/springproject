@@ -8,13 +8,18 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<form th:action="techniqueByPrice" method="post">
+<form th:action="techniques" method="get">
     <input th:type="number" th:name="startPrice" placeholder="Enter the start price">
     <input th:type="number" th:name="endPrice" placeholder="Enter the end price">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
 </form>
+<form th:action="techniques" method="get">
+    <input th:type="hidden" th:name="startPrice" th:value="${null}">
+    <input th:type="hidden" th:name="endPrice" th:value="${null}">
+    <button class="w3-button w3-white w3-border" th:type="submit">Clear filter</button>
+</form>
 <div th:if="${list.size() eq 0}">
-    <p>Founded nothing</p>
+    <p>Nothing founded</p>
 </div>
 <div th:if="${list.size() > 0}">
     <table class="w3-table-all">
@@ -63,7 +68,32 @@
 <form sec:authorize="hasAuthority('ADMIN')" th:action="newTechnique" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new technique</button>
 </form>
+<div th:if="${list.size() > 0}">
+    <ul class="pagination">
 
+        <li th:if="${page} ne 1">
+            <a th:href="@{/techniques(page=${page}-1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}">предыдущая</a>
+        </li>
+
+        <li th:each="i : ${#numbers.sequence( 1, totalPage)}">
+            <a th:text="${i}"
+               th:if="${page} eq ${i}">
+                ${i}
+            </a>
+
+            <a th:href="@{/techniques(page=${i},size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}"
+               th:text="${i}"
+               th:if="${page} ne ${i}">
+                ${i}
+            </a>
+        </li>
+
+        <li th:if="${page} lt ${totalPage}">
+            <a th:href="@{/techniques(page=${page}+1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}">следующая</a>
+        </li>
+
+    </ul>
+</div>
 <a th:href="home">To home page</a>
 </body>
 </html>

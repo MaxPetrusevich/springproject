@@ -1,12 +1,16 @@
 package com.spring.springproject.controller;
 
 import com.spring.springproject.dto.StoreDto;
+import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.service.interfaces.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import static com.spring.springproject.controller.Constants.*;
@@ -23,9 +27,21 @@ public class StoreController {
         this.storeService = storeService;
     }
 
-    @GetMapping(STORES_URL)
-    public String findAll(Model model) {
-        model.addAttribute(LIST, storeService.findAll());
+    @RequestMapping(STORES_URL)
+    public String findAll(Model model,
+                          @RequestParam(defaultValue = "3", required = false) int size,
+                          @RequestParam(defaultValue = "1", required = false) int page,
+                          @RequestParam(defaultValue = "", required = false) String name,
+                          @RequestParam(defaultValue = "", required = false) String address) {
+        Pageable pageable = Pageable.ofSize(size);
+        pageable = pageable.withPage(page-1);
+        Page<StoreDto> storePage = storeService.findAll(pageable, name,address);
+        model.addAttribute("page", page);
+        model.addAttribute("size", size);
+        model.addAttribute("name", name);
+        model.addAttribute("address", address);
+        model.addAttribute("totalPage", storePage.getTotalPages());
+        model.addAttribute(LIST, storePage.getContent());
         return ST_LIST;
     }
 
@@ -40,13 +56,13 @@ public class StoreController {
     public String edit(@RequestParam(STORE_ID) Integer id, @RequestParam(NAME) String name,
                        @RequestParam(ADDRESS) String address, Model model) {
         storeService.update(id,name,address);
-        return findAll(model);
+        return "redirect:" + STORES_URL;
     }
 
     @PostMapping(DEL_STORE)
     public String delete(@RequestParam(STORE_ID) Integer id, Model model) {
         storeService.delete(id);
-        return findAll(model);
+        return "redirect:" + STORES_URL;
     }
 
     @GetMapping(NEW_STORE)
@@ -59,18 +75,7 @@ public class StoreController {
                       @RequestParam(ADDRESS) String address, Model model) {
 
         storeService.save(name,address);
-        return findAll(model);
+        return "redirect:" + STORES_URL;
     }
 
-    @PostMapping(STORE_BY_NAME)
-    public String findByName(Model model, @RequestParam(NAME) String name) {
-        model.addAttribute(LIST, storeService.findByName(name));
-        return ST_LIST;
-    }
-
-    @PostMapping(STORE_BY_ADDRESS)
-    public String findByCountry(Model model, @RequestParam(ADDRESS) String address) {
-        model.addAttribute(LIST, storeService.findByAddress(address));
-        return ST_LIST;
-    }
 }

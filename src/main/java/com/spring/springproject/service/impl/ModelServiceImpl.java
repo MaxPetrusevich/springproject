@@ -1,18 +1,16 @@
 package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.ModelDto;
-import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.entities.Model;
-import com.spring.springproject.entities.Type;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.spring.springproject.repositories.ModelRepository;
 import com.spring.springproject.service.interfaces.ModelService;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,14 +25,13 @@ public class ModelServiceImpl implements ModelService {
         this.modelMapper = modelMapper;
     }
 
+
     @Override
     public Set<ModelDto> findByName(String name) {
-        Set<ModelDto> modelDtoSet = new HashSet<>();
-        for (Model model :
-                repository.findByNameContaining(name)) {
-            modelDtoSet.add(modelMapper.map(model, ModelDto.class));
-        }
-        return modelDtoSet;
+        return repository.findByNameContaining(name)
+                .stream()
+                .map(model -> modelMapper.map(model, ModelDto.class))
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -56,17 +53,19 @@ public class ModelServiceImpl implements ModelService {
 
     @Override
     public Set<ModelDto> findAll() {
-        Set<ModelDto> modelDtoSet = new HashSet<>();
-        for (Model model :
-                repository.findAll()) {
-            modelDtoSet.add(modelMapper.map(model, ModelDto.class));
-        }
-        return modelDtoSet;
+        return repository.findAll()
+                .stream()
+                .map(model -> modelMapper.map(model, ModelDto.class))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public ModelDto findById(Integer id) {
-        return modelMapper.map(repository.findById(id).orElse(null), ModelDto.class);
+        return repository.findById(id)
+                .stream()
+                .map(model -> modelMapper.map(model, ModelDto.class))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

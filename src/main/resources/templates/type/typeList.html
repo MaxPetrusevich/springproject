@@ -9,9 +9,13 @@
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<form th:action="typeByName" method="post">
+<form th:action="types" th:method="get">
   <input th:type="search" th:name="name" placeholder="Enter the name">
   <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
+</form>
+<form th:action="types" th:method="get">
+  <input th:type="hidden" th:name="name" th:value="${null}">
+  <button th:type="submit" class="w3-button w3-white w3-border">Clear filter</button>
 </form>
 <div th:if="${list.size() eq 0}">
   <p>Founded nothing</p>
@@ -45,7 +49,33 @@
 <form sec:authorize="hasAuthority('ADMIN')" th:action="newType" th:method="get">
   <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new type</button>
 </form>
+<!--pagination-->
+<div th:if="${list.size() > 0}">
+  <ul class="pagination">
 
+  <li th:if="${page} ne 1">
+    <a th:href="@{/types(name = ${name},page=${page}-1,size=${size})}">предыдущая</a>
+  </li>
+
+  <li th:each="i : ${#numbers.sequence( 1, totalPage)}">
+    <a th:text="${i}"
+       th:if="${page} eq ${i}">
+      ${i}
+    </a>
+
+    <a th:href="@{/types(name = ${name},page=${i},size=${size})}"
+       th:text="${i}"
+       th:if="${page} ne ${i}">
+      ${i}
+    </a>
+  </li>
+
+  <li th:if="${page} lt ${totalPage}">
+    <a th:href="@{/types(name = ${name},page=${page}+1,size=${size})}">следующая</a>
+  </li>
+
+</ul>
+</div>
 <a th:href="home">To home page</a>
 </body>
 </html>

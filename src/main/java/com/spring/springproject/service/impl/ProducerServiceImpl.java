@@ -3,15 +3,15 @@ package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.ProducerDto;
 import com.spring.springproject.entities.Producer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.spring.springproject.repositories.ProducerRepository;
 import com.spring.springproject.service.interfaces.ProducerService;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -26,19 +26,22 @@ public class ProducerServiceImpl implements ProducerService {
         this.repository = repository;
     }
 
+
     @Override
     public Set<ProducerDto> findAll() {
-        Set<ProducerDto> producerDtoSet = new HashSet<>();
-        for (Producer producer :
-                repository.findAll()) {
-            producerDtoSet.add(modelMapper.map(producer, ProducerDto.class));
-        }
-        return producerDtoSet;
+        return repository.findAll()
+                .stream()
+                .map(producer -> modelMapper.map(producer, ProducerDto.class))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public ProducerDto findById(Integer id) {
-        return modelMapper.map(repository.findById(id).orElse(null), ProducerDto.class);
+        return repository.findById(id)
+                .stream()
+                .map(producer -> modelMapper.map(producer, ProducerDto.class))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -60,22 +63,18 @@ public class ProducerServiceImpl implements ProducerService {
 
     @Override
     public Set<ProducerDto> findByName(String name) {
-        Set<ProducerDto> producerDtoSet = new HashSet<>();
-        for (Producer producer :
-                repository.findByNameContaining(name)) {
-            producerDtoSet.add(modelMapper.map(producer, ProducerDto.class));
-        }
-        return producerDtoSet;
+        return repository.findByNameContaining(name)
+                .stream()
+                .map(producer -> modelMapper.map(producer, ProducerDto.class))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public Set<ProducerDto> findByCountry(String country) {
-        Set<ProducerDto> producerDtoSet = new HashSet<>();
-        for (Producer producer :
-                repository.findByCountryContaining(country)) {
-            producerDtoSet.add(modelMapper.map(producer, ProducerDto.class));
-        }
-        return producerDtoSet;
+        return repository.findByCountryContaining(country)
+                .stream()
+                .map(producer -> modelMapper.map(producer, ProducerDto.class))
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -90,6 +89,7 @@ public class ProducerServiceImpl implements ProducerService {
 
     @Override
     public ProducerDto save(String name, String country) {
-        return null;
+        return modelMapper.map(repository.save(Producer.
+                builder().name(name).country(country).build()), ProducerDto.class);
     }
 }
