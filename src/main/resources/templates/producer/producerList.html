@@ -8,13 +8,15 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<form th:action="producerByName" method="post">
+<form th:action="${'/producers'}" method="post">
     <input th:type="search" th:name="name" placeholder="Enter the name">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
-</form>
-<form th:action="producerByName" method="post">
     <input th:type="search" th:name="country" placeholder="Enter the country name">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
+</form>
+<form th:action="${'/producers'}" method="post">
+    <input th:type="hidden" th:name="name" th:value="${null}">
+    <input th:type="hidden" th:name="country" th:value="${null}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Clear filter</button>
 </form>
 <div th:if="${list.size() eq 0}">
     <p>Founded nothing</p>
@@ -32,14 +34,15 @@
             <td th:text="${unit.name}"></td>
             <td th:text="${unit.country}"></td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="producer" th:method="get">
+                <form th:action="${'/producers/edit'}" th:method="get">
                     <input th:type="hidden" th:name = "producerId" th:value="${unit.id}">
                     <button class = "w3-button w3-white w3-border" th:type="submit">Edit</button>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="producer" th:method="post">
+                <form th:action="${'/producers/delete'}" th:method="post">
                     <input th:type="hidden" th:name = "producerId" th:value="${unit.id}">
+
                     <button class = "w3-button w3-white w3-border" th:type="submit">Delete</button>
                 </form>
             </td>
@@ -47,13 +50,13 @@
         </tbody>
     </table>
 </div>
-<form sec:authorize="hasAuthority('ADMIN')" th:action="newProducer" th:method="get">
+<form sec:authorize="hasAuthority('ADMIN')" th:action="${'/producers/add'}" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new producer</button>
 </form>
 <ul class="pagination">
 
     <li th:if="${page} ne 1">
-        <a th:href="@{/producers(page=${page}-1,size=${size})}">предыдущая</a>
+        <a th:href="@{/producers(page=${page}-1,size=${size}, name = ${name}, country = ${country})}">предыдущая</a>
     </li>
 
     <li th:each="i : ${#numbers.sequence( 1, totalPage)}">
@@ -62,7 +65,7 @@
             ${i}
         </a>
 
-        <a th:href="@{/producers(page=${i},size=${size})}"
+        <a th:href="@{/producers(page=${i},size=${size},name = ${name}, country = ${country})}"
            th:text="${i}"
            th:if="${page} ne ${i}">
             ${i}
@@ -70,11 +73,11 @@
     </li>
 
     <li th:if="${page} lt ${totalPage}">
-        <a th:href="@{/producers(page=${page}+1,size=${size})}">следующая</a>
+        <a th:href="@{/producers(page=${page}+1,size=${size},name = ${name}, country = ${country})}">следующая</a>
     </li>
 
 </ul>
 
-<a th:href="home">To home page</a>
+<a th:href="${'/home'}">To home page</a>
 </body>
 </html>

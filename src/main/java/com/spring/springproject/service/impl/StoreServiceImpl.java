@@ -1,20 +1,18 @@
 package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.StoreDto;
-import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.entities.Store;
-import com.spring.springproject.entities.Type;
+import com.spring.springproject.repositories.StoreRepository;
+import com.spring.springproject.repositories.TechniqueRepository;
+import com.spring.springproject.service.interfaces.StoreService;
 import com.spring.springproject.specifications.StoreSpecification;
-import com.spring.springproject.specifications.TypeSpecification;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import com.spring.springproject.repositories.StoreRepository;
-import com.spring.springproject.service.interfaces.StoreService;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
@@ -27,11 +25,13 @@ public class StoreServiceImpl implements StoreService {
 
     private final ModelMapper modelMapper;
     private final StoreRepository repository;
+    private final TechniqueRepository techniqueRepository;
 
     @Autowired
-    public StoreServiceImpl(ModelMapper modelMapper, StoreRepository repository) {
+    public StoreServiceImpl(ModelMapper modelMapper, StoreRepository repository, TechniqueRepository techniqueRepository) {
         this.modelMapper = modelMapper;
         this.repository = repository;
+        this.techniqueRepository = techniqueRepository;
     }
 
 
@@ -66,7 +66,14 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public void delete(Integer id) {
-        repository.deleteById(id);
+        Store store = repository.findById(id).orElse(null);
+        if (!store.equals(null)) {
+            store.getTechniques().stream().forEach(technique -> {
+                technique.getStoreList().remove(store);
+                techniqueRepository.save(technique);
+            });
+            repository.deleteById(id);
+        }
     }
 
 

@@ -1,17 +1,15 @@
 package com.spring.springproject.service.interfaces;
 
-import com.spring.springproject.dto.ModelDto;
 import com.spring.springproject.dto.ProducerDto;
-import com.spring.springproject.dto.TypeDto;
-
-import java.util.Set;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 public interface ProducerService extends Service<ProducerDto> {
-    Set<ProducerDto> findByName(String name);
+    Page<ProducerDto> findAll(Pageable pageable, String name, String country);
 
-    Set<ProducerDto> findByCountry(String country);
     void update(Integer id, String name, String country);
+
     ProducerDto save(String name, String country);
 
 }

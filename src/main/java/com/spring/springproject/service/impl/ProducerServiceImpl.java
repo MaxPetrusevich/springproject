@@ -3,13 +3,20 @@ package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.ProducerDto;
 import com.spring.springproject.entities.Producer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
 import com.spring.springproject.repositories.ProducerRepository;
+import com.spring.springproject.repositories.TechniqueRepository;
 import com.spring.springproject.service.interfaces.ProducerService;
+import com.spring.springproject.specifications.ProducerSpecification;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.util.StringUtils;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,11 +26,14 @@ public class ProducerServiceImpl implements ProducerService {
 
     private final ModelMapper modelMapper;
     private final ProducerRepository repository;
+    private final TechniqueRepository techniqueRepository;
 
     @Autowired
-    public ProducerServiceImpl(ModelMapper modelMapper, ProducerRepository repository) {
+    public ProducerServiceImpl(ModelMapper modelMapper, ProducerRepository repository,
+                               TechniqueRepository techniqueRepository) {
         this.modelMapper = modelMapper;
         this.repository = repository;
+        this.techniqueRepository = techniqueRepository;
     }
 
 
@@ -58,23 +68,34 @@ public class ProducerServiceImpl implements ProducerService {
 
     @Override
     public void delete(Integer id) {
-        repository.deleteById(id);
+        Producer producer = repository.findById(id).orElse(null);
+        if (!producer.equals(null)) {
+            producer.getTechniques().stream().forEach(technique -> {
+                technique.setProducer(null);
+                techniqueRepository.save(technique);
+            });
+            repository.deleteById(id);
+        }
     }
 
-    @Override
-    public Set<ProducerDto> findByName(String name) {
-        return repository.findByNameContaining(name)
-                .stream()
-                .map(producer -> modelMapper.map(producer, ProducerDto.class))
-                .collect(Collectors.toSet());
-    }
 
     @Override
-    public Set<ProducerDto> findByCountry(String country) {
-        return repository.findByCountryContaining(country)
-                .stream()
-                .map(producer -> modelMapper.map(producer, ProducerDto.class))
-                .collect(Collectors.toSet());
+    public Page<ProducerDto> findAll(Pageable pageable, String name, String country) {
+        if (!StringUtils.isEmptyOrWhitespace(name) || !StringUtils.isEmptyOrWhitespace(country)) {
+            Page<Producer> producerPage = repository.findAll(ProducerSpecification.searchProducer(name, country), pageable);
+            List<ProducerDto> producerDtoList = producerPage
+                    .stream()
+                    .map(producer -> modelMapper.map(producer, ProducerDto.class))
+                    .toList();
+            return new PageImpl<>(producerDtoList, pageable, producerPage.getTotalElements());
+        } else {
+            Page<Producer> producerPage = repository.findAll(pageable);
+            List<ProducerDto> producerDtoList = producerPage
+                    .stream()
+                    .map(producer -> modelMapper.map(producer, ProducerDto.class))
+                    .toList();
+            return new PageImpl<>(producerDtoList, pageable, producerPage.getTotalElements());
+        }
     }
 
     @Override

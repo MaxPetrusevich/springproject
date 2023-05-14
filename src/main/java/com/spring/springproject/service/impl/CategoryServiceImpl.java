@@ -1,16 +1,24 @@
 package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.CategoryDto;
+import com.spring.springproject.dto.ModelDto;
 import com.spring.springproject.entities.Category;
+import com.spring.springproject.entities.Model;
 import com.spring.springproject.service.interfaces.TypeService;
+import com.spring.springproject.specifications.CategorySpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.spring.springproject.repositories.CategoryRepository;
 import com.spring.springproject.service.interfaces.CategoryService;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.util.StringUtils;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,7 +27,6 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repository;
     private final TypeService typeService;
-
     private final ModelMapper modelMapper;
 
     @Autowired
@@ -30,12 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-    @Override
-    public Set<CategoryDto> findByName(String name) {
-        return repository.findByNameContaining(name).stream()
-                .map(category -> modelMapper.map(category, CategoryDto.class))
-                .collect(Collectors.toSet());
-    }
+
 
     @Override
     public Set<CategoryDto> findAll() {
@@ -75,6 +77,25 @@ public class CategoryServiceImpl implements CategoryService {
             typeService.save(typeDto);
         });
         repository.deleteById(id);
+    }
+
+    @Override
+    public Page<CategoryDto> findAll(Pageable pageable, String name) {
+        if(!StringUtils.isEmptyOrWhitespace(name)) {
+            Page<Category> categories = repository.findAll(CategorySpecification.searchCategory(name), pageable);
+            List<CategoryDto> categoryDtoList = categories
+                    .stream()
+                    .map(category -> modelMapper.map(category, CategoryDto.class))
+                    .toList();
+            return new PageImpl<>(categoryDtoList, pageable, categories.getTotalElements());
+        }else{
+            Page<Category> categories = repository.findAll(pageable);
+            List<CategoryDto> categoryDtoList = categories
+                    .stream()
+                    .map(category -> modelMapper.map(category, CategoryDto.class))
+                    .toList();
+            return new PageImpl<>(categoryDtoList, pageable, categories.getTotalElements());
+        }
     }
 
     @Override

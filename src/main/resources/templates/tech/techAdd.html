@@ -9,7 +9,7 @@
 </head>
 <body>
 <body>
-<form class="w3-container"  th:action="newTechnique" th:method="post">
+<form class="w3-container"  th:action="${'/techniques/add'}" th:method="post">
   <label>Price</label>
   <input class="w3-input" required th:type="number" th:name="price" placeholder="Enter the price">
   <div th:if="${categories} ne null">
@@ -43,7 +43,7 @@
   <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Submit</button>
 </form>
 
-<a th:href="techniques">Previous</a>
+<a th:href="${'/techniques'}">Previous</a>
 </body>
 </body>
 </html>

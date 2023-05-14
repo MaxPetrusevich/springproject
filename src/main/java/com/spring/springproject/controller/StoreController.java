@@ -34,8 +34,8 @@ public class StoreController {
                           @RequestParam(defaultValue = "", required = false) String name,
                           @RequestParam(defaultValue = "", required = false) String address) {
         Pageable pageable = Pageable.ofSize(size);
-        pageable = pageable.withPage(page-1);
-        Page<StoreDto> storePage = storeService.findAll(pageable, name,address);
+        pageable = pageable.withPage(page - 1);
+        Page<StoreDto> storePage = storeService.findAll(pageable, name, address);
         model.addAttribute("page", page);
         model.addAttribute("size", size);
         model.addAttribute("name", name);
@@ -55,7 +55,7 @@ public class StoreController {
     @PostMapping(STORE)
     public String edit(@RequestParam(STORE_ID) Integer id, @RequestParam(NAME) String name,
                        @RequestParam(ADDRESS) String address, Model model) {
-        storeService.update(id,name,address);
+        storeService.update(id, name, address);
         return "redirect:" + STORES_URL;
     }
 
@@ -74,7 +74,7 @@ public class StoreController {
     public String add(@RequestParam(NAME) String name,
                       @RequestParam(ADDRESS) String address, Model model) {
 
-        storeService.save(name,address);
+        storeService.save(name, address);
         return "redirect:" + STORES_URL;
     }
 

@@ -10,7 +10,7 @@
 </head>
 <body>
 <p> Choose entity</p>
-<form th:action="homeView" th:method="get">
+<form th:action="@{'/home/view'}" th:method="get">
     <select class="w3-select" th:name="listName">
         <option th:value="1" selected>Technique</option>
         <option th:value="2">Category</option>

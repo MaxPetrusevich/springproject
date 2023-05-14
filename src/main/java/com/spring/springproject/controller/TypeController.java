@@ -34,11 +34,11 @@ public class TypeController {
 
     @RequestMapping(TYPES_URL)
     public String findAll(Model model,
-                          @RequestParam(required = false, defaultValue = " ") String name,
+                          @RequestParam(required = false, defaultValue = "") String name,
                           @RequestParam(required = false, defaultValue = "1") int page,
                           @RequestParam(required = false, defaultValue = "3") int size) {
         Pageable pageable = Pageable.ofSize(size);
-        pageable = pageable.withPage(page-1);
+        pageable = pageable.withPage(page - 1);
         Page<TypeDto> typePage = typeService.findAll(pageable, name);
         model.addAttribute("page", page);
         model.addAttribute("size", size);
@@ -73,7 +73,7 @@ public class TypeController {
     }
 
     @PostMapping(NEW_TYPE)
-    public String add(@RequestParam(NAME) String name, Model model) {
+    public String add(@RequestParam(NAME) String name) {
         typeService.save(name);
         return "redirect:" + TYPES_URL;
     }

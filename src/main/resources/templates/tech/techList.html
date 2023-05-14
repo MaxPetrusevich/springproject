@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<form th:action="techniques" method="get">
+<form th:action="${'/techniques'}" method="get">
     <input th:type="number" th:name="startPrice" placeholder="Enter the start price">
     <input th:type="number" th:name="endPrice" placeholder="Enter the end price">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
 </form>
-<form th:action="techniques" method="get">
+<form th:action="${'/techniques'}" method="get">
     <input th:type="hidden" th:name="startPrice" th:value="${null}">
     <input th:type="hidden" th:name="endPrice" th:value="${null}">
     <button class="w3-button w3-white w3-border" th:type="submit">Clear filter</button>
@@ -50,13 +50,13 @@
                 <p th:text="${store.address}"></p>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="technique" th:method="GET">
+                <form th:action="${'/techniques/edit'}" th:method="GET">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="delTechnique" th:method="POST">
+                <form th:action="${'/techniques/delete'}" th:method="POST">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
                 </form>
@@ -65,7 +65,7 @@
         </tbody>
     </table>
 </div>
-<form sec:authorize="hasAuthority('ADMIN')" th:action="newTechnique" th:method="get">
+<form sec:authorize="hasAuthority('ADMIN')" th:action="${'/techniques/add'}" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new technique</button>
 </form>
 <div th:if="${list.size() > 0}">
@@ -94,6 +94,6 @@
 
     </ul>
 </div>
-<a th:href="home">To home page</a>
+<a th:href="${'/home'}">To home page</a>
 </body>
 </html>

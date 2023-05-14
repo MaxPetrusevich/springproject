@@ -9,12 +9,12 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<form th:action="stores" method="get">
+<form th:action="${'/stores'}" method="get">
     <input th:type="search" th:name="name" placeholder="Enter the name">
     <input th:type="search" th:name="address" placeholder="Enter the address">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
 </form>
-<form th:action="stores" th:method="get">
+<form th:action="${'/stores'}" th:method="get">
     <input th:type="hidden" th:name="name" th:value="${null}">
     <input th:type="hidden" th:name="address" th:value="${null}">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Clear filter</button>
@@ -35,13 +35,13 @@
             <td th:text="${unit.name}"></td>
             <td th:text="${unit.address}"></td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="store" th:method="get">
+                <form th:action="${'/stores/edit'}" th:method="get">
                     <input th:type="hidden" th:name="storeId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="store" th:method="post">
+                <form th:action="${'/stores/delete'}" th:method="post">
                     <input th:type="hidden" th:name="storeId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
                 </form>
@@ -50,7 +50,7 @@
         </tbody>
     </table>
 </div>
-<form sec:authorize="hasAuthority('ADMIN')" th:action="newStore" th:method="get">
+<form sec:authorize="hasAuthority('ADMIN')" th:action="${'/stores/add'}" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new store</button>
 </form>
 <div th:if="${list.size()>0}">
@@ -77,6 +77,6 @@
         </li>
     </ul>
 </div>
-<a th:href="home">To home page</a>
+<a th:href="${'/home'}">To home page</a>
 </body>
 </html>

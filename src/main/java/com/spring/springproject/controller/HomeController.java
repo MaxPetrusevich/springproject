@@ -47,13 +47,13 @@ public class HomeController {
                 address = "redirect:" + TECHNIQUES;
                 break;
             case 2:
-                address = categoryController.findAll(model);
+                address = "redirect:" + CATEGORIES_URL;
                 break;
             case 3:
-                address = modelController.findAll(model);
+                address = "redirect:" + MODELS_URL;
                 break;
             case 4:
-                address = producerController.findAll(model);
+                address = "redirect:" + PRODUCERS_URL;
                 break;
             case 5:
                 address = "redirect:" + TYPES_URL;

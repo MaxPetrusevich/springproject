@@ -9,11 +9,11 @@
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<form th:action="types" th:method="get">
+<form th:action="${'/types'}" th:method="get">
   <input th:type="search" th:name="name" placeholder="Enter the name">
   <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
 </form>
-<form th:action="types" th:method="get">
+<form th:action="${'/types'}" th:method="get">
   <input th:type="hidden" th:name="name" th:value="${null}">
   <button th:type="submit" class="w3-button w3-white w3-border">Clear filter</button>
 </form>
@@ -31,13 +31,13 @@
       <td th:text="${unit.id}"></td>
       <td th:text="${unit.name}"></td>
       <td>
-        <form sec:authorize="hasAuthority('ADMIN')" th:action="type" th:method="get">
+        <form sec:authorize="hasAuthority('ADMIN')" th:action="${'/types/edit'}" th:method="get">
           <input th:type="hidden" th:name = "typeId" th:value="${unit.id}">
           <button class = "w3-button w3-white w3-border" th:type="submit">Edit</button>
         </form>
       </td>
       <td>
-        <form sec:authorize="hasAuthority('ADMIN')" th:action="delType" th:method="post">
+        <form sec:authorize="hasAuthority('ADMIN')" th:action="${'/types/delete'}" th:method="post">
           <input th:type="hidden" th:name = "typeId" th:value="${unit.id}">
           <button class = "w3-button w3-white w3-border" th:type="submit">Delete</button>
         </form>
@@ -46,7 +46,7 @@
     </tbody>
   </table>
 </div>
-<form sec:authorize="hasAuthority('ADMIN')" th:action="newType" th:method="get">
+<form sec:authorize="hasAuthority('ADMIN')" th:action="${'/types/add'}" th:method="get">
   <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new type</button>
 </form>
 <!--pagination-->
@@ -76,6 +76,6 @@
 
 </ul>
 </div>
-<a th:href="home">To home page</a>
+<a th:href="${'/home'}">To home page</a>
 </body>
 </html>

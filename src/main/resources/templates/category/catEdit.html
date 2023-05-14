@@ -8,11 +8,11 @@
 
 </head>
 <body>
-<form class="w3-container" th:action="category" th:method="post">
+<form class="w3-container" th:action="${'/categories/edit'}" th:method="post">
     <input th:type="hidden" th:name="catId" th:value="${unit.id}">
     <label>Name</label>
     <input class="w3-input" th:type="text" th:name="name" th:value="${unit.name}">
-    <div th:if="${types.size()>0}">
+    <div th:if="${types ne null}">
         <div th:each="type, iter:${types}">
             <div th:if="${type.category eq null}">
                 <input class="w3-check"  th:type="checkbox" th:name="typeId"
@@ -25,10 +25,12 @@
                 <label th:text="${type.name}"></label>
             </div>
         </div>
-
+    </div>
+    <div th:if="${types eq null}">
+        <input th:type="hidden" th:name ="typeId" th:value="${null}">
     </div>
     <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border">Submit</button>
 </form>
-<a th:href="categories">Previous</a>
+<a th:href="${'categories'}">Previous</a>
 </body>
 </html>

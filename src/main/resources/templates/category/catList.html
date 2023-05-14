@@ -10,9 +10,13 @@
 
 </head>
 <body>
-<form th:action="categoryByName" method="post">
+<form th:action="${'/categories'}" method="post">
     <input th:type="search" th:name="name" placeholder="Enter the name">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
+</form>
+<form th:action="${'/categories'}" method="post">
+    <input th:type="search" th:name="name" th:value="${null}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Clear filter</button>
 </form>
 <div th:if="${list.size() eq 0}">
     <p>Founded nothing</p>
@@ -35,13 +39,13 @@
                 </div>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="category" th:method="get">
+                <form th:action="${'/categories/edit'}" th:method="get">
                     <input th:type="hidden" th:name="catId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="delCategory" th:method="post">
+                <form th:action="${'/categories/delete'}" th:method="post">
                     <input th:type="hidden" th:name="catId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
                 </form>
@@ -50,13 +54,13 @@
         </tbody>
     </table>
 </div>
-<form th:action="newCategory" th:method="get" sec:authorize="hasAuthority('ADMIN')">
+<form th:action="${'/categories/add'}" th:method="get" sec:authorize="hasAuthority('ADMIN')">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new category</button>
 </form>
 <ul class="pagination">
 
     <li th:if="${page} ne 1">
-        <a th:href="@{/categories(page=${page}-1,size=${size})}">предыдущая</a>
+        <a th:href="@{/categories(page=${page}-1,size=${size}, name =${name})}">предыдущая</a>
     </li>
 
     <li th:each="i : ${#numbers.sequence( 1, totalPage)}">
@@ -65,7 +69,7 @@
             ${i}
         </a>
 
-        <a th:href="@{/categories(page=${i},size=${size})}"
+        <a th:href="@{/categories(page=${i},size=${size}, name =${name})}"
            th:text="${i}"
            th:if="${page} ne ${i}">
             ${i}
@@ -73,10 +77,10 @@
     </li>
 
     <li th:if="${page} lt ${totalPage}">
-        <a th:href="@{/categories(page=${page}+1,size=${size})}">следующая</a>
+        <a th:href="@{/categories(page=${page}+1,size=${size}, name =${name})}">следующая</a>
     </li>
 
 </ul>
-<a th:href="home">To home page</a>
+<a th:href="${'/home'}">To home page</a>
 </body>
 </html>

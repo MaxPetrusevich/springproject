@@ -44,7 +44,7 @@ public class TechniqueController {
                           @RequestParam(defaultValue = "", required = false) Double startPrice,
                           @RequestParam(defaultValue = "", required = false) Double endPrice) {
         Pageable pageable = Pageable.ofSize(size);
-        pageable = pageable.withPage(page-1);
+        pageable = pageable.withPage(page - 1);
         Page<TechniqueDto> techniqueDtoPage = techniqueService.findAll(pageable, startPrice, endPrice);
         model.addAttribute("page", page);
         model.addAttribute("size", size);
@@ -71,9 +71,6 @@ public class TechniqueController {
         return "redirect:" + TECHNIQUES;
 
     }
-
-
-
 
 
     @PostMapping(value = DEL_TECHNIQUE)

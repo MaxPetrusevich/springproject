@@ -1,12 +1,16 @@
 package com.spring.springproject.controller;
 
 import com.spring.springproject.dto.ProducerDto;
+import com.spring.springproject.dto.StoreDto;
 import com.spring.springproject.service.interfaces.ProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import static com.spring.springproject.controller.Constants.*;
@@ -22,9 +26,21 @@ public class ProducerController {
         this.producerService = producerService;
     }
 
-    @GetMapping(PRODUCERS_URL)
-    public String findAll(Model model) {
-        model.addAttribute(LIST, producerService.findAll());
+    @RequestMapping(PRODUCERS_URL)
+    public String findAll(Model model,
+                          @RequestParam(defaultValue = "3", required = false) int size,
+                          @RequestParam(defaultValue = "1", required = false) int page,
+                          @RequestParam(defaultValue = "", required = false) String name,
+                          @RequestParam(defaultValue = "", required = false) String country) {
+        Pageable pageable = Pageable.ofSize(size);
+        pageable = pageable.withPage(page - 1);
+        Page<ProducerDto> producerPage = producerService.findAll(pageable, name, country);
+        model.addAttribute("page", page);
+        model.addAttribute("size", size);
+        model.addAttribute("name", name);
+        model.addAttribute("country", country);
+        model.addAttribute("totalPage", producerPage.getTotalPages());
+        model.addAttribute("list", producerPage.getContent());
         return PROD_LIST;
     }
 
@@ -39,13 +55,13 @@ public class ProducerController {
     public String edit(@RequestParam(PRODUCER_ID) Integer id, @RequestParam(NAME) String name,
                        @RequestParam(COUNTRY) String country, Model model) {
         producerService.update(id, name, country);
-        return findAll(model);
+        return "redirect:" + PRODUCERS_URL;
     }
 
     @PostMapping(DEL_PRODUCER)
-    public String delete(@RequestParam(PRODUCER_ID) Integer id, Model model) {
+    public String delete(@RequestParam(PRODUCER_ID) Integer id) {
         producerService.delete(id);
-        return findAll(model);
+        return "redirect:" + PRODUCERS_URL;
     }
 
     @GetMapping(NEW_PRODUCER)
@@ -56,18 +72,9 @@ public class ProducerController {
     @PostMapping(NEW_PRODUCER)
     public String add(@RequestParam(NAME) String name, @RequestParam(COUNTRY) String country, Model model) {
         producerService.save(name, country);
-        return findAll(model);
+        return "redirect:" + PRODUCERS_URL;
     }
 
-    @PostMapping(PRODUCER_BY_NAME)
-    public String findByName(Model model, @RequestParam(NAME) String name) {
-        model.addAttribute(LIST, producerService.findByName(name));
-        return PROD_LIST;
-    }
 
-    @PostMapping(PRODUCER_BY_COUNTRY)
-    public String findByCountry(Model model, @RequestParam(COUNTRY) String country) {
-        model.addAttribute(LIST, producerService.findByCountry(country));
-        return PROD_LIST;
-    }
+
 }

@@ -1,19 +1,17 @@
 package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.TypeDto;
-
 import com.spring.springproject.entities.Type;
+import com.spring.springproject.repositories.TypeRepository;
+import com.spring.springproject.service.interfaces.TypeService;
 import com.spring.springproject.specifications.TypeSpecification;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import com.spring.springproject.repositories.TypeRepository;
-import com.spring.springproject.service.interfaces.TypeService;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
@@ -55,7 +53,10 @@ public class TypeServiceImpl implements TypeService {
 
     @Override
     public Set<TypeDto> findAll() {
-        return null;
+        return repository.findAll()
+                .stream()
+                .map(type -> modelMapper.map(type, TypeDto.class))
+                .collect(Collectors.toSet());
     }
 
     @Override

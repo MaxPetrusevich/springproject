@@ -2,13 +2,20 @@ package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.ModelDto;
 import com.spring.springproject.entities.Model;
+import com.spring.springproject.repositories.TechniqueRepository;
+import com.spring.springproject.specifications.ModelSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import com.spring.springproject.repositories.ModelRepository;
 import com.spring.springproject.service.interfaces.ModelService;
+import org.thymeleaf.util.StringUtils;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,20 +25,33 @@ public class ModelServiceImpl implements ModelService {
 
     private final ModelRepository repository;
     private final ModelMapper modelMapper;
+    private final TechniqueRepository techniqueRepository;
 
     @Autowired
-    public ModelServiceImpl(ModelRepository repository, ModelMapper modelMapper) {
+    public ModelServiceImpl(ModelRepository repository, ModelMapper modelMapper, TechniqueRepository techniqueRepository) {
         this.repository = repository;
         this.modelMapper = modelMapper;
+        this.techniqueRepository = techniqueRepository;
     }
 
 
     @Override
-    public Set<ModelDto> findByName(String name) {
-        return repository.findByNameContaining(name)
-                .stream()
-                .map(model -> modelMapper.map(model, ModelDto.class))
-                .collect(Collectors.toSet());
+    public Page<ModelDto> findAll(Pageable pageable, String name) {
+        if(!StringUtils.isEmptyOrWhitespace(name)) {
+            Page<Model> models = repository.findAll(ModelSpecification.searchModel(name), pageable);
+            List<ModelDto> modelDtoList = models
+                    .stream()
+                    .map(model -> modelMapper.map(model, ModelDto.class))
+                    .toList();
+            return new PageImpl<>(modelDtoList, pageable, models.getTotalElements());
+        }else{
+            Page<Model> models = repository.findAll(pageable);
+            List<ModelDto> modelDtoList = models
+                    .stream()
+                    .map(model -> modelMapper.map(model, ModelDto.class))
+                    .toList();
+            return new PageImpl<>(modelDtoList, pageable, models.getTotalElements());
+        }
     }
 
     @Override
@@ -82,6 +102,13 @@ public class ModelServiceImpl implements ModelService {
 
     @Override
     public void delete(Integer id) {
-        repository.deleteById(id);
+        Model model = repository.findById(id).orElse(null);
+        if (!model.equals(null)) {
+            model.getTechniques().stream().forEach(technique -> {
+                technique.setProducer(null);
+                techniqueRepository.save(technique);
+            });
+            repository.deleteById(id);
+        }
     }
 }
