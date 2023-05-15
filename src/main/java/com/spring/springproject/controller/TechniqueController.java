@@ -1,20 +1,18 @@
 package com.spring.springproject.controller;
 
 import com.spring.springproject.dto.TechniqueDto;
-import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.service.interfaces.*;
-import liquibase.pro.packaged.D;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import static com.spring.springproject.controller.Constants.*;
-
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Controller
@@ -46,11 +44,11 @@ public class TechniqueController {
         Pageable pageable = Pageable.ofSize(size);
         pageable = pageable.withPage(page - 1);
         Page<TechniqueDto> techniqueDtoPage = techniqueService.findAll(pageable, startPrice, endPrice);
-        model.addAttribute("page", page);
-        model.addAttribute("size", size);
-        model.addAttribute("startPrice", startPrice);
-        model.addAttribute("endPrice", endPrice);
-        model.addAttribute("totalPage", techniqueDtoPage.getTotalPages());
+        model.addAttribute(PAGE, page);
+        model.addAttribute(SIZE, size);
+        model.addAttribute(START_PRICE, startPrice);
+        model.addAttribute(END_PRICE, endPrice);
+        model.addAttribute(TOTAL_PAGE, techniqueDtoPage.getTotalPages());
         model.addAttribute(LIST, techniqueDtoPage.getContent());
         return T_LIST;
     }
@@ -63,29 +61,28 @@ public class TechniqueController {
     }
 
     @PostMapping(TECHNIQUE)
-    public String edit(Model model, @RequestParam(TECH_ID) Integer id,
+    public String edit(@RequestParam(TECH_ID) Integer id,
                        @RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
                        @RequestParam(CATEGORY) Integer categoryId, @RequestParam(PRICE) Double price,
                        @RequestParam(STORE_ID) Integer[] storeIdes) {
         techniqueService.update(producerId, modelId, categoryId, price, storeIdes, id);
-        return "redirect:" + TECHNIQUES;
+        return REDIRECT + TECHNIQUES;
 
     }
 
 
     @PostMapping(value = DEL_TECHNIQUE)
-    public String delete(Model model, @RequestParam(TECH_ID) Integer id) {
+    public String delete(@RequestParam(TECH_ID) Integer id) {
         techniqueService.delete(id);
-        return "redirect:" + TECHNIQUES;
+        return REDIRECT + TECHNIQUES;
     }
 
     @PostMapping(NEW_TECHNIQUE)
-    public String add(Model model,
-                      @RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
+    public String add(@RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
                       @RequestParam(CATEGORY) Integer categoryId, @RequestParam(PRICE) Double price,
                       @RequestParam(STORE_ID) Integer[] storeIdes) {
         techniqueService.save(producerId, modelId, categoryId, price, storeIdes);
-        return "redirect:" + TECHNIQUES;
+        return REDIRECT + TECHNIQUES;
     }
 
     @GetMapping(NEW_TECHNIQUE)
@@ -100,6 +97,4 @@ public class TechniqueController {
         model.addAttribute(PRODUCERS, producerService.findAll());
         model.addAttribute(STORES, storeService.findAll());
     }
-
-
 }

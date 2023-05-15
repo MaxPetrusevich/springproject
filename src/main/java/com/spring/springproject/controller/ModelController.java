@@ -1,7 +1,6 @@
 package com.spring.springproject.controller;
 
 import com.spring.springproject.dto.ModelDto;
-import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.service.interfaces.ModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 import static com.spring.springproject.controller.Constants.*;
 
@@ -36,10 +34,10 @@ public class ModelController {
         Pageable pageable = Pageable.ofSize(size);
         pageable = pageable.withPage(page - 1);
         Page<ModelDto> modelPage = modelService.findAll(pageable, name);
-        model.addAttribute("page", page);
-        model.addAttribute("size", size);
-        model.addAttribute("name", name);
-        model.addAttribute("totalPage", modelPage.getTotalPages());
+        model.addAttribute(PAGE, page);
+        model.addAttribute(SIZE, size);
+        model.addAttribute(NAME, name);
+        model.addAttribute(TOTAL_PAGE, modelPage.getTotalPages());
         model.addAttribute(LIST, modelPage.getContent());
         return MOD_LIST;
     }
@@ -52,15 +50,15 @@ public class ModelController {
     }
 
     @PostMapping(MODEL_URL)
-    public String edit(@RequestParam(MODEL_ID) Integer id, @RequestParam(NAME) String name, Model model) {
+    public String edit(@RequestParam(MODEL_ID) Integer id, @RequestParam(NAME) String name) {
         modelService.update(id, name);
-        return "redirect:" + MODELS_URL;
+        return REDIRECT + MODELS_URL;
     }
 
     @PostMapping(DEL_MODEL)
     public String delete(@RequestParam(MODEL_ID) Integer id) {
         modelService.delete(id);
-        return "redirect:" + MODELS_URL;
+        return REDIRECT + MODELS_URL;
     }
 
     @GetMapping(NEW_MODEL)
@@ -69,9 +67,9 @@ public class ModelController {
     }
 
     @PostMapping(NEW_MODEL)
-    public String add(@RequestParam(NAME) String name, Model model) {
+    public String add(@RequestParam(NAME) String name) {
         modelService.save(name);
-        return "redirect:" + MODELS_URL;
+        return REDIRECT + MODELS_URL;
     }
 
 }

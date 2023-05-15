@@ -1,7 +1,6 @@
 package com.spring.springproject.controller;
 
 import com.spring.springproject.dto.ProducerDto;
-import com.spring.springproject.dto.StoreDto;
 import com.spring.springproject.service.interfaces.ProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,12 +34,12 @@ public class ProducerController {
         Pageable pageable = Pageable.ofSize(size);
         pageable = pageable.withPage(page - 1);
         Page<ProducerDto> producerPage = producerService.findAll(pageable, name, country);
-        model.addAttribute("page", page);
-        model.addAttribute("size", size);
-        model.addAttribute("name", name);
-        model.addAttribute("country", country);
-        model.addAttribute("totalPage", producerPage.getTotalPages());
-        model.addAttribute("list", producerPage.getContent());
+        model.addAttribute(PAGE, page);
+        model.addAttribute(SIZE, size);
+        model.addAttribute(NAME, name);
+        model.addAttribute(COUNTRY, country);
+        model.addAttribute(TOTAL_PAGE, producerPage.getTotalPages());
+        model.addAttribute(LIST, producerPage.getContent());
         return PROD_LIST;
     }
 
@@ -53,15 +52,15 @@ public class ProducerController {
 
     @PostMapping(PRODUCER_URL)
     public String edit(@RequestParam(PRODUCER_ID) Integer id, @RequestParam(NAME) String name,
-                       @RequestParam(COUNTRY) String country, Model model) {
+                       @RequestParam(COUNTRY) String country) {
         producerService.update(id, name, country);
-        return "redirect:" + PRODUCERS_URL;
+        return REDIRECT + PRODUCERS_URL;
     }
 
     @PostMapping(DEL_PRODUCER)
     public String delete(@RequestParam(PRODUCER_ID) Integer id) {
         producerService.delete(id);
-        return "redirect:" + PRODUCERS_URL;
+        return REDIRECT + PRODUCERS_URL;
     }
 
     @GetMapping(NEW_PRODUCER)
@@ -70,11 +69,10 @@ public class ProducerController {
     }
 
     @PostMapping(NEW_PRODUCER)
-    public String add(@RequestParam(NAME) String name, @RequestParam(COUNTRY) String country, Model model) {
+    public String add(@RequestParam(NAME) String name, @RequestParam(COUNTRY) String country) {
         producerService.save(name, country);
-        return "redirect:" + PRODUCERS_URL;
+        return REDIRECT + PRODUCERS_URL;
     }
-
 
 
 }

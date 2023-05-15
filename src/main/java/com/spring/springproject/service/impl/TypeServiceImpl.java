@@ -33,14 +33,14 @@ public class TypeServiceImpl implements TypeService {
 
     @Override
     public Page<TypeDto> findAll(Pageable pageable, String name) {
-        if(!StringUtils.isEmptyOrWhitespace(name)) {
+        if (!StringUtils.isEmptyOrWhitespace(name)) {
             Page<Type> types = repository.findAll(TypeSpecification.searchType(name), pageable);
             List<TypeDto> typeDtoList = types
                     .stream()
                     .map(type -> modelMapper.map(type, TypeDto.class))
                     .toList();
             return new PageImpl<>(typeDtoList, pageable, types.getTotalElements());
-        }else{
+        } else {
             Page<Type> types = repository.findAll(pageable);
             List<TypeDto> typeDtoList = types
                     .stream()
@@ -84,7 +84,6 @@ public class TypeServiceImpl implements TypeService {
     public void delete(Integer id) {
         repository.deleteById(id);
     }
-
 
 
     @Override

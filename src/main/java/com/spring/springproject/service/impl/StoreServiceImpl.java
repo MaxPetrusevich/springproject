@@ -67,8 +67,8 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public void delete(Integer id) {
         Store store = repository.findById(id).orElse(null);
-        if (!store.equals(null)) {
-            store.getTechniques().stream().forEach(technique -> {
+        if (store != null) {
+            store.getTechniques().forEach(technique -> {
                 technique.getStoreList().remove(store);
                 techniqueRepository.save(technique);
             });

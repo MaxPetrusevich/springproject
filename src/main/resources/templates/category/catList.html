@@ -5,29 +5,38 @@
       xmlns:sec="http://www.springframework.org/schema/security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Categories</title>
+    <title th:text="#{category.list.title}"></title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="static/style.css">
 
 </head>
 <body>
+<header>
+    <a th:text="#{language.en}"
+       th:href="@{/categories(page=${page},size=${size}, name =${name}, language=${'en'})}"></a>
+    <a th:text="#{language.ru}"
+       th:href="@{/categories(page=${page},size=${size}, name =${name}, language=${'ru'})}"></a>
+</header>
 <form th:action="${'/categories'}" method="post">
-    <input th:type="search" th:name="name" placeholder="Enter the name">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
+    <input th:type="search" th:name="name" th:placeholder="#{name.placeholder}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{confirm.name}"></button>
 </form>
 <form th:action="${'/categories'}" method="post">
     <input th:type="search" th:name="name" th:value="${null}">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Clear filter</button>
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{clear.filter}"></button>
 </form>
 <div th:if="${list.size() eq 0}">
-    <p>Founded nothing</p>
+    <p th:text="#{found.nothing}"></p>
 </div>
 <div th:if="${list.size() > 0}">
 
     <table class="w3-table-all">
         <thead class="w3-light-grey">
-        <th>Id</th>
-        <th>Name</th>
-        <th>Types</th>
+        <th th:text="#{id.name}"></th>
+        <th th:text="#{name.name}"></th>
+        <th th:text="#{type.list.title}"></th>
         </thead>
         <tbody>
         <tr th:each="unit, iter: ${list}">
@@ -41,13 +50,13 @@
             <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="${'/categories/edit'}" th:method="get">
                     <input th:type="hidden" th:name="catId" th:value="${unit.id}">
-                    <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"></button>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="${'/categories/delete'}" th:method="post">
                     <input th:type="hidden" th:name="catId" th:value="${unit.id}">
-                    <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"></button>
                 </form>
             </td>
         </tr>
@@ -55,32 +64,34 @@
     </table>
 </div>
 <form th:action="${'/categories/add'}" th:method="get" sec:authorize="hasAuthority('ADMIN')">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new category</button>
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{add.category}"></button>
 </form>
-<ul class="pagination">
+<div class="w3-bar">
+    <div class="w3-center">
 
-    <li th:if="${page} ne 1">
-        <a th:href="@{/categories(page=${page}-1,size=${size}, name =${name})}">предыдущая</a>
-    </li>
+        <div th:if="${page} ne 1" style="display: inline-block">
+            <a th:href="@{/categories(page=${page}-1,size=${size}, name =${name})}" th:text="#{page.prev}"></a>
+        </div>
 
-    <li th:each="i : ${#numbers.sequence( 1, totalPage)}">
-        <a th:text="${i}"
-           th:if="${page} eq ${i}">
-            ${i}
-        </a>
+        <div th:each="i : ${#numbers.sequence( 1, totalPage)}" style="display: inline-block">
+            <a th:text="${i}"
+               th:if="${page} eq ${i}">
+                ${i}
+            </a>
 
-        <a th:href="@{/categories(page=${i},size=${size}, name =${name})}"
-           th:text="${i}"
-           th:if="${page} ne ${i}">
-            ${i}
-        </a>
-    </li>
+            <a th:href="@{/categories(page=${i},size=${size}, name =${name})}"
+               th:text="${i}"
+               th:if="${page} ne ${i}">
+                ${i}
+            </a>
+        </div>
 
-    <li th:if="${page} lt ${totalPage}">
-        <a th:href="@{/categories(page=${page}+1,size=${size}, name =${name})}">следующая</a>
-    </li>
-
-</ul>
-<a th:href="${'/home'}">To home page</a>
+        <div th:if="${page} lt ${totalPage}" style="display: inline-block">
+            <a th:href="@{/categories(page=${page}+1,size=${size}, name =${name})}" th:text="#{page.next}"></a>
+        </div>
+    </div>
+</div>
+<a th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"></a>
 </body>
 </html>

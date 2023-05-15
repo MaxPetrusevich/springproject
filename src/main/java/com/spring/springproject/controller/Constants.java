@@ -2,6 +2,10 @@ package com.spring.springproject.controller;
 
 
 public class Constants {
+    public static final String USERS_URL = "/users";
+    public static final String USERS_ID_URL = "/users/{id}";
+    public static final String SWAGGER_UI_URL = "/swagger-ui/index.html";
+
     public static final String TYPES_URL = "/types";
     public static final String TYPE = "/types/edit";
     public static final String DEL_TYPE = "/types/delete";
@@ -26,7 +30,11 @@ public class Constants {
     public static final String CATEGORY_URL = "/categories/edit";
     public static final String DEL_CATEGORY = "/categories/delete";
     public static final String NEW_CATEGORY = "/categories/add";
-
+    public static final String PAGE = "page";
+    public static final String SIZE = "size";
+    public static final String START_PRICE = "startPrice";
+    public static final String END_PRICE = "endPrice";
+    public static final String TOTAL_PAGE = "totalPage";
     public static final String LOGIN = "/login";
     public static final String ADMIN = "ADMIN";
     public static final String USER = "USER";
@@ -77,4 +85,6 @@ public class Constants {
     public static final String TY_ADD = "type/typeAdd";
     public static final String TY_EDIT = "type/typeEdit";
     public static final String TY_LIST = "type/typeList";
+    public static final String REDIRECT = "redirect:";
+
 }

@@ -4,34 +4,41 @@
       xmlns:sec="http://www.springframework.org/schema/security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>TechList</title>
+    <title th:text="#{technique.list.title}"></title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
+<header>
+    <a th:text="#{language.en}"
+       th:href="@{/techniques(page=${page},size=${size}, startPrice =${startPrice}, endPrice =${endPrice}, language=${'en'})}"></a>
+    <a th:text="#{language.ru}"
+       th:href="@{/techniques(page=${page},size=${size}, startPrice =${startPrice}, endPrice =${endPrice}, language=${'ru'})}"></a>
+</header>
 <form th:action="${'/techniques'}" method="get">
-    <input th:type="number" th:name="startPrice" placeholder="Enter the start price">
-    <input th:type="number" th:name="endPrice" placeholder="Enter the end price">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
+    <input th:type="number" th:name="startPrice" th:placeholder="#{start.price.placeholder}">
+    <input th:type="number" th:name="endPrice" th:placeholder="#{end.price.placeholder}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{confirm.name}"></button>
 </form>
 <form th:action="${'/techniques'}" method="get">
     <input th:type="hidden" th:name="startPrice" th:value="${null}">
     <input th:type="hidden" th:name="endPrice" th:value="${null}">
-    <button class="w3-button w3-white w3-border" th:type="submit">Clear filter</button>
+    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{clear.filter}"></button>
 </form>
 <div th:if="${list.size() eq 0}">
-    <p>Nothing founded</p>
+    <p th:text="#{found.nothing}"></p>
 </div>
 <div th:if="${list.size() > 0}">
     <table class="w3-table-all">
         <thead class="w3-light-grey">
-        <th>Id</th>
-        <th>Price</th>
-        <th>Category</th>
-        <th>Producer</th>
-        <th>ProducerCountry</th>
-        <th>Model</th>
-        <th>Types</th>
-        <th>Stores</th>
+        <th th:text="#{id.name}"></th>
+        <th th:text="#{price.name}"></th>
+        <th th:text="#{category.name}"></th>
+        <th th:text="#{producer.name}"></th>
+        <th th:text="#{producer.country}"></th>
+        <th th:text="#{model.name}"></th>
+        <th th:text="#{type.list.title}"></th>
+        <th th:text="#{store.list.title}"></th>
         </thead>
         <tbody>
         <tr th:each="unit, iter: ${list}">
@@ -52,13 +59,13 @@
             <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="${'/techniques/edit'}" th:method="GET">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
-                    <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"></button>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="${'/techniques/delete'}" th:method="POST">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
-                    <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"></button>
                 </form>
             </td>
         </tr>
@@ -66,34 +73,38 @@
     </table>
 </div>
 <form sec:authorize="hasAuthority('ADMIN')" th:action="${'/techniques/add'}" th:method="get">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new technique</button>
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{add.technique}"></button>
 </form>
 <div th:if="${list.size() > 0}">
-    <ul class="pagination">
+    <div class="w3-bar">
+        <div class="w3-center">
+            <div th:if="${page} ne 1" style="display: inline-block">
+                <a th:href="@{/techniques(page=${page}-1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}"
+                   th:text="#{page.prev}"></a>
+            </div>
 
-        <li th:if="${page} ne 1">
-            <a th:href="@{/techniques(page=${page}-1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}">предыдущая</a>
-        </li>
+            <div th:each="i : ${#numbers.sequence( 1, totalPage)}" style="display: inline-block">
+                <a th:text="${i}"
+                   th:if="${page} eq ${i}">
+                    ${i}
+                </a>
 
-        <li th:each="i : ${#numbers.sequence( 1, totalPage)}">
-            <a th:text="${i}"
-               th:if="${page} eq ${i}">
-                ${i}
-            </a>
+                <a th:href="@{/techniques(page=${i},size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}"
+                   th:text="${i}"
+                   th:if="${page} ne ${i}">
+                    ${i}
+                </a>
+            </div>
 
-            <a th:href="@{/techniques(page=${i},size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}"
-               th:text="${i}"
-               th:if="${page} ne ${i}">
-                ${i}
-            </a>
-        </li>
+            <div th:if="${page} lt ${totalPage}" style="display: inline-block">
+                <a th:href="@{/techniques(page=${page}+1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}"
+                   th:text="#{page.next}"></a>
+            </div>
 
-        <li th:if="${page} lt ${totalPage}">
-            <a th:href="@{/techniques(page=${page}+1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}">следующая</a>
-        </li>
-
-    </ul>
+        </div>
+    </div>
 </div>
-<a th:href="${'/home'}">To home page</a>
+<a th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"></a>
 </body>
 </html>

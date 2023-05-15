@@ -78,7 +78,6 @@ public class TechniqueServiceImpl implements TechniqueService {
     }
 
 
-
     @Override
     public void update(Integer producerId, Integer modelId, Integer categoryId, Double price, Integer[] storeIdes, Integer id) {
         TechniqueDto techniqueDto = findById(id);
@@ -101,14 +100,14 @@ public class TechniqueServiceImpl implements TechniqueService {
     @Override
     public Page<TechniqueDto> findAll(Pageable pageable, Double startPrice, Double endPrice) {
         if (startPrice == null && endPrice == null) {
-           Page<Technique> techniquesPage = repository.findAll(pageable);
+            Page<Technique> techniquesPage = repository.findAll(pageable);
             List<TechniqueDto> techniqueDtoList = techniquesPage
                     .stream()
                     .map(technique -> modelMapper.map(technique, TechniqueDto.class))
                     .toList();
             return new PageImpl<>(techniqueDtoList, pageable, techniquesPage.getTotalElements());
         } else {
-            Page<Technique> techniquesPage = repository.findAll(TechniqueSpecification.searchTechnique(startPrice, endPrice),pageable);
+            Page<Technique> techniquesPage = repository.findAll(TechniqueSpecification.searchTechnique(startPrice, endPrice), pageable);
             List<TechniqueDto> techniqueDtoList = techniquesPage
                     .stream()
                     .map(technique -> modelMapper.map(technique, TechniqueDto.class))

@@ -1,13 +1,11 @@
 package com.spring.springproject.entities;
 
+import lombok.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-
-import lombok.*;
-import org.springframework.stereotype.Component;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;

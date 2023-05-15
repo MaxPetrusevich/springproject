@@ -1,9 +1,9 @@
 package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.CategoryDto;
-import com.spring.springproject.dto.ModelDto;
 import com.spring.springproject.entities.Category;
-import com.spring.springproject.entities.Model;
+import com.spring.springproject.repositories.CategoryRepository;
+import com.spring.springproject.service.interfaces.CategoryService;
 import com.spring.springproject.service.interfaces.TypeService;
 import com.spring.springproject.specifications.CategorySpecification;
 import org.modelmapper.ModelMapper;
@@ -12,8 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.spring.springproject.repositories.CategoryRepository;
-import com.spring.springproject.service.interfaces.CategoryService;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 

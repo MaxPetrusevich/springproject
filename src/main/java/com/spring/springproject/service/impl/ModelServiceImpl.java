@@ -37,14 +37,14 @@ public class ModelServiceImpl implements ModelService {
 
     @Override
     public Page<ModelDto> findAll(Pageable pageable, String name) {
-        if(!StringUtils.isEmptyOrWhitespace(name)) {
+        if (!StringUtils.isEmptyOrWhitespace(name)) {
             Page<Model> models = repository.findAll(ModelSpecification.searchModel(name), pageable);
             List<ModelDto> modelDtoList = models
                     .stream()
                     .map(model -> modelMapper.map(model, ModelDto.class))
                     .toList();
             return new PageImpl<>(modelDtoList, pageable, models.getTotalElements());
-        }else{
+        } else {
             Page<Model> models = repository.findAll(pageable);
             List<ModelDto> modelDtoList = models
                     .stream()
@@ -103,8 +103,8 @@ public class ModelServiceImpl implements ModelService {
     @Override
     public void delete(Integer id) {
         Model model = repository.findById(id).orElse(null);
-        if (!model.equals(null)) {
-            model.getTechniques().stream().forEach(technique -> {
+        if (model != null) {
+            model.getTechniques().forEach(technique -> {
                 technique.setProducer(null);
                 techniqueRepository.save(technique);
             });

@@ -35,10 +35,10 @@ public class CategoryController {
         Pageable pageable = Pageable.ofSize(size);
         pageable = pageable.withPage(page - 1);
         Page<CategoryDto> categoryPage = categoryService.findAll(pageable, name);
-        model.addAttribute("page", page);
-        model.addAttribute("size", size);
-        model.addAttribute("name", name);
-        model.addAttribute("totalPage", categoryPage.getTotalPages());
+        model.addAttribute(PAGE, page);
+        model.addAttribute(SIZE, size);
+        model.addAttribute(NAME, name);
+        model.addAttribute(TOTAL_PAGE, categoryPage.getTotalPages());
         model.addAttribute(LIST, categoryPage.getContent());
         return CATEGORY_LIST;
     }
@@ -52,16 +52,16 @@ public class CategoryController {
     }
 
     @PostMapping(CATEGORY_URL)
-    public String edit(@RequestParam(CAT_ID) Integer id, @RequestParam(TYPE_ID) Integer[] typeIdes, @RequestParam(NAME) String name, Model model) {
+    public String edit(@RequestParam(CAT_ID) Integer id, @RequestParam(TYPE_ID) Integer[] typeIdes, @RequestParam(NAME) String name) {
         CategoryDto categoryDto = categoryService.findById(id);
         categoryService.save(name, typeIdes, categoryDto);
-        return "redirect:" + CATEGORIES_URL;
+        return REDIRECT + CATEGORIES_URL;
     }
 
     @PostMapping(DEL_CATEGORY)
     public String delete(@RequestParam(CAT_ID) Integer id) {
         categoryService.delete(id);
-        return "redirect:" + CATEGORIES_URL;
+        return REDIRECT + CATEGORIES_URL;
     }
 
     @GetMapping(NEW_CATEGORY)
@@ -71,11 +71,11 @@ public class CategoryController {
     }
 
     @PostMapping(NEW_CATEGORY)
-    public String add(@RequestParam(NAME) String name,@RequestParam(name = TYPE_ID, required = false, defaultValue = "") Integer[] typeIdes) {
+    public String add(@RequestParam(NAME) String name, @RequestParam(name = TYPE_ID, required = false, defaultValue = "") Integer[] typeIdes) {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setTypes(new HashSet<>());
         categoryService.save(name, typeIdes, categoryDto);
-        return "redirect:" + CATEGORIES_URL;
+        return REDIRECT + CATEGORIES_URL;
     }
 }
 

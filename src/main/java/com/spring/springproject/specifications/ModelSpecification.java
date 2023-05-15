@@ -2,7 +2,6 @@ package com.spring.springproject.specifications;
 
 import com.spring.springproject.entities.Model;
 import com.spring.springproject.entities.Model_;
-import com.spring.springproject.entities.Type_;
 import org.springframework.data.jpa.domain.Specification;
 import org.thymeleaf.util.StringUtils;
 

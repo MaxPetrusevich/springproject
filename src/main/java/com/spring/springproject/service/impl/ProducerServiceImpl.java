@@ -69,8 +69,8 @@ public class ProducerServiceImpl implements ProducerService {
     @Override
     public void delete(Integer id) {
         Producer producer = repository.findById(id).orElse(null);
-        if (!producer.equals(null)) {
-            producer.getTechniques().stream().forEach(technique -> {
+        if (producer != null) {
+            producer.getTechniques().forEach(technique -> {
                 technique.setProducer(null);
                 techniqueRepository.save(technique);
             });

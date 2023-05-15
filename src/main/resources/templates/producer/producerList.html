@@ -4,29 +4,35 @@
       xmlns:sec="http://www.springframework.org/schema/security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Producer List</title>
+    <title th:text="#{producer.list.title}"></title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
+<header>
+    <a th:text="#{language.en}"
+       th:href="@{/producers(page=${page},size=${size}, name =${name}, country=${country}, language=${'en'})}"></a>
+    <a th:text="#{language.ru}"
+       th:href="@{/producers(page=${page},size=${size}, name =${name},country=${country}, language=${'ru'})}"></a>
+</header>
 <form th:action="${'/producers'}" method="post">
-    <input th:type="search" th:name="name" placeholder="Enter the name">
-    <input th:type="search" th:name="country" placeholder="Enter the country name">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
+    <input th:type="search" th:name="name" th:placeholder="#{name.placeholder}">
+    <input th:type="search" th:name="country" th:placeholder="#{country.placeholder}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{confirm.name}"></button>
 </form>
 <form th:action="${'/producers'}" method="post">
     <input th:type="hidden" th:name="name" th:value="${null}">
     <input th:type="hidden" th:name="country" th:value="${null}">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Clear filter</button>
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{clear.filter}"></button>
 </form>
 <div th:if="${list.size() eq 0}">
-    <p>Founded nothing</p>
+    <p th:text="#{found.nothing}"></p>
 </div>
 <div th:if="${list.size() > 0}">
     <table class="w3-table-all">
         <thead class="w3-light-grey">
-        <th>Id</th>
-        <th>Name</th>
-        <th>Country</th>
+        <th th:text="#{id.name}"></th>
+        <th th:text="#{name.name}"></th>
+        <th th:text="#{producer.country}"></th>
         </thead>
         <tbody>
         <tr th:each="unit, iter: ${list}">
@@ -36,14 +42,14 @@
             <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="${'/producers/edit'}" th:method="get">
                     <input th:type="hidden" th:name = "producerId" th:value="${unit.id}">
-                    <button class = "w3-button w3-white w3-border" th:type="submit">Edit</button>
+                    <button class = "w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"></button>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="${'/producers/delete'}" th:method="post">
                     <input th:type="hidden" th:name = "producerId" th:value="${unit.id}">
 
-                    <button class = "w3-button w3-white w3-border" th:type="submit">Delete</button>
+                    <button class = "w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"></button>
                 </form>
             </td>
         </tr>
@@ -51,15 +57,15 @@
     </table>
 </div>
 <form sec:authorize="hasAuthority('ADMIN')" th:action="${'/producers/add'}" th:method="get">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new producer</button>
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{add.producer}"></button>
 </form>
-<ul class="pagination">
+<div class="w3-bar">
+    <div class="w3-center">
+    <div th:if="${page} ne 1" style="display:inline-block;">
+        <a th:href="@{/producers(page=${page}-1,size=${size}, name = ${name}, country = ${country})}" th:text="#{page.prev}"></a>
+    </div>
 
-    <li th:if="${page} ne 1">
-        <a th:href="@{/producers(page=${page}-1,size=${size}, name = ${name}, country = ${country})}">предыдущая</a>
-    </li>
-
-    <li th:each="i : ${#numbers.sequence( 1, totalPage)}">
+    <div th:each="i : ${#numbers.sequence( 1, totalPage)}" style="display:inline-block;">
         <a th:text="${i}"
            th:if="${page} eq ${i}">
             ${i}
@@ -70,14 +76,15 @@
            th:if="${page} ne ${i}">
             ${i}
         </a>
-    </li>
+    </div>
 
-    <li th:if="${page} lt ${totalPage}">
-        <a th:href="@{/producers(page=${page}+1,size=${size},name = ${name}, country = ${country})}">следующая</a>
-    </li>
+    <div th:if="${page} lt ${totalPage}" style="display:inline-block;">
+        <a th:href="@{/producers(page=${page}+1,size=${size},name = ${name}, country = ${country})}" th:text="#{page.next}"></a>
+    </div>
 
-</ul>
+    </div>
+</div>
 
-<a th:href="${'/home'}">To home page</a>
+<a th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"></a>
 </body>
 </html>

@@ -4,14 +4,19 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <title>techAdd</title>
+  <title th:text="#{technique.add.title}"></title>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<body>
+<header>
+  <a th:text="#{language.en}"
+     th:href="@{/techniques/add(language=${'en'})}"></a>
+  <a th:text="#{language.ru}"
+     th:href="@{/techniques/add(language=${'ru'})}"></a>
+</header>
 <form class="w3-container"  th:action="${'/techniques/add'}" th:method="post">
-  <label>Price</label>
-  <input class="w3-input" required th:type="number" th:name="price" placeholder="Enter the price">
+  <label th:text="#{price.name}"></label>
+  <input class="w3-input" required th:type="number" th:name="price" th:placeholder="#{price.placeholder}">
   <div th:if="${categories} ne null">
     <select class="w3-select" required th:name="category">
       <option th:each="cat, iter:${categories}"  th:value="${cat.id}">
@@ -40,10 +45,9 @@
       <label th:utext="${store.name}"><label th:text="${store.address}"></label> </label>
     </div>
   </div>
-  <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Submit</button>
+  <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{submit.name}"></button>
 </form>
 
-<a th:href="${'/techniques'}">Previous</a>
-</body>
+<a th:href="${'/techniques'}" th:text="#{page.prev}"></a>
 </body>
 </html>

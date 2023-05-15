@@ -3,17 +3,23 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Producer Add</title>
+    <title th:text="#{producer.add.title}"></title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
+<header>
+    <a th:text="#{language.en}"
+       th:href="@{/producers/add(language=${'en'})}"></a>
+    <a th:text="#{language.ru}"
+       th:href="@{/producers/add(language=${'ru'})}"></a>
+</header>
 <form class="w3-container" th:action="${'/producers/add'}" th:method="post">
-    <label>Name</label>
-    <input class="w3-input" required th:type="text" th:name="name" placeholder="Enter the producer name">
-    <label>Country</label>
-    <input class="w3-input" required th:type="text" th:name="country" placeholder="Enter the producer country">
-    <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border">Submit</button>
+    <label th:text="#{name.name}"></label>
+    <input class="w3-input" required th:type="text" th:name="name" th:placeholder="#{name.placeholder}">
+    <label th:text="#{producer.country}"></label>
+    <input class="w3-input" required th:type="text" th:name="country" th:placeholder="#{country.placeholder}">
+    <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border" th:text="#{submit.name}"></button>
 </form>
-<a th:href="${'/producers'}">Previous</a>
+<a th:href="${'/producers'}" th:text="#{page.prev}"></a>
 </body>
 </html>

@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CategorySpecification {
-    public static Specification<Category> searchCategory(String name){
+    public static Specification<Category> searchCategory(String name) {
         return ((root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if(!StringUtils.isEmptyOrWhitespace(name)){
+            if (!StringUtils.isEmptyOrWhitespace(name)) {
                 predicates.add(criteriaBuilder.like(root.get(Category_.NAME), "%" + name + "%"));
             }
             return criteriaBuilder.or(predicates.toArray(new Predicate[0]));

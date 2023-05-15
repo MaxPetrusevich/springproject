@@ -3,13 +3,19 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>EditTechnique</title>
+    <title th:text="#{technique.edit.title}"></title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
+<header>
+    <a th:text="#{language.en}"
+       th:href="@{/techniques/edit(language=${'en'}, techId =${unit.id})}"></a>
+    <a th:text="#{language.ru}"
+       th:href="@{/techniques/edit(language=${'ru'}, techId =${unit.id})}"></a>
+</header>
 <form class="w3-container"  th:action="${'/techniques/edit'}" th:method="post">
     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
-    <label>Price</label>
+    <label th:text="#{price.name}"></label>
     <input class="w3-input" th:type="number" th:name="price" th:value="${unit.price}">
     <div th:if="${categories} ne null">
         <select  class="w3-select" th:name="category">
@@ -39,9 +45,9 @@
             <label th:utext="${store.name + store.address}"> </label>
         </div>
     </div>
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Submit</button>
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{submit.name}"></button>
 </form>
 
-<a th:href="${'/techniques'}">Previous</a>
+<a th:href="${'/techniques'}" th:text="#{page.prev}"></a>
 </body>
 </html>

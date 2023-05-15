@@ -1,7 +1,6 @@
 package com.spring.springproject.controller;
 
 import com.spring.springproject.dto.StoreDto;
-import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.service.interfaces.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,11 +35,11 @@ public class StoreController {
         Pageable pageable = Pageable.ofSize(size);
         pageable = pageable.withPage(page - 1);
         Page<StoreDto> storePage = storeService.findAll(pageable, name, address);
-        model.addAttribute("page", page);
-        model.addAttribute("size", size);
-        model.addAttribute("name", name);
-        model.addAttribute("address", address);
-        model.addAttribute("totalPage", storePage.getTotalPages());
+        model.addAttribute(PAGE, page);
+        model.addAttribute(SIZE, size);
+        model.addAttribute(NAME, name);
+        model.addAttribute(ADDRESS, address);
+        model.addAttribute(TOTAL_PAGE, storePage.getTotalPages());
         model.addAttribute(LIST, storePage.getContent());
         return ST_LIST;
     }
@@ -54,15 +53,15 @@ public class StoreController {
 
     @PostMapping(STORE)
     public String edit(@RequestParam(STORE_ID) Integer id, @RequestParam(NAME) String name,
-                       @RequestParam(ADDRESS) String address, Model model) {
+                       @RequestParam(ADDRESS) String address) {
         storeService.update(id, name, address);
-        return "redirect:" + STORES_URL;
+        return REDIRECT + STORES_URL;
     }
 
     @PostMapping(DEL_STORE)
-    public String delete(@RequestParam(STORE_ID) Integer id, Model model) {
+    public String delete(@RequestParam(STORE_ID) Integer id) {
         storeService.delete(id);
-        return "redirect:" + STORES_URL;
+        return REDIRECT + STORES_URL;
     }
 
     @GetMapping(NEW_STORE)
@@ -72,10 +71,10 @@ public class StoreController {
 
     @PostMapping(NEW_STORE)
     public String add(@RequestParam(NAME) String name,
-                      @RequestParam(ADDRESS) String address, Model model) {
+                      @RequestParam(ADDRESS) String address) {
 
         storeService.save(name, address);
-        return "redirect:" + STORES_URL;
+        return REDIRECT + STORES_URL;
     }
 
 }

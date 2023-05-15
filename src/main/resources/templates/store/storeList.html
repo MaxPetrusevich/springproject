@@ -5,29 +5,37 @@
       xmlns:sec="http://www.springframework.org/schema/security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Store List</title>
+    <title th:text="#{store.list.title}"></title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
+<header>
+    <a th:text="#{language.en}"
+       th:href="@{/stores(page=${page},size=${size}, name =${name},address=${address}, language=${'en'})}"></a>
+    <a th:text="#{language.ru}"
+       th:href="@{/stores(page=${page},size=${size}, name =${name},address=${address}, language=${'ru'})}"></a>
+</header>
 <form th:action="${'/stores'}" method="get">
-    <input th:type="search" th:name="name" placeholder="Enter the name">
-    <input th:type="search" th:name="address" placeholder="Enter the address">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Confirm</button>
+    <input th:type="search" th:name="name" th:placeholder="#{name.placeholder}">
+    <input th:type="search" th:name="address" th:placeholder="#{address.placeholder}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{confirm.name}"></button>
 </form>
 <form th:action="${'/stores'}" th:method="get">
     <input th:type="hidden" th:name="name" th:value="${null}">
     <input th:type="hidden" th:name="address" th:value="${null}">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Clear filter</button>
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{clear.filter}"></button>
 </form>
 <div th:if="${list.size() eq 0}">
-    <p>Founded nothing</p>
+    <p th:text="#{found.nothing}"></p>
 </div>
 <div th:if="${list.size() > 0}">
     <table class="w3-table-all">
         <thead class="w3-light-grey">
-        <th>Id</th>
-        <th>Name</th>
-        <th>Address</th>
+        <th th:text="#{id.name}"></th>
+        <th th:text="#{name.name}"></th>
+        <th th:text="#{address.name}"></th>
         </thead>
         <tbody>
         <tr th:each="unit, iter: ${list}">
@@ -37,13 +45,13 @@
             <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="${'/stores/edit'}" th:method="get">
                     <input th:type="hidden" th:name="storeId" th:value="${unit.id}">
-                    <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"></button>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="${'/stores/delete'}" th:method="post">
                     <input th:type="hidden" th:name="storeId" th:value="${unit.id}">
-                    <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"></button>
                 </form>
             </td>
         </tr>
@@ -51,32 +59,37 @@
     </table>
 </div>
 <form sec:authorize="hasAuthority('ADMIN')" th:action="${'/stores/add'}" th:method="get">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new store</button>
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{add.store}"></button>
 </form>
 <div th:if="${list.size()>0}">
-    <ul class="pagination">
-        <li th:if="${page} ne 1">
-            <a th:href="@{/stores(page=${page}-1,size=${size}, name=${name}, address=${address})}">предыдущая</a>
-        </li>
+    <div class="w3-bar">
+        <div class="w3-center">
+            <div th:if="${page} ne 1" style="display: inline-block">
+                <a th:href="@{/stores(page=${page}-1,size=${size}, name=${name}, address=${address})}"
+                   th:text="#{page.prev}"></a>
+            </div>
 
-        <li th:each="i : ${#numbers.sequence( 1, totalPage)}">
-            <a th:text="${i}"
-               th:if="${page} eq ${i}">
-                ${i}
-            </a>
+            <div th:each="i : ${#numbers.sequence( 1, totalPage)} " style="display: inline-block">
+                <a th:text="${i}"
+                   th:if="${page} eq ${i}">
+                    ${i}
+                </a>
 
-            <a th:href="@{/stores(page=${i},size=${size}, name=${name}, address=${address})}"
-               th:text="${i}"
-               th:if="${page} ne ${i}">
-                ${i}
-            </a>
-        </li>
+                <a th:href="@{/stores(page=${i},size=${size}, name=${name}, address=${address})}"
+                   th:text="${i}"
+                   th:if="${page} ne ${i}">
+                    ${i}
+                </a>
+            </div>
 
-        <li th:if="${page} lt ${totalPage}">
-            <a th:href="@{/stores(page=${page}+1,size=${size}, name=${name}, address=${address})}">следующая</a>
-        </li>
-    </ul>
+            <div th:if="${page} lt ${totalPage}" style="display: inline-block">
+                <a th:href="@{/stores(page=${page}+1,size=${size}, name=${name}, address=${address})}"
+                   th:text="#{page.next}">следующая</a>
+            </div>
+        </div>
+    </div>
 </div>
-<a th:href="${'/home'}">To home page</a>
+<a th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"></a>
 </body>
 </html>
