@@ -47,7 +47,7 @@
         <input th:type="hidden" th:if="${stores.size() == 0}" th:name="storeId" th:value="${null}">
         <div th:each="store, iter:${stores}">
             <input class="w3-check" th:type="checkbox" th:name="storeId" th:value="${store.id}">
-            <label th:utext="${store.name + store.address}"/>
+            <label th:text="${store.name + store.address}"/>
         </div>
     </div>
     <input th:type="hidden" th:if="${stores eq null}" th:name="storeId" th:value="${null}">

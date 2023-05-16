@@ -3,7 +3,7 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
-    <changeSet id="add-tech-constraints" author="Maks">
+    <changeSet id="11" author="Maks">
         <addForeignKeyConstraint baseTableName="technique" baseColumnNames="model_id" constraintName="fk-tech-model"
                                  referencedTableName="model"
                                  referencedColumnNames="model_id"></addForeignKeyConstraint>

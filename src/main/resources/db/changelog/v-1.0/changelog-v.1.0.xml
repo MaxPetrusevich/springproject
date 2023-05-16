@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <include file="2023-05-16--01-model-create.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--02-producer-create.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--03-category-create.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--04-roles-create.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--05-store-create.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--06-technique-create.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--07-techstore-create.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--08-type-create.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--09-user-create.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--10-usersroles-create.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--11-tech-constraint-add.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--12-users-roles-constraints-add.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--13-category-type-constraint-add.xml" relativeToChangelogFile="true"/>
+    <include file="2023-05-16--14-test-data-insert.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

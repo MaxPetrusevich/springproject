@@ -3,14 +3,11 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <changeSet id="13" author="Maks">
+        <addForeignKeyConstraint baseTableName="type" baseColumnNames="category_id"
+                                 constraintName="fk-cat-type" referencedTableName="category"
+                                 referencedColumnNames="category_id"></addForeignKeyConstraint>
+    </changeSet>
 
-<changeSet id="category-create" author="Maks">
- <createTable tableName="category">
-     <column autoIncrement="true" name="category_id" type="bigint">
-         <constraints primaryKey="true" nullable="false"/>
-     </column>
-     <column name="category_name" type="varchar(30)"/>
- </createTable>
-</changeSet>
 
 </databaseChangeLog>
