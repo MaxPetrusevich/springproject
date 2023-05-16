@@ -9,19 +9,21 @@
             <column autoIncrement="true" name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="user_name" type="varchar(30)"></column>
-            <column name="password" type="varchar(255)"></column>
+            <column name="user_name" type="varchar(30)">
+                <constraints unique="true"/>
+            </column>
+            <column name="password" type="varchar(255)"/>
 
         </createTable>
         <insert tableName="users">
-            <column name="id" value="1"></column>
-            <column name="user_name" value="ADMIN"></column>
-            <column name="password" value="$2y$12$kjBEvSNH8oN9508Vi8gpLOxzxsfc7H/HLRTQatlR4z3JOzrC4YXB6"></column>
+            <column name="id" value="1"/>
+            <column name="user_name" value="ADMIN"/>
+            <column name="password" value="$2y$12$kjBEvSNH8oN9508Vi8gpLOxzxsfc7H/HLRTQatlR4z3JOzrC4YXB6"/>
         </insert>
         <insert tableName="users">
-            <column name="id" value="2"></column>
-            <column name="user_name" value="USER"></column>
-            <column name="password" value="$2y$12$kjBEvSNH8oN9508Vi8gpLOxzxsfc7H/HLRTQatlR4z3JOzrC4YXB6"></column>
+            <column name="id" value="2"/>
+            <column name="user_name" value="USER"/>
+            <column name="password" value="$2y$12$kjBEvSNH8oN9508Vi8gpLOxzxsfc7H/HLRTQatlR4z3JOzrC4YXB6"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

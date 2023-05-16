@@ -10,15 +10,15 @@
             <column autoIncrement="true" name="tech_id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="price" type="double"></column>
+            <column name="price" type="double"/>
             <column name="producer_id" type="bigint">
-                <constraints nullable="true"></constraints>
+                <constraints nullable="true"/>
             </column>
             <column name="model_id" type="bigint">
-                <constraints nullable="true"></constraints>
+                <constraints nullable="true"/>
             </column>
             <column name="category_id" type="bigint">
-                <constraints nullable="true"></constraints>
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>

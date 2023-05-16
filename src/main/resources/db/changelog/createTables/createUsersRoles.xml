@@ -6,10 +6,10 @@
     <changeSet id="users-roles-create" author="Maks">
         <createTable tableName="user_role">
             <column name="user_id" type="bigint">
-                <constraints nullable="false"></constraints>
+                <constraints nullable="false"/>
             </column>
             <column name="role_id" type="bigint">
-                <constraints nullable="false"></constraints>
+                <constraints nullable="false"/>
             </column>
         </createTable>
 

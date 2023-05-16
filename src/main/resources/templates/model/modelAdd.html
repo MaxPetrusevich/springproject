@@ -4,21 +4,21 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title th:text="#{model.add.title}"></title>
+    <title th:text="#{model.add.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
 <header>
     <a th:text="#{language.en}"
-       th:href="@{/models/add(language=${'en'})}"></a>
+       th:href="@{/models/add(language=${'en'})}"/>
     <a th:text="#{language.ru}"
-       th:href="@{/models/add(language=${'ru'})}"></a>
+       th:href="@{/models/add(language=${'ru'})}"/>
 </header>
 <form class="w3-container"  th:action="${'/models/add'}" th:method="post">
-    <label th:text="#{name.name}"></label>
+    <label th:text="#{name.name}"/>
     <input class="w3-input"  th:type="text" required th:name="name" th:placeholder="#{name.placeholder}">
-    <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border" th:text="#{submit.name}"></button>
+    <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border" th:text="#{submit.name}"/>
 </form>
-<a th:href="${'/models'}" th:text="#{page.prev}"></a>
+<a th:href="${'/models'}" th:text="#{page.prev}"/>
 </body>
 </html>

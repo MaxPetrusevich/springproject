@@ -122,6 +122,8 @@ public class TechniqueServiceImpl implements TechniqueService {
         techniqueDto.setCategory(categoryService.findById(categoryId));
         techniqueDto.setPrice(price);
         techniqueDto.getStoreList().removeAll(techniqueDto.getStoreList());
-        Arrays.stream(storeIdes).forEach(storeId -> techniqueDto.getStoreList().add(storeService.findById(storeId)));
+        if (storeIdes != null) {
+            Arrays.stream(storeIdes).forEach(storeId -> techniqueDto.getStoreList().add(storeService.findById(storeId)));
+        }
     }
 }

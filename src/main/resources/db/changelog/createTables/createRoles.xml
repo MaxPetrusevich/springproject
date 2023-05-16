@@ -8,15 +8,15 @@
             <column autoIncrement="true" name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="varchar(30)"></column>
+            <column name="name" type="varchar(30)"/>
         </createTable>
         <insert tableName="roles">
-            <column name="id" value="1"></column>
-            <column name="name" value="ADMIN"></column>
+            <column name="id" value="1"/>
+            <column name="name" value="ADMIN"/>
         </insert>
         <insert tableName="roles">
-            <column name="id" value="2"></column>
-            <column name="name" value="USER"></column>
+            <column name="id" value="2"/>
+            <column name="name" value="USER"/>
         </insert>
     </changeSet>
 

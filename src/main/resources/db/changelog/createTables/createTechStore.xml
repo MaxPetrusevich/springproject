@@ -6,13 +6,13 @@
 <changeSet id="create-tech-store" author="Maks">
     <createTable tableName="tech_store">
         <column name="tech_id" type="bigint">
-            <constraints unique="false" nullable="false"></constraints>
+            <constraints unique="false" nullable="false"/>
         </column>
         <column name="store_id" type="bigint">
-            <constraints unique="false" nullable="false"></constraints>
+            <constraints unique="false" nullable="false"/>
         </column>
    </createTable>
-    <addPrimaryKey tableName="tech_store" columnNames="store_id, tech_id"></addPrimaryKey>
+    <addPrimaryKey tableName="tech_store" columnNames="store_id, tech_id"/>
 </changeSet>
 
 

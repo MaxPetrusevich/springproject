@@ -7,6 +7,7 @@ import com.spring.springproject.repositories.UserRepository;
 import com.spring.springproject.service.interfaces.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto save(UserDto object) {
         User user = modelMapper.map(object, User.class);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        user.setPassword(encoder.encode(user.getPassword()));
         user = repository.save(user);
         user.getRoles().add(roleRepository.findById(USER_ROLE_ID).orElse(null));
         return modelMapper.map(user, UserDto.class);
@@ -55,6 +58,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(UserDto object) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        object.setPassword(encoder.encode(object.getPassword()));
         repository.save(modelMapper.map(object, User.class));
     }
 

@@ -5,48 +5,48 @@
       xmlns:sec="http://www.springframework.org/schema/security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title th:text="#{type.list.title}"></title>
+    <title th:text="#{type.list.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
 <header>
     <a th:text="#{language.en}"
-       th:href="@{/types(page=${page},size=${size}, name =${name}, language=${'en'})}"></a>
+       th:href="@{/types(page=${page},size=${size}, name =${name}, language=${'en'})}"/>
     <a th:text="#{language.ru}"
-       th:href="@{/types(page=${page},size=${size}, name =${name}, language=${'ru'})}"></a>
+       th:href="@{/types(page=${page},size=${size}, name =${name}, language=${'ru'})}"/>
 </header>
 <form th:action="${'/types'}" th:method="get">
     <input th:type="search" th:name="name" th:placeholder="#{name.placeholder}">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
-            th:text="#{confirm.name}"></button>
+            th:text="#{confirm.name}"/>
 </form>
 <form th:action="${'/types'}" th:method="get">
     <input th:type="hidden" th:name="name" th:value="${null}">
-    <button th:type="submit" class="w3-button w3-white w3-border" th:text="#{clear.filter}"></button>
+    <button th:type="submit" class="w3-button w3-white w3-border" th:text="#{clear.filter}"/>
 </form>
 <div th:if="${list.size() eq 0}">
-    <p th:text="#{found.nothing}"></p>
+    <p th:text="#{found.nothing}"/>
 </div>
 <div th:if="${list.size() > 0}">
     <table class="w3-table-all">
         <thead class="w3-light-grey">
-        <th th:text="#{id.name}"></th>
-        <th th:text="#{name.name}"></th>
+        <th th:text="#{id.name}"/>
+        <th th:text="#{name.name}"/>
         </thead>
         <tbody>
         <tr th:each="unit, iter: ${list}">
-            <td th:text="${unit.id}"></td>
-            <td th:text="${unit.name}"></td>
+            <td th:text="${unit.id}"/>
+            <td th:text="${unit.name}"/>
             <td>
                 <form sec:authorize="hasAuthority('ADMIN')" th:action="${'/types/edit'}" th:method="get">
                     <input th:type="hidden" th:name="typeId" th:value="${unit.id}">
-                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"></button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"/>
                 </form>
             </td>
             <td>
                 <form sec:authorize="hasAuthority('ADMIN')" th:action="${'/types/delete'}" th:method="post">
                     <input th:type="hidden" th:name="typeId" th:value="${unit.id}">
-                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"></button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"/>
                 </form>
             </td>
         </tr>
@@ -55,15 +55,14 @@
 </div>
 <form sec:authorize="hasAuthority('ADMIN')" th:action="${'/types/add'}" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
-            th:text="#{add.type}"></button>
+            th:text="#{add.type}"/>
 </form>
 <!--pagination-->
 <div th:if="${list.size() > 0}">
     <div class="w3-bar">
         <div class="w3-center">
-
             <div th:if="${page} ne 1" style="display: inline-block">
-                <a th:href="@{/types(name = ${name},page=${page}-1,size=${size})}" th:text="#{page.prev}"></a>
+                <a th:href="@{/types(name = ${name},page=${page}-1,size=${size})}" th:text="#{page.prev}"/>
             </div>
 
             <div th:each="i : ${#numbers.sequence( 1, totalPage)}" style="display: inline-block">
@@ -80,12 +79,12 @@
             </div>
 
             <div th:if="${page} lt ${totalPage}" style="display: inline-block">
-                <a th:href="@{/types(name = ${name},page=${page}+1,size=${size})}" th:text="#{page.next}"></a>
+                <a th:href="@{/types(name = ${name},page=${page}+1,size=${size})}" th:text="#{page.next}"/>
             </div>
 
         </div>
     </div>
 </div>
-<a th:href="${'/home'}" style="alignment: center" th:text="#{home.page}"></a>
+<a th:href="${'/home'}" style="alignment: center" th:text="#{home.page}"/>
 </body>
 </html>

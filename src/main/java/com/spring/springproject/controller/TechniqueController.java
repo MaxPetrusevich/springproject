@@ -64,7 +64,7 @@ public class TechniqueController {
     public String edit(@RequestParam(TECH_ID) Integer id,
                        @RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
                        @RequestParam(CATEGORY) Integer categoryId, @RequestParam(PRICE) Double price,
-                       @RequestParam(STORE_ID) Integer[] storeIdes) {
+                       @RequestParam(name = STORE_ID, required = false) Integer[] storeIdes) {
         techniqueService.update(producerId, modelId, categoryId, price, storeIdes, id);
         return REDIRECT + TECHNIQUES;
 
@@ -80,7 +80,7 @@ public class TechniqueController {
     @PostMapping(NEW_TECHNIQUE)
     public String add(@RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
                       @RequestParam(CATEGORY) Integer categoryId, @RequestParam(PRICE) Double price,
-                      @RequestParam(STORE_ID) Integer[] storeIdes) {
+                      @RequestParam(name = STORE_ID, required = false) Integer[] storeIdes) {
         techniqueService.save(producerId, modelId, categoryId, price, storeIdes);
         return REDIRECT + TECHNIQUES;
     }

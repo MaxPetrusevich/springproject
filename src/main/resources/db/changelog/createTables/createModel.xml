@@ -8,7 +8,7 @@
         <column autoIncrement="true" name="model_id" type="bigint">
             <constraints primaryKey="true" nullable="false"/>
         </column>
-        <column name="model_name" type="varchar(30)"></column>
+        <column name="model_name" type="varchar(30)"/>
     </createTable>
 </changeSet>
 

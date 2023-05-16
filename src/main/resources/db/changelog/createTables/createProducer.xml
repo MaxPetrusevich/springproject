@@ -9,8 +9,8 @@
         <column autoIncrement="true" name="producer_id" type="bigint">
             <constraints primaryKey="true" nullable="false"/>
         </column>
-        <column name="producer_name" type="varchar(30)"></column>
-        <column name="producer_country" type="varchar(30)"></column>
+        <column name="producer_name" type="varchar(30)"/>
+        <column name="producer_country" type="varchar(30)"/>
     </createTable>
 </changeSet>
 

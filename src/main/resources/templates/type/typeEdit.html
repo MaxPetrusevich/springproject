@@ -4,22 +4,22 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <title th:text="#{type.edit.title}"></title>
+  <title th:text="#{type.edit.title}"/>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
 <header>
   <a th:text="#{language.en}"
-     th:href="@{/types/edit(language=${'en'}, typeId =${unit.id})}"></a>
+     th:href="@{/types/edit(language=${'en'}, typeId =${unit.id})}"/>
   <a th:text="#{language.ru}"
-     th:href="@{/types/edit(language=${'ru'}, typeId =${unit.id})}"></a>
+     th:href="@{/types/edit(language=${'ru'}, typeId =${unit.id})}"/>
 </header>
 <form class="w3-container" th:action="${'/types/edit'}" th:method="post">
   <input th:type="hidden" th:name="typeId" th:value="${unit.id}">
-  <label th:text="#{name.name}"></label>
+  <label th:text="#{name.name}"/>
   <input class="w3-input" th:type="text" th:name="name" th:value="${unit.name}">
-  <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border" th:text="#{submit.name}"></button>
+  <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border" th:text="#{submit.name}"/>
 </form>
-<a th:href="${'/types'}" th:text="#{page.prev}"></a>
+<a th:href="${'/types'}" th:text="#{page.prev}"/>
 </body>
 </html>

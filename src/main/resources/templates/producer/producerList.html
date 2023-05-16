@@ -4,52 +4,54 @@
       xmlns:sec="http://www.springframework.org/schema/security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title th:text="#{producer.list.title}"></title>
+    <title th:text="#{producer.list.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
 <header>
     <a th:text="#{language.en}"
-       th:href="@{/producers(page=${page},size=${size}, name =${name}, country=${country}, language=${'en'})}"></a>
+       th:href="@{/producers(page=${page},size=${size}, name =${name}, country=${country}, language=${'en'})}"/>
     <a th:text="#{language.ru}"
-       th:href="@{/producers(page=${page},size=${size}, name =${name},country=${country}, language=${'ru'})}"></a>
+       th:href="@{/producers(page=${page},size=${size}, name =${name},country=${country}, language=${'ru'})}"/>
 </header>
 <form th:action="${'/producers'}" method="post">
     <input th:type="search" th:name="name" th:placeholder="#{name.placeholder}">
     <input th:type="search" th:name="country" th:placeholder="#{country.placeholder}">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{confirm.name}"></button>
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{confirm.name}"/>
 </form>
 <form th:action="${'/producers'}" method="post">
     <input th:type="hidden" th:name="name" th:value="${null}">
     <input th:type="hidden" th:name="country" th:value="${null}">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{clear.filter}"></button>
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{clear.filter}"/>
 </form>
 <div th:if="${list.size() eq 0}">
-    <p th:text="#{found.nothing}"></p>
+    <p th:text="#{found.nothing}"/>
 </div>
 <div th:if="${list.size() > 0}">
     <table class="w3-table-all">
         <thead class="w3-light-grey">
-        <th th:text="#{id.name}"></th>
-        <th th:text="#{name.name}"></th>
-        <th th:text="#{producer.country}"></th>
+        <th th:text="#{id.name}"/>
+        <th th:text="#{name.name}"/>
+        <th th:text="#{producer.country}"/>
         </thead>
         <tbody>
         <tr th:each="unit, iter: ${list}">
-            <td th:text="${unit.id}"></td>
-            <td th:text="${unit.name}"></td>
-            <td th:text="${unit.country}"></td>
+            <td th:text="${unit.id}"/>
+            <td th:text="${unit.name}"/>
+            <td th:text="${unit.country}"/>
             <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="${'/producers/edit'}" th:method="get">
-                    <input th:type="hidden" th:name = "producerId" th:value="${unit.id}">
-                    <button class = "w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"></button>
+                    <input th:type="hidden" th:name="producerId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"/>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
                 <form th:action="${'/producers/delete'}" th:method="post">
-                    <input th:type="hidden" th:name = "producerId" th:value="${unit.id}">
+                    <input th:type="hidden" th:name="producerId" th:value="${unit.id}">
 
-                    <button class = "w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"></button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"/>
                 </form>
             </td>
         </tr>
@@ -57,34 +59,38 @@
     </table>
 </div>
 <form sec:authorize="hasAuthority('ADMIN')" th:action="${'/producers/add'}" th:method="get">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{add.producer}"></button>
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{add.producer}"/>
 </form>
-<div class="w3-bar">
-    <div class="w3-center">
-    <div th:if="${page} ne 1" style="display:inline-block;">
-        <a th:href="@{/producers(page=${page}-1,size=${size}, name = ${name}, country = ${country})}" th:text="#{page.prev}"></a>
-    </div>
+<div th:if="${list.size()>0}">
+    <div class="w3-bar">
+        <div class="w3-center">
+            <div th:if="${page} ne 1" style="display:inline-block;">
+                <a th:href="@{/producers(page=${page}-1,size=${size}, name = ${name}, country = ${country})}"
+                   th:text="#{page.prev}"/>
+            </div>
 
-    <div th:each="i : ${#numbers.sequence( 1, totalPage)}" style="display:inline-block;">
-        <a th:text="${i}"
-           th:if="${page} eq ${i}">
-            ${i}
-        </a>
+            <div th:each="i : ${#numbers.sequence( 1, totalPage)}" style="display:inline-block;">
+                <a th:text="${i}"
+                   th:if="${page} eq ${i}">
+                    ${i}
+                </a>
 
-        <a th:href="@{/producers(page=${i},size=${size},name = ${name}, country = ${country})}"
-           th:text="${i}"
-           th:if="${page} ne ${i}">
-            ${i}
-        </a>
-    </div>
+                <a th:href="@{/producers(page=${i},size=${size},name = ${name}, country = ${country})}"
+                   th:text="${i}"
+                   th:if="${page} ne ${i}">
+                    ${i}
+                </a>
+            </div>
 
-    <div th:if="${page} lt ${totalPage}" style="display:inline-block;">
-        <a th:href="@{/producers(page=${page}+1,size=${size},name = ${name}, country = ${country})}" th:text="#{page.next}"></a>
-    </div>
+            <div th:if="${page} lt ${totalPage}" style="display:inline-block;">
+                <a th:href="@{/producers(page=${page}+1,size=${size},name = ${name}, country = ${country})}"
+                   th:text="#{page.next}"/>
+            </div>
 
+        </div>
     </div>
 </div>
-
-<a th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"></a>
+<a th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"/>
 </body>
 </html>

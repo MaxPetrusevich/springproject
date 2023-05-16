@@ -9,7 +9,7 @@
      <column autoIncrement="true" name="category_id" type="bigint">
          <constraints primaryKey="true" nullable="false"/>
      </column>
-     <column name="category_name" type="varchar(30)"></column>
+     <column name="category_name" type="varchar(30)"/>
  </createTable>
 </changeSet>
 
