@@ -42,9 +42,11 @@
         <tr th:each="unit, iter: ${list}">
             <td th:text="${unit.id}"/>
             <td th:text="${unit.name}"/>
-            <td th:if="${unit.types ne null}">
-                <div th:each="type, it:${unit.types}">
-                    <p th:text="${type.name}"/>
+            <td>
+                <div th:if="${unit.types ne null}">
+                    <div th:each="type, it:${unit.types}">
+                        <p th:text="${type.name}"/>
+                    </div>
                 </div>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">

@@ -105,7 +105,7 @@ public class ModelServiceImpl implements ModelService {
         Model model = repository.findById(id).orElse(null);
         if (model != null) {
             model.getTechniques().forEach(technique -> {
-                technique.setProducer(null);
+                technique.setModel(null);
                 techniqueRepository.save(technique);
             });
             repository.deleteById(id);

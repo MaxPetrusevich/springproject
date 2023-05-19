@@ -44,18 +44,22 @@
         <tr th:each="unit, iter: ${list}">
             <td th:text="${unit.id}"/>
             <td th:text="${unit.price}"/>
-            <td th:if="${unit.category ne null}" th:text="${unit.category.name}"/>
-            <td th:if="${unit.producer ne null}" th:text="${unit.producer.name}"/>
-            <td th:if="${unit.producer ne null}" th:text="${unit.producer.country}"/>
-            <td th:if="${unit.model ne null}" th:text="${unit.model.name}"/>
-            <td th:if="${unit.category ne null}">
-                <div th:each="type, it:${unit.category.types}">
-                    <p th:text="${type.name}"/>
+            <td><p th:if="${unit.category ne null}" th:text="${unit.category.name}"/></td>
+            <td><p th:if="${unit.producer ne null}" th:text="${unit.producer.name}"/></td>
+            <td><p th:if="${unit.producer ne null}" th:text="${unit.producer.country}"/></td>
+            <td><p th:if="${unit.model ne null}" th:text="${unit.model.name}"/></td>
+            <td>
+                <div th:if="${unit.category ne null}">
+                    <div th:each="type, it:${unit.category.types}">
+                        <p th:text="${type.name}"/>
+                    </div>
                 </div>
             </td>
-            <td th:if="${unit.storeList ne null}" >
-                <div th:each="store, it:${unit.storeList}">
-                    <p th:text="${store.name + ';' + store.address}"/>
+            <td>
+                <div th:if="${unit.storeList ne null}">
+                    <div th:each="store, it:${unit.storeList}">
+                        <p th:text="${store.name + ';' + store.address}"/>
+                    </div>
                 </div>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">

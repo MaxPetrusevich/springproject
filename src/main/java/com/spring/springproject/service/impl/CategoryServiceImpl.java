@@ -1,8 +1,10 @@
 package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.CategoryDto;
+import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.entities.Category;
 import com.spring.springproject.repositories.CategoryRepository;
+import com.spring.springproject.repositories.TechniqueRepository;
 import com.spring.springproject.service.interfaces.CategoryService;
 import com.spring.springproject.service.interfaces.TypeService;
 import com.spring.springproject.specifications.CategorySpecification;
@@ -26,15 +28,15 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repository;
     private final TypeService typeService;
     private final ModelMapper modelMapper;
+    private final TechniqueRepository techniqueRepository;
 
     @Autowired
-    public CategoryServiceImpl(CategoryRepository repository, TypeService typeService, ModelMapper modelMapper) {
+    public CategoryServiceImpl(CategoryRepository repository, TypeService typeService, ModelMapper modelMapper, TechniqueRepository techniqueRepository) {
         this.repository = repository;
         this.typeService = typeService;
         this.modelMapper = modelMapper;
+        this.techniqueRepository = techniqueRepository;
     }
-
-
 
 
     @Override
@@ -70,23 +72,30 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void delete(Integer id) {
-        findById(id).getTypes().forEach(typeDto -> {
-            typeDto.setCategory(null);
-            typeService.save(typeDto);
-        });
-        repository.deleteById(id);
+        Category category = repository.findById(id).orElse(null);
+        if (category != null) {
+            category.getTechniques().forEach(technique -> {
+                technique.setCategory(null);
+                techniqueRepository.save(technique);
+            });
+            category.getTypes().forEach(type -> {
+                type.setCategory(null);
+                typeService.save(modelMapper.map(type, TypeDto.class));
+            });
+            repository.deleteById(id);
+        }
     }
 
     @Override
     public Page<CategoryDto> findAll(Pageable pageable, String name) {
-        if(!StringUtils.isEmptyOrWhitespace(name)) {
+        if (!StringUtils.isEmptyOrWhitespace(name)) {
             Page<Category> categories = repository.findAll(CategorySpecification.searchCategory(name), pageable);
             List<CategoryDto> categoryDtoList = categories
                     .stream()
                     .map(category -> modelMapper.map(category, CategoryDto.class))
                     .toList();
             return new PageImpl<>(categoryDtoList, pageable, categories.getTotalElements());
-        }else{
+        } else {
             Page<Category> categories = repository.findAll(pageable);
             List<CategoryDto> categoryDtoList = categories
                     .stream()
