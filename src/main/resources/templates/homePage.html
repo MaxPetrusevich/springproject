@@ -1,25 +1,37 @@
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/schema/security">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Home</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title th:text="#{home.name}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
 </head>
 <body>
-<p> Choose entity</p>
-    <form th:action="homeView" th:method="get">
-        <select class="w3-select" th:name="listName">
-            <option th:value="1" selected>Technique</option>
-            <option th:value="2">Category</option>
-            <option th:value="3">Model</option>
-            <option th:value="4">Producer</option>
-            <option th:value="5">Type</option>
-            <option th:value="6">Store</option>
-        </select>
-        <button class="w3-button w3-white w3-border"  style="margin-top: 10px" type="submit">View</button>
-    </form>
+<header>
+    <a th:text="#{language.en}"
+       th:href="@{/home(language=${'en'})}"/>
+    <a th:text="#{language.ru}"
+       th:href="@{/home(language=${'ru'})}"/>
+</header>
+<p th:text="#{start.choose}"/>
+<form th:action="@{'/home/view'}" th:method="get">
+    <select class="w3-select" th:name="listName">
+        <option th:value="1" selected th:text="#{technique.name}"/>
+        <option th:value="2" th:text="#{category.name}"/>
+        <option th:value="3" th:text="#{model.name}"/>
+        <option th:value="4" th:text="#{producer.name}"/>
+        <option th:value="5" th:text="#{type.name}"/>
+        <option th:value="6" th:text="#{store.name}"/>
+        <option sec:authorize="hasAuthority('ADMIN')"  th:value="7" th:text="#{user.name}"/>
+    </select>
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{view.name}"/>
+</form>
+<form method="post" th:action="@{/logout}">
+    <div>
+        <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{logout.name}"/>
+    </div>
+</form>
 </body>
 </html>

@@ -1,22 +1,25 @@
 package com.spring.springproject.controller;
 
 import com.spring.springproject.dto.CategoryDto;
-import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.service.interfaces.CategoryService;
 import com.spring.springproject.service.interfaces.TypeService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.thymeleaf.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashSet;
-import java.util.Set;
+
+import static com.spring.springproject.controller.Constants.*;
 
 @Controller
 public class CategoryController {
+
     private final CategoryService categoryService;
     private final TypeService typeService;
 
@@ -26,82 +29,53 @@ public class CategoryController {
         this.typeService = typeService;
     }
 
-    @GetMapping("/category-list")
-    public String findAll(Model model) {
-        model.addAttribute("list", categoryService.findAll());
-        return "category/catList";
+
+    @RequestMapping(CATEGORIES_URL)
+    public String findAll(Model model, @RequestParam(required = false, defaultValue = "") String name, @RequestParam(required = false, defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "3") int size) {
+        Pageable pageable = Pageable.ofSize(size);
+        pageable = pageable.withPage(page - 1);
+        Page<CategoryDto> categoryPage = categoryService.findAll(pageable, name);
+        model.addAttribute(PAGE, page);
+        model.addAttribute(SIZE, size);
+        model.addAttribute(NAME, name);
+        model.addAttribute(TOTAL_PAGE, categoryPage.getTotalPages());
+        model.addAttribute(LIST, categoryPage.getContent());
+        return CATEGORY_LIST;
     }
 
-    @GetMapping("/category-edit")
-    public String editRedirect(Model model, HttpServletRequest request) {
-        String catId = request.getParameter("catId");
-        CategoryDto categoryDto = null;
-        if (!StringUtils.isEmptyOrWhitespace(catId)) {
-            Integer id = Integer.parseInt(catId);
-            categoryDto = categoryService.findById(id);
-        }
-        model.addAttribute("unit", categoryDto);
-        Set<TypeDto> set = typeService.findAll();
-        model.addAttribute("types", typeService.findAll());
-        return "category/catEdit";
+    @GetMapping(CATEGORY_URL)
+    public String editRedirect(Model model, @RequestParam(CAT_ID) Integer id) {
+        CategoryDto categoryDto = categoryService.findById(id);
+        model.addAttribute(UNIT, categoryDto);
+        model.addAttribute(TYPES, typeService.findAll());
+        return CAT_EDIT;
     }
 
-    @PostMapping("/category-edit")
-    public String edit(HttpServletRequest request, Model model) {
-        String catId = request.getParameter("catId");
-        CategoryDto categoryDto = null;
-        if (!StringUtils.isEmptyOrWhitespace(catId)) {
-            Integer id = Integer.parseInt(catId);
-            categoryDto = categoryService.findById(id);
-        }
-        if (categoryDto.getTypes() != null) {
-            categoryDto.getTypes().removeAll(categoryDto.getTypes());
-        }
-        setEditParams(request, categoryDto);
-        categoryService.update(categoryDto);
-        return findAll(model);
+    @PostMapping(CATEGORY_URL)
+    public String edit(@RequestParam(CAT_ID) Integer id, @RequestParam(TYPE_ID) Integer[] typeIdes, @RequestParam(NAME) String name) {
+        CategoryDto categoryDto = categoryService.findById(id);
+        categoryService.save(name, typeIdes, categoryDto);
+        return REDIRECT + CATEGORIES_URL;
     }
 
-    @PostMapping("/category-delete")
-    public String delete(HttpServletRequest request, Model model){
-        String catId = request.getParameter("catId");
-
-        if (!StringUtils.isEmptyOrWhitespace(catId)) {
-            Integer id = Integer.parseInt(catId);
-            categoryService.delete(id);
-        }
-        return findAll(model);
+    @PostMapping(DEL_CATEGORY)
+    public String delete(@RequestParam(CAT_ID) Integer id) {
+        categoryService.delete(id);
+        return REDIRECT + CATEGORIES_URL;
     }
 
-    @GetMapping("/category-add")
-    public String add(Model model){
-        model.addAttribute("types", typeService.findAll());
-        return "/category/catAdd";
+    @GetMapping(NEW_CATEGORY)
+    public String add(Model model) {
+        model.addAttribute(TYPES, typeService.findAll());
+        return CAT_ADD;
     }
-    @PostMapping("/category-add")
-    public String add(HttpServletRequest request, Model model){
+
+    @PostMapping(NEW_CATEGORY)
+    public String add(@RequestParam(NAME) String name, @RequestParam(name = TYPE_ID, required = false, defaultValue = "") Integer[] typeIdes) {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setTypes(new HashSet<>());
-        categoryDto = categoryService.save(categoryDto);
-        setEditParams(request, categoryDto);
-        categoryService.update(categoryDto);
-        return findAll(model);
-    }
-
-    private void setEditParams(HttpServletRequest request, CategoryDto categoryDto) {
-        categoryDto.setName(request.getParameter("name"));
-        String[] typeIdes = request.getParameterValues("typeId");
-        if (typeIdes != null) {
-            for (String typeId :
-                    typeIdes) {
-                if (!StringUtils.isEmptyOrWhitespace(typeId)) {
-                    Integer id = Integer.parseInt(typeId);
-                    TypeDto typeDto =typeService.findById(id);
-                    typeDto.setCategory(categoryDto);
-                    typeService.update(typeDto);
-                    categoryDto.getTypes().add(typeDto);
-                }
-            }
-        }
+        categoryService.save(name, typeIdes, categoryDto);
+        return REDIRECT + CATEGORIES_URL;
     }
 }
+

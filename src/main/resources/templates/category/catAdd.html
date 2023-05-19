@@ -3,22 +3,28 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Category add</title>
+    <title th:text="#{category.add.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
 </head>
 <body>
-<form class="w3-container" th:action="category-add" th:method="post">
-    <label>Name</label>
-    <input class="w3-input" th:type="text" th:name="name" placeholder="Enter the category name">
+<header>
+    <a th:text="#{language.en}"
+       th:href="@{/categories/add(language=${'en'})}"/>
+    <a th:text="#{language.ru}"
+       th:href="@{/categories/add(language=${'ru'})}"/>
+</header>
+<form class="w3-container" th:action="${'/categories/add'}" th:method="post">
+    <label th:text="#{name.name}"/>
+    <input class="w3-input" required th:type="text" th:name="name" th:placeholder="#{name.placeholder}">
     <div th:if="${types.size()>0}">
         <div th:each="type, iter:${types}">
-            <input class="w3-check" th:type="checkbox" th:name ="typeId"  th:value="${type.id}">
-            <label th:text="${type.name}"></label>
+            <input class="w3-check"  th:type="checkbox" th:name ="typeId"  th:value="${type.id}">
+            <label th:text="${type.name}"/>
         </div>
     </div>
-    <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border">Submit</button>
+    <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border" th:text="#{submit.name}"/>
 </form>
-<a th:href="category-list">Previous</a>
+<a th:href="${'/categories'}" th:text="#{page.prev}"/>
 </body>
 </html>

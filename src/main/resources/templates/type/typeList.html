@@ -1,43 +1,90 @@
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/schema/security">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <title>Type List</title>
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title th:text="#{type.list.title}"/>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<div th:if="${list.size() > 0}">
-  <table class="w3-table-all">
-    <thead class="w3-light-grey">
-    <th>Id</th>
-    <th>Name</th>
-    </thead>
-    <tbody>
-    <tr th:each="unit, iter: ${list}">
-      <td th:text="${unit.id}"></td>
-      <td th:text="${unit.name}"></td>
-      <td>
-        <form th:action="type-edit" th:method="get">
-          <input th:type="hidden" th:name = "typeId" th:value="${unit.id}">
-          <button class = "w3-button w3-white w3-border" th:type="submit">Edit</button>
-        </form>
-      </td>
-      <td>
-        <form th:action="type-delete" th:method="post">
-          <input th:type="hidden" th:name = "typeId" th:value="${unit.id}">
-          <button class = "w3-button w3-white w3-border" th:type="submit">Delete</button>
-        </form>
-      </td>
-    </tr>
-    </tbody>
-  </table>
-</div>
-<form th:action="type-add" th:method="get">
-  <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new type</button>
+<header>
+    <a th:text="#{language.en}"
+       th:href="@{/types(page=${page},size=${size}, name =${name}, language=${'en'})}"/>
+    <a th:text="#{language.ru}"
+       th:href="@{/types(page=${page},size=${size}, name =${name}, language=${'ru'})}"/>
+</header>
+<form th:action="${'/types'}" th:method="get">
+    <input th:type="search" th:name="name" th:placeholder="#{name.placeholder}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{confirm.name}"/>
 </form>
+<form th:action="${'/types'}" th:method="get">
+    <input th:type="hidden" th:name="name" th:value="${null}">
+    <button th:type="submit" class="w3-button w3-white w3-border" th:text="#{clear.filter}"/>
+</form>
+<div th:if="${list.size() eq 0}">
+    <p th:text="#{found.nothing}"/>
+</div>
+<div th:if="${list.size() > 0}">
+    <table class="w3-table-all">
+        <thead class="w3-light-grey">
+        <th th:text="#{id.name}"/>
+        <th th:text="#{name.name}"/>
+        </thead>
+        <tbody>
+        <tr th:each="unit, iter: ${list}">
+            <td th:text="${unit.id}"/>
+            <td th:text="${unit.name}"/>
+            <td>
+                <form sec:authorize="hasAuthority('ADMIN')" th:action="${'/types/edit'}" th:method="get">
+                    <input th:type="hidden" th:name="typeId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"/>
+                </form>
+            </td>
+            <td>
+                <form sec:authorize="hasAuthority('ADMIN')" th:action="${'/types/delete'}" th:method="post">
+                    <input th:type="hidden" th:name="typeId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"/>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<form sec:authorize="hasAuthority('ADMIN')" th:action="${'/types/add'}" th:method="get">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{add.type}"/>
+</form>
+<!--pagination-->
+<div th:if="${list.size() > 0}">
+    <div class="w3-bar">
+        <div class="w3-center">
+            <div th:if="${page} ne 1" style="display: inline-block">
+                <a th:href="@{/types(name = ${name},page=${page}-1,size=${size})}" th:text="#{page.prev}"/>
+            </div>
 
-<a th:href="home">To home page</a>
+            <div th:each="i : ${#numbers.sequence( 1, totalPage)}" style="display: inline-block">
+                <a th:text="${i}"
+                   th:if="${page} eq ${i}">
+                    ${i}
+                </a>
+
+                <a th:href="@{/types(name = ${name},page=${i},size=${size})}"
+                   th:text="${i}"
+                   th:if="${page} ne ${i}">
+                    ${i}
+                </a>
+            </div>
+
+            <div th:if="${page} lt ${totalPage}" style="display: inline-block">
+                <a th:href="@{/types(name = ${name},page=${page}+1,size=${size})}" th:text="#{page.next}"/>
+            </div>
+
+        </div>
+    </div>
+</div>
+<a th:href="${'/home'}" style="alignment: center" th:text="#{home.page}"/>
 </body>
 </html>

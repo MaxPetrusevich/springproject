@@ -4,17 +4,23 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Store Add</title>
+    <title th:text="#{store.add.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<form class="w3-container"  th:action="store-add" th:method="post">
-    <label>Name</label>
-    <input class="w3-input" th:type="text" th:name="name" placeholder="Enter the store name">
-    <label>Address</label>
-    <input class="w3-input" th:type="text" th:name="address" placeholder="Enter the store address">
-    <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border">Submit</button>
+<header>
+    <a th:text="#{language.en}"
+       th:href="@{/stores/add(language=${'en'})}"/>
+    <a th:text="#{language.ru}"
+       th:href="@{/stores/add(language=${'ru'})}"/>
+</header>
+<form class="w3-container"  th:action="${'/stores/add'}" th:method="post">
+    <label th:text="#{name.name}"/>
+    <input class="w3-input" required th:type="text" th:name="name" th:placeholder="#{name.placeholder}">
+    <label th:text="#{address.name}"/>
+    <input class="w3-input" required th:type="text" th:name="address" th:placeholder="#{address.placeholder}">
+    <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border" th:text="#{submit.name}"/>
 </form>
-<a th:href="store-list">Previous</a>
+<a th:href="${'/stores'}" th:text="#{page.prev}"/>
 </body>
 </html>

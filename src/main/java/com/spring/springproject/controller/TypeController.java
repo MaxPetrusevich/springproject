@@ -2,73 +2,74 @@ package com.spring.springproject.controller;
 
 import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.service.interfaces.TypeService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.thymeleaf.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import static com.spring.springproject.controller.Constants.*;
 
 @Controller
 public class TypeController {
+
+
     private final TypeService typeService;
 
     @Autowired
     public TypeController(TypeService typeService) {
         this.typeService = typeService;
     }
-    @GetMapping("/type-list")
-    public String findAll(Model model) {
-        model.addAttribute("list", typeService.findAll());
-        return "type/typeList";
+
+    @RequestMapping(TYPES_URL)
+    public String findAll(Model model,
+                          @RequestParam(required = false, defaultValue = "") String name,
+                          @RequestParam(required = false, defaultValue = "1") int page,
+                          @RequestParam(required = false, defaultValue = "3") int size) {
+        Pageable pageable = Pageable.ofSize(size);
+        pageable = pageable.withPage(page - 1);
+        Page<TypeDto> typePage = typeService.findAll(pageable, name);
+        model.addAttribute(PAGE, page);
+        model.addAttribute(SIZE, size);
+        model.addAttribute(NAME, name);
+        model.addAttribute(TOTAL_PAGE, typePage.getTotalPages());
+        model.addAttribute(LIST, typePage.getContent());
+        return TY_LIST;
     }
 
-    @GetMapping("/type-edit")
-    public String typeirect(Model model, HttpServletRequest request) {
-        String typeId = request.getParameter("typeId");
-        TypeDto typeDto = null;
-        if (!StringUtils.isEmptyOrWhitespace(typeId)) {
-            Integer id = Integer.parseInt(typeId);
-            typeDto = typeService.findById(id);
-        }
-        model.addAttribute("unit", typeDto);
-        return "type/typeEdit";
+    @GetMapping(TYPE)
+    public String typeRedirect(Model model, @RequestParam(TYPE_ID) Integer id) {
+        TypeDto typeDto = typeService.findById(id);
+        model.addAttribute(UNIT, typeDto);
+        return TY_EDIT;
     }
 
-    @PostMapping("/type-edit")
-    public String edit(HttpServletRequest request, Model model) {
-        String typeId = request.getParameter("typeId");
-        TypeDto typeDto = null;
-        if (!StringUtils.isEmptyOrWhitespace(typeId)) {
-            Integer id = Integer.parseInt(typeId);
-            typeDto = typeService.findById(id);
-        }
-        typeDto.setName(request.getParameter("name"));
-        typeService.update(typeDto);
-        return findAll(model);
+    @PostMapping(TYPE)
+    public String edit(@RequestParam(TYPE_ID) Integer id, @RequestParam(NAME) String name) {
+        typeService.update(id, name);
+        return REDIRECT + TYPES_URL;
     }
 
-    @PostMapping("/type-delete")
-    public String delete(HttpServletRequest request, Model model){
-        String typeId = request.getParameter("typeId");
-
-        if (!StringUtils.isEmptyOrWhitespace(typeId)) {
-            Integer id = Integer.parseInt(typeId);
-            typeService.delete(id);
-        }
-        return findAll(model);
+    @PostMapping(DEL_TYPE)
+    public String delete(@RequestParam(TYPE_ID) Integer id) {
+        typeService.delete(id);
+        return REDIRECT + TYPES_URL;
     }
 
-    @GetMapping("/type-add")
-    public String add(){
-        return "/type/typeAdd";
+    @GetMapping(NEW_TYPE)
+    public String add() {
+        return TY_ADD;
     }
-    @PostMapping("/type-add")
-    public String add(HttpServletRequest request, Model model){
-        TypeDto typeDto = new TypeDto();
-        typeDto.setName(request.getParameter("name"));
-        typeDto = typeService.save(typeDto);
-        return findAll(model);
+
+    @PostMapping(NEW_TYPE)
+    public String add(@RequestParam(NAME) String name) {
+        typeService.save(name);
+        return REDIRECT + TYPES_URL;
     }
+
+
 }

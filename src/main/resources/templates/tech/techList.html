@@ -1,59 +1,116 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/schema/security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>TechList</title>
+    <title th:text="#{technique.list.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
+<header>
+    <a th:text="#{language.en}"
+       th:href="@{/techniques(page=${page},size=${size}, startPrice =${startPrice}, endPrice =${endPrice}, language=${'en'})}"/>
+    <a th:text="#{language.ru}"
+       th:href="@{/techniques(page=${page},size=${size}, startPrice =${startPrice}, endPrice =${endPrice}, language=${'ru'})}"/>
+</header>
+<form th:action="${'/techniques'}" method="get">
+    <input th:type="number" th:name="startPrice" th:placeholder="#{start.price.placeholder}">
+    <input th:type="number" th:name="endPrice" th:placeholder="#{end.price.placeholder}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{confirm.name}"/>
+</form>
+<form th:action="${'/techniques'}" method="get">
+    <input th:type="hidden" th:name="startPrice" th:value="${null}">
+    <input th:type="hidden" th:name="endPrice" th:value="${null}">
+    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{clear.filter}"/>
+</form>
+<div th:if="${list.size() eq 0}">
+    <p th:text="#{found.nothing}"/>
+</div>
 <div th:if="${list.size() > 0}">
     <table class="w3-table-all">
         <thead class="w3-light-grey">
-        <th>Id</th>
-        <th>Price</th>
-        <th>Category</th>
-        <th>Producer</th>
-        <th>ProducerCountry</th>
-        <th>Model</th>
-        <th>Types</th>
-        <th>Stores</th>
+        <th th:text="#{id.name}"/>
+        <th th:text="#{price.name}"/>
+        <th th:text="#{category.name}"/>
+        <th th:text="#{producer.name}"/>
+        <th th:text="#{producer.country}"/>
+        <th th:text="#{model.name}"/>
+        <th th:text="#{type.list.title}"/>
+        <th th:text="#{store.list.title}"/>
         </thead>
         <tbody>
         <tr th:each="unit, iter: ${list}">
-            <td th:text="${unit.id}"></td>
-            <td th:text="${unit.price}"></td>
-            <td th:if="${unit.category ne null}" th:text="${unit.category.name}"></td>
-            <td th:if="${unit.producer ne null}" th:text="${unit.producer.name}"></td>
-            <td th:if="${unit.producer ne null}" th:text="${unit.producer.country}"></td>
-            <td th:if="${unit.model ne null}" th:text="${unit.model.name}"></td>
-            <td th:if="${unit.category ne null}" th:each="type, it:${unit.category.types}">
-                <p th:text="${type.name}"></p>
-            </td>
-            <td th:if="${unit.storeList ne null}" th:each="store, it:${unit.storeList}">
-                <p th:text="${store.name}"></p>
-                <p th:text="${store.address}"></p>
+            <td th:text="${unit.id}"/>
+            <td th:text="${unit.price}"/>
+            <td><p th:if="${unit.category ne null}" th:text="${unit.category.name}"/></td>
+            <td><p th:if="${unit.producer ne null}" th:text="${unit.producer.name}"/></td>
+            <td><p th:if="${unit.producer ne null}" th:text="${unit.producer.country}"/></td>
+            <td><p th:if="${unit.model ne null}" th:text="${unit.model.name}"/></td>
+            <td>
+                <div th:if="${unit.category ne null}">
+                    <div th:each="type, it:${unit.category.types}">
+                        <p th:text="${type.name}"/>
+                    </div>
+                </div>
             </td>
             <td>
-                <form th:action="technique-edit" th:method="GET">
+                <div th:if="${unit.storeList ne null}">
+                    <div th:each="store, it:${unit.storeList}">
+                        <p th:text="${store.name + ';' + store.address}"/>
+                    </div>
+                </div>
+            </td>
+            <td sec:authorize="hasAuthority('ADMIN')">
+                <form th:action="${'/techniques/edit'}" th:method="GET">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
-                    <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"/>
                 </form>
             </td>
-            <td>
-                <form th:action="technique-delete" th:method="POST">
+            <td sec:authorize="hasAuthority('ADMIN')">
+                <form th:action="${'/techniques/delete'}" th:method="POST">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
-                    <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"/>
                 </form>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
-<form th:action="technique-add" th:method="get">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new technique</button>
+<form sec:authorize="hasAuthority('ADMIN')" th:action="${'/techniques/add'}" th:method="get">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{add.technique}"/>
 </form>
+<div th:if="${list.size() > 0}">
+    <div class="w3-bar">
+        <div class="w3-center">
+            <div th:if="${page} ne 1" style="display: inline-block">
+                <a th:href="@{/techniques(page=${page}-1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}"
+                   th:text="#{page.prev}"/>
+            </div>
 
-<a th:href="home">To home page</a>
+            <div th:each="i : ${#numbers.sequence( 1, totalPage)}" style="display: inline-block">
+                <a th:text="${i}"
+                   th:if="${page} eq ${i}">
+                    ${i}
+                </a>
+
+                <a th:href="@{/techniques(page=${i},size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}"
+                   th:text="${i}"
+                   th:if="${page} ne ${i}">
+                    ${i}
+                </a>
+            </div>
+
+            <div th:if="${page} lt ${totalPage}" style="display: inline-block">
+                <a th:href="@{/techniques(page=${page}+1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}"
+                   th:text="#{page.next}"/>
+            </div>
+
+        </div>
+    </div>
+</div>
+<a th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"/>
 </body>
 </html>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+
+    <changeSet id="08" author="Maks">
+        <createTable tableName="type">
+            <column autoIncrement="true" name="type_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="type_name" type="varchar(30)"/>
+            <column name="category_id" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <createIndex tableName="type" indexName="category_id">
+            <column name="category_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

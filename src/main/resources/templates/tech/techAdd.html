@@ -4,46 +4,56 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <title>techAdd</title>
+  <title th:text="#{technique.add.title}"/>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-<body>
-<form class="w3-container"  th:action="technique-add" th:method="post">
-  <label>Price</label>
-  <input class="w3-input" th:type="number" th:name="price" placeholder="Enter the price">
+<header>
+  <a th:text="#{language.en}"
+     th:href="@{/techniques/add(language=${'en'})}"/>
+  <a th:text="#{language.ru}"
+     th:href="@{/techniques/add(language=${'ru'})}"/>
+</header>
+<form class="w3-container"  th:action="${'/techniques/add'}" th:method="post">
+  <label th:text="#{price.name}"/>
+  <input class="w3-input" required th:type="number" th:name="price" th:placeholder="#{price.placeholder}">
+  <label th:text="#{category.name}"/>
   <div th:if="${categories} ne null">
-    <select class="w3-select" th:name="category">
+    <select class="w3-select" required th:name="category">
       <option th:each="cat, iter:${categories}"  th:value="${cat.id}">
-        <p th:text="${cat.name}"></p>
+        <p th:text="${cat.name}"/>
       </option>
     </select>
   </div>
+  <label th:text="#{model.name}"/>
   <div th:if="${models} ne null">
-    <select class="w3-select" th:name="model">
+    <select class="w3-select" required th:name="model">
       <option th:each="mod1, iter:${models}"  th:value="${mod1.id}">
-        <p th:text="${mod1.name}"></p>
+        <p th:text="${mod1.name}"/>
       </option>
     </select>
   </div>
+  <label th:text="#{producer.name}"/>
   <div th:if="${producers} ne null">
-    <select class="w3-select" th:name="producer">
+    <select class="w3-select" required th:name="producer">
       <option th:each="prod, iter:${producers}"  th:value="${prod.id}">
-        <p th:text="${prod.name}"></p>
-        <p th:text="${prod.country}"></p>
+        <p th:text="${prod.name}"/>
+        <p th:text="${prod.country}"/>
       </option>
     </select>
   </div>
+  <label th:text="#{store.list.title}"/>
   <div th:if="${stores} ne null">
+    <input th:type="hidden" th:if="${stores.size() == 0}" th:name="storeId" th:value="${null}">
     <div th:each="store, iter:${stores}">
       <input class="w3-check" th:type="checkbox" th:name="storeId" th:value="${store.id}">
-      <label th:utext="${store.name}"><label th:text="${store.address}"></label> </label>
+      <label th:text="${store.name + ';' +store.address}"/>
     </div>
   </div>
-  <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Submit</button>
+  <input th:type="hidden" th:if="${stores eq null}" th:name="storeId" th:value="${null}">
+  <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{submit.name}"/>
 </form>
 
-<a th:href="technique-list">Previous</a>
-</body>
+<a th:href="${'/techniques'}" th:text="#{page.prev}"/>
 </body>
 </html>

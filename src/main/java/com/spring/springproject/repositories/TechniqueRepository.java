@@ -1,11 +1,11 @@
 package com.spring.springproject.repositories;
 
 import com.spring.springproject.entities.Technique;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
 
-public interface TechniqueRepository extends CrudRepository<Technique, Integer>, PagingAndSortingRepository<Technique, Integer> {
+public interface TechniqueRepository extends JpaRepository<Technique, Integer>, JpaSpecificationExecutor<Technique> {
 }

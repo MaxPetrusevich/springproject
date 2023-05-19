@@ -2,40 +2,54 @@ package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.StoreDto;
 import com.spring.springproject.entities.Store;
-import jakarta.transaction.Transactional;
+import com.spring.springproject.repositories.StoreRepository;
+import com.spring.springproject.repositories.TechniqueRepository;
+import com.spring.springproject.service.interfaces.StoreService;
+import com.spring.springproject.specifications.StoreSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.spring.springproject.repositories.StoreRepository;
-import com.spring.springproject.service.interfaces.StoreService;
+import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.util.StringUtils;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 public class StoreServiceImpl implements StoreService {
 
     private final ModelMapper modelMapper;
     private final StoreRepository repository;
+    private final TechniqueRepository techniqueRepository;
+
     @Autowired
-    public StoreServiceImpl(ModelMapper modelMapper, StoreRepository repository) {
+    public StoreServiceImpl(ModelMapper modelMapper, StoreRepository repository, TechniqueRepository techniqueRepository) {
         this.modelMapper = modelMapper;
         this.repository = repository;
+        this.techniqueRepository = techniqueRepository;
     }
+
 
     @Override
     public Set<StoreDto> findAll() {
-        Set<StoreDto> storeDtoSet = new HashSet<>();
-        for (Store store:
-                repository.findAll()) {
-            storeDtoSet.add(modelMapper.map(store, StoreDto.class));
-        }
-        return storeDtoSet;
+        return repository.findAll()
+                .stream()
+                .map(store -> modelMapper.map(store, StoreDto.class))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public StoreDto findById(Integer id) {
-        return modelMapper.map(repository.findById(id).orElse(null), StoreDto.class);
+        return repository.findById(id)
+                .stream()
+                .map(store -> modelMapper.map(store, StoreDto.class))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -52,6 +66,52 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public void delete(Integer id) {
-        repository.deleteById(id);
+        Store store = repository.findById(id).orElse(null);
+        if (store != null) {
+            store.getTechniques().forEach(technique -> {
+                technique.getStoreList().remove(store);
+                techniqueRepository.save(technique);
+            });
+            repository.deleteById(id);
+        }
+    }
+
+
+    @Override
+    public void update(Integer id, String name, String address) {
+        Store store = repository.findById(id).orElse(null);
+        if (store != null) {
+            store.setName(name);
+            store.setAddress(address);
+            repository.save(store);
+        }
+    }
+
+    @Override
+    public StoreDto save(String name, String address) {
+        Store store = new Store();
+        store.setName(name);
+        store.setAddress(address);
+        store = repository.save(store);
+        return modelMapper.map(store, StoreDto.class);
+    }
+
+    @Override
+    public Page<StoreDto> findAll(Pageable pageable, String name, String address) {
+        if (!StringUtils.isEmptyOrWhitespace(name) || !StringUtils.isEmptyOrWhitespace(address)) {
+            Page<Store> stores = repository.findAll(StoreSpecification.searchStore(name, address), pageable);
+            List<StoreDto> storeDtoList = stores
+                    .stream()
+                    .map(store -> modelMapper.map(store, StoreDto.class))
+                    .toList();
+            return new PageImpl<>(storeDtoList, pageable, stores.getTotalElements());
+        } else {
+            Page<Store> stores = repository.findAll(pageable);
+            List<StoreDto> storeDtoList = stores
+                    .stream()
+                    .map(store -> modelMapper.map(store, StoreDto.class))
+                    .toList();
+            return new PageImpl<>(storeDtoList, pageable, stores.getTotalElements());
+        }
     }
 }

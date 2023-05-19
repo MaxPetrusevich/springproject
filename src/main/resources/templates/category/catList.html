@@ -1,50 +1,100 @@
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/schema/security">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Categories</title>
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title th:text="#{category.list.title}"/>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="static/style.css">
 
 </head>
 <body>
-  <div th:if="${list.size() > 0}">
-    <table class="w3-table-all">
-      <thead class="w3-light-grey">
-        <th>Id</th>
-        <th>Name</th>
-        <th>Types</th>
-      </thead>
-      <tbody>
-      <tr th:each="unit, iter: ${list}">
-        <td th:text="${unit.id}"></td>
-        <td th:text="${unit.name}"></td>
-        <td th:if="${unit.types ne null}">
-          <div th:each="type, it:${unit.types}">
-            <p th:text="${type.name}"></p>
-          </div>
-        </td>
-        <td>
-          <form th:action="category-edit" th:method="get">
-            <input th:type="hidden" th:name = "catId" th:value="${unit.id}">
-            <button class = "w3-button w3-white w3-border" th:type="submit">Edit</button>
-          </form>
-        </td>
-        <td>
-          <form th:action="category-delete" th:method="post">
-            <input th:type="hidden" th:name = "catId" th:value="${unit.id}">
-            <button class = "w3-button w3-white w3-border" th:type="submit">Delete</button>
-          </form>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-  <form th:action="category-add" th:method="get">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new category</button>
-  </form>
+<header>
+    <a th:text="#{language.en}"
+       th:href="@{/categories(page=${page},size=${size}, name =${name}, language=${'en'})}"/>
+    <a th:text="#{language.ru}"
+       th:href="@{/categories(page=${page},size=${size}, name =${name}, language=${'ru'})}"/>
+</header>
+<form th:action="${'/categories'}" method="post">
+    <input th:type="search" th:name="name" th:placeholder="#{name.placeholder}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{confirm.name}"/>
+</form>
+<form th:action="${'/categories'}" method="post">
+    <input th:type="hidden" th:name="name" th:value="${null}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{clear.filter}"/>
+</form>
+<div th:if="${list.size() eq 0}">
+    <p th:text="#{found.nothing}"/>
+</div>
+<div th:if="${list.size() > 0}">
 
-<a th:href="home">To home page</a>
+    <table class="w3-table-all">
+        <thead class="w3-light-grey">
+        <th th:text="#{id.name}"/>
+        <th th:text="#{name.name}"/>
+        <th th:text="#{type.list.title}"/>
+        </thead>
+        <tbody>
+        <tr th:each="unit, iter: ${list}">
+            <td th:text="${unit.id}"/>
+            <td th:text="${unit.name}"/>
+            <td>
+                <div th:if="${unit.types ne null}">
+                    <div th:each="type, it:${unit.types}">
+                        <p th:text="${type.name}"/>
+                    </div>
+                </div>
+            </td>
+            <td sec:authorize="hasAuthority('ADMIN')">
+                <form th:action="${'/categories/edit'}" th:method="get">
+                    <input th:type="hidden" th:name="catId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"/>
+                </form>
+            </td>
+            <td sec:authorize="hasAuthority('ADMIN')">
+                <form th:action="${'/categories/delete'}" th:method="post">
+                    <input th:type="hidden" th:name="catId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"/>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<form th:action="${'/categories/add'}" th:method="get" sec:authorize="hasAuthority('ADMIN')">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{add.category}"/>
+</form>
+<div th:if="${list.size()>0}">
+    <div class="w3-bar">
+        <div class="w3-center">
+            <div th:if="${page} ne 1" style="display: inline-block">
+                <a th:href="@{/categories(page=${page}-1,size=${size}, name =${name})}" th:text="#{page.prev}"/>
+            </div>
+
+            <div th:each="i : ${#numbers.sequence( 1, totalPage)}" style="display: inline-block">
+                <a th:text="${i}"
+                   th:if="${page} eq ${i}">
+                    ${i}
+                </a>
+
+                <a th:href="@{/categories(page=${i},size=${size}, name =${name})}"
+                   th:text="${i}"
+                   th:if="${page} ne ${i}">
+                    ${i}
+                </a>
+            </div>
+
+            <div th:if="${page} lt ${totalPage}" style="display: inline-block">
+                <a th:href="@{/categories(page=${page}+1,size=${size}, name =${name})}" th:text="#{page.next}"/>
+            </div>
+        </div>
+    </div>
+</div>
+<a th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"/>
 </body>
 </html>

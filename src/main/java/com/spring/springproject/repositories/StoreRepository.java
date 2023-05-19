@@ -1,11 +1,13 @@
 package com.spring.springproject.repositories;
 
 import com.spring.springproject.entities.Store;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
 
-public interface StoreRepository extends CrudRepository<Store, Integer>, PagingAndSortingRepository<Store, Integer> {
+public interface StoreRepository extends JpaRepository<Store, Integer>, JpaSpecificationExecutor<Store> {
+
+
 }

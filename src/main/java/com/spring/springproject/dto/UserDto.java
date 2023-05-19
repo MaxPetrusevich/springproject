@@ -6,9 +6,13 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EqualsAndHashCode(of = {"id"})
 public class UserDto {
+    @EqualsAndHashCode.Include
     private Integer id;
-    private String name;
-    private String email;
+    @EqualsAndHashCode.Exclude
+    private String username;
+
+    @EqualsAndHashCode.Exclude
+    private String password;
+
 }
