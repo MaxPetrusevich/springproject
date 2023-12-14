@@ -4,6 +4,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -40,5 +41,13 @@ public class LocaleConfig extends WebMvcConfigurerAdapter {
         messageSource.setCacheSeconds(3600);
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
+    }
+
+
+    @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver multipartResolver() {
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+        resolver.setMaxUploadSizePerFile(10 * 1024 * 1024); // Максимальный размер файла (здесь 10 МБ)
+        return resolver;
     }
 }

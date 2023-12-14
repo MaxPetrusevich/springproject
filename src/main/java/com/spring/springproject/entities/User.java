@@ -3,6 +3,7 @@ package com.spring.springproject.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -40,5 +41,17 @@ public class User implements Serializable {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @Column(name = "image")
+    private String image;
+    @Pattern(regexp = "[a-zA-Z]*", message = "Только латинские буквы")
+    @NotBlank(message = "Не должно быть пустым")
+    private String name;
+    @Pattern(regexp = "[a-zA-Z]*", message = "Только латинские буквы")
+    @NotBlank(message = "Не должно быть пустым")
+    private String surname;
+    @NotBlank(message = "Не должно быть пустым")
+    @Email(message = "Введите email в правильном формате")
+    private String email;
 
 }

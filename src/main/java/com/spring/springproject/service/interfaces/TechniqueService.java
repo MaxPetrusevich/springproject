@@ -3,6 +3,9 @@ package com.spring.springproject.service.interfaces;
 import com.spring.springproject.dto.TechniqueDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 public interface TechniqueService extends Service<TechniqueDto> {
@@ -13,4 +16,8 @@ public interface TechniqueService extends Service<TechniqueDto> {
                       Double price, Integer[] storeIdes);
 
     Page<TechniqueDto> findAll(Pageable pageable, Double startPrice, Double endPrice);
+
+    public void saveDataToJsonFile();
+
+    void importDataFromJson(MultipartFile file) throws IOException;
 }

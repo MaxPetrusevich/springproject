@@ -7,18 +7,19 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title th:text="#{store.list.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link th:href="@{/category/catList.css}" rel="stylesheet" />
 </head>
 <body>
 <header>
-    <a th:text="#{language.en}"
+    <a class="w3-a" th:text="#{language.en}"
        th:href="@{/stores(page=${page},size=${size}, name =${name},address=${address}, language=${'en'})}"/>
-    <a th:text="#{language.ru}"
+    <a class="w3-a" th:text="#{language.ru}"
        th:href="@{/stores(page=${page},size=${size}, name =${name},address=${address}, language=${'ru'})}"/>
 </header>
-<form th:action="${'/stores'}" method="get">
-    <input th:type="search" th:name="name" th:placeholder="#{name.placeholder}">
+<form class="form1" th:action="${'/stores'}" method="get">
+    <input style="margin-bottom: 10px" th:type="search" th:name="name" th:placeholder="#{name.placeholder}">
     <input th:type="search" th:name="address" th:placeholder="#{address.placeholder}">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+    <button class="w3-button w3-white w3-border" style="margin-top: -40px" th:type="submit"
             th:text="#{confirm.name}"/>
 </form>
 <form th:action="${'/stores'}" th:method="get">
@@ -90,6 +91,6 @@
         </div>
     </div>
 </div>
-<a th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"/>
+<a class="w3-back" th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"/>
 </body>
 </html>

@@ -18,4 +18,6 @@
     <include file="2023-05-16--12-users-roles-constraints-add.xml" relativeToChangelogFile="true"/>
     <include file="2023-05-16--13-category-type-constraint-add.xml" relativeToChangelogFile="true"/>
     <include file="2023-05-16--14-test-data-insert.xml" relativeToChangelogFile="true"/>
+    <include file="2023-12-07--15-create-order.xml" relativeToChangelogFile="true"/>
+    <include file="2023-12-07--16-create_order_technique.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

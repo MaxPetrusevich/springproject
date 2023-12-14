@@ -1,0 +1,89 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: linear-gradient(45deg, rgb(10, 209, 164), rgb(11, 176, 181));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+a {
+    color: #3498db; /* Цвет ссылок */
+    text-decoration: none;
+}
+
+a:hover {
+    color: #2980b9; /* Цвет ссылок при наведении */
+}
+
+a:active {
+    color: #2980b9; /* Цвет ссылок при активации */
+}
+
+.w3-input {
+    max-width: 245px;
+    border: 1px solid #333; /* Цвет рамки вокруг инпутов */
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+}
+
+.form1 {
+    margin-top: 20px;
+}
+
+.w3-button {
+    margin: 10px auto;
+    width: 100%;
+    padding: 10px;
+    background-color: rgb(10, 209, 164);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.w3-button:hover {
+    background-color: rgb(11, 176, 181);
+}
+
+.button {
+    display: block;
+}
+
+.homeP {
+    margin: 10px auto;
+    width: 170px;
+}
+
+/* Additional styles for the "Not registered yet?" message */
+.login-container p {
+    margin-top: 10px;
+    color: #333;
+}
+
+.login-container a.register-link {
+    color: rgb(11, 176, 181);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-container a.register-link:hover {
+    text-decoration: underline;
+}

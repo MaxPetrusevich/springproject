@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="all" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Computer Equipment</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header>
+  <a class="back" href="">Back to Main Menu</a>
+  <div class="head">
+    <ul class="ul">
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">User Account</a></li>
+    </ul>
+  </div>
+</header>
+<div class="container" th:each="item : ${items}">
+  <div class="item">
+    <div class="photo">
+      <div class="photo__text">
+        <span>Computer Equipment</span>
+      </div>
+      <img th:src="${item.image}" alt="#">
+    </div>
+    <h3 th:text="${item.name}"></h3>
+    <div class="specs">
+      <p th:text="'Model: ' + ${item.model}"></p>
+      <p th:text="'Manufacturer: ' + ${item.producer}"></p>
+      <p th:text="'Country: ' + ${item.producer.country}"></p>
+      <p th:text="'Category: ' + ${item.category}"></p>
+      <div th:if="${unit.category ne null}">
+        <div th:each="type, it:${unit.category.types}">
+          <p th:text="${type.name}"/>
+        </div>
+      </div>
+    </div>
+    <div class="availability">
+      <p>Available at:</p>
+      <ul>
+        <li th:each="store : ${item.stores}" th:text="${store}"></li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>

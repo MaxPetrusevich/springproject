@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.15.xsd">
+
+    <!-- Create Order Table -->
+    <changeSet id="15" author="Maks">
+        <createTable tableName="Order">
+            <column name="order_id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_amount" type="DOUBLE"/>
+            <column name="user_id" type="INTEGER"/>
+            <column name="order_date" type="timestamp"/>
+            <column name="status" type="varchar(15)"/>
+            <!-- Add other columns as needed -->
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                  baseTableName="User"
+                                  constraintName="fk_order_user"
+                                  referencedColumnNames="id"
+                                  referencedTableName="User"/>
+         </changeSet>
+</databaseChangeLog>

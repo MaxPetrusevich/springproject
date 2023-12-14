@@ -6,15 +6,16 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title th:text="#{producer.list.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link th:href="@{/category/catList.css}" rel="stylesheet" />
 </head>
 <body>
 <header>
-    <a th:text="#{language.en}"
+    <a class="w3-a" th:text="#{language.en}"
        th:href="@{/producers(page=${page},size=${size}, name =${name}, country=${country}, language=${'en'})}"/>
-    <a th:text="#{language.ru}"
+    <a class="w3-a" th:text="#{language.ru}"
        th:href="@{/producers(page=${page},size=${size}, name =${name},country=${country}, language=${'ru'})}"/>
 </header>
-<form th:action="${'/producers'}" method="post">
+<form class="form1" th:action="${'/producers'}" method="post">
     <input th:type="search" th:name="name" th:placeholder="#{name.placeholder}">
     <input th:type="search" th:name="country" th:placeholder="#{country.placeholder}">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
@@ -91,6 +92,6 @@
         </div>
     </div>
 </div>
-<a th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"/>
+<a class="w3-back" th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"/>
 </body>
 </html>

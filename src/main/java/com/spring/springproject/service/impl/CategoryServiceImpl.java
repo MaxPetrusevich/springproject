@@ -7,7 +7,6 @@ import com.spring.springproject.repositories.CategoryRepository;
 import com.spring.springproject.repositories.TechniqueRepository;
 import com.spring.springproject.service.interfaces.CategoryService;
 import com.spring.springproject.service.interfaces.TypeService;
-import com.spring.springproject.specifications.CategorySpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,7 +22,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repository;
     private final TypeService typeService;
@@ -56,18 +54,20 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryDto save(CategoryDto categoryDto) {
         Category category = null;
         if (categoryDto != null) {
             category = modelMapper.map(categoryDto, Category.class);
-            category = repository.save(category);
+            repository.saveCategory(category);
         }
         return modelMapper.map(category, CategoryDto.class);
     }
 
     @Override
+    @Transactional
     public void update(CategoryDto categoryDto) {
-        repository.save(modelMapper.map(categoryDto, Category.class));
+        repository.update(modelMapper.map(categoryDto, Category.class));
     }
 
     @Override
@@ -88,23 +88,38 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Page<CategoryDto> findAll(Pageable pageable, String name) {
-        if (!StringUtils.isEmptyOrWhitespace(name)) {
-            Page<Category> categories = repository.findAll(CategorySpecification.searchCategory(name), pageable);
+            Page<Category> categories = repository.findAll(Category.builder().name(name).build(), pageable);
             List<CategoryDto> categoryDtoList = categories
                     .stream()
                     .map(category -> modelMapper.map(category, CategoryDto.class))
                     .toList();
             return new PageImpl<>(categoryDtoList, pageable, categories.getTotalElements());
-        } else {
-            Page<Category> categories = repository.findAll(pageable);
-            List<CategoryDto> categoryDtoList = categories
-                    .stream()
-                    .map(category -> modelMapper.map(category, CategoryDto.class))
-                    .toList();
-            return new PageImpl<>(categoryDtoList, pageable, categories.getTotalElements());
-        }
     }
 
+    @Override
+    @Transactional
+    public void update(String name, Integer[] typeIdes, CategoryDto categoryDto) {
+        categoryDto.setName(name);
+        categoryDto.getTypes()
+                .forEach(typeDto -> {
+                    typeDto.setCategory(null);
+                    typeService.update(typeDto);
+                });
+        if (categoryDto.getTypes() != null) {
+            categoryDto.getTypes().removeAll(categoryDto.getTypes());
+        }
+        CategoryDto finalCategoryDto = categoryDto;
+        Arrays.stream(typeIdes)
+                .map(typeService::findById)
+                .forEach(typeDto -> {
+                    typeDto.setCategory(finalCategoryDto);
+                    typeService.update(typeDto);
+                    finalCategoryDto.getTypes().add(typeDto);
+                });
+        repository.update(modelMapper.map(finalCategoryDto, Category.class));
+    }
+
+    @Transactional
     @Override
     public CategoryDto save(String name, Integer[] typeIdes, CategoryDto categoryDto) {
         categoryDto.setName(name);
@@ -126,7 +141,7 @@ public class CategoryServiceImpl implements CategoryService {
                     typeService.update(typeDto);
                     finalCategoryDto.getTypes().add(typeDto);
                 });
-        category = repository.save(modelMapper.map(categoryDto, Category.class));
+        repository.update(modelMapper.map(categoryDto, Category.class));
         return modelMapper.map(category, CategoryDto.class);
     }
 

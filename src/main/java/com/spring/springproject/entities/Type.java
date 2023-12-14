@@ -1,5 +1,6 @@
 package com.spring.springproject.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,6 +23,7 @@ public class Type implements Serializable {
     @EqualsAndHashCode.Exclude
     @Column(name = "type_name")
     private String name;
+    @JsonIgnore
     @EqualsAndHashCode.Exclude
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")

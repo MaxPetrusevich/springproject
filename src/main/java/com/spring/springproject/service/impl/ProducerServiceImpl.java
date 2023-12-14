@@ -6,7 +6,6 @@ import com.spring.springproject.entities.Producer;
 import com.spring.springproject.repositories.ProducerRepository;
 import com.spring.springproject.repositories.TechniqueRepository;
 import com.spring.springproject.service.interfaces.ProducerService;
-import com.spring.springproject.specifications.ProducerSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,14 +13,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class ProducerServiceImpl implements ProducerService {
 
     private final ModelMapper modelMapper;
@@ -55,15 +52,16 @@ public class ProducerServiceImpl implements ProducerService {
     }
 
     @Override
+    @Transactional
     public ProducerDto save(ProducerDto object) {
         Producer producer = modelMapper.map(object, Producer.class);
         producer = repository.save(producer);
         return modelMapper.map(producer, ProducerDto.class);
     }
-
+    @Transactional
     @Override
     public void update(ProducerDto object) {
-        repository.save(modelMapper.map(object, Producer.class));
+        repository.update(modelMapper.map(object, Producer.class));
     }
 
     @Override
@@ -81,33 +79,26 @@ public class ProducerServiceImpl implements ProducerService {
 
     @Override
     public Page<ProducerDto> findAll(Pageable pageable, String name, String country) {
-        if (!StringUtils.isEmptyOrWhitespace(name) || !StringUtils.isEmptyOrWhitespace(country)) {
-            Page<Producer> producerPage = repository.findAll(ProducerSpecification.searchProducer(name, country), pageable);
+            Page<Producer> producerPage = repository.findAll(Producer.builder().name(name).country(country).build(), pageable);
             List<ProducerDto> producerDtoList = producerPage
                     .stream()
                     .map(producer -> modelMapper.map(producer, ProducerDto.class))
                     .toList();
             return new PageImpl<>(producerDtoList, pageable, producerPage.getTotalElements());
-        } else {
-            Page<Producer> producerPage = repository.findAll(pageable);
-            List<ProducerDto> producerDtoList = producerPage
-                    .stream()
-                    .map(producer -> modelMapper.map(producer, ProducerDto.class))
-                    .toList();
-            return new PageImpl<>(producerDtoList, pageable, producerPage.getTotalElements());
-        }
+
     }
 
     @Override
+    @Transactional
     public void update(Integer id, String name, String country) {
         Producer producer = repository.findById(id).orElse(null);
         if (producer != null) {
             producer.setName(name);
             producer.setCountry(country);
-            repository.save(producer);
+            repository.update(producer);
         }
     }
-
+    @Transactional
     @Override
     public ProducerDto save(String name, String country) {
         return modelMapper.map(repository.save(Producer.

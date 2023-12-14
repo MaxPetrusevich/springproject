@@ -20,6 +20,7 @@
             <column name="category_id" type="bigint">
                 <constraints nullable="true"/>
             </column>
+            <column name="image" type="text"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

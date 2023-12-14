@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page</title>
+    <link th:href="@{/auth/reg.css}" rel="stylesheet" />
+</head>
+<body>
+<div class="register-container">
+    <h2>Registration</h2>
+    <p>Already registered? <a th:href="@{/login}">Login here</a></p>
+    <form class="form1">
+        <input type="text" class="w3-input" placeholder="First Name" required>
+        <input type="text" class="w3-input" placeholder="Last Name" required>
+        <input type="email" class="w3-input" placeholder="Email Address" required>
+        <input type="text" class="w3-input" placeholder="Username" required>
+        <input type="password" class="w3-input" placeholder="Password" required>
+        <input type="password" class="w3-input" placeholder="Confirm Password" required>
+        <button type="submit" class="w3-button">Register</button>
+    </form>
+</div>
+</body>
+</html>

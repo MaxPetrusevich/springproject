@@ -9,10 +9,17 @@ import static com.spring.springproject.controller.Constants.*;
 @Controller
 public class HomeController {
 
-
-    @GetMapping(START_PAGE)
+   @GetMapping(START_PAGE)
     public String home() {
         return HOME_PAGE;
+    }
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
+    @GetMapping("/registration")
+    public String register(){
+        return "registration";
     }
 
     @GetMapping(HOME)

@@ -1,5 +1,6 @@
 package com.spring.springproject.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -30,6 +31,7 @@ public class Producer implements Serializable {
     private String country;
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     @OneToMany(mappedBy = "producer")
     private Set<Technique> techniques = new HashSet<Technique>();
 }

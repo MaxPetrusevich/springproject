@@ -6,12 +6,13 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <title th:text="#{type.add.title}"/>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link th:href="@{/category/catAdd.css}" rel="stylesheet" />
 </head>
 <body>
 <header>
-  <a th:text="#{language.en}"
+  <a class="w3-a" th:text="#{language.en}"
      th:href="@{/types/add(language=${'en'})}"/>
-  <a th:text="#{language.ru}"
+  <a class="w3-a" th:text="#{language.ru}"
      th:href="@{/types/add(language=${'ru'})}"/>
 </header>
 <form class="w3-container"  th:action="${'/types/add'}" th:method="post">
@@ -19,6 +20,6 @@
   <input class="w3-input" required th:type="text" th:name="name" th:placeholder="#{name.placeholder}">
   <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border" th:text="#{submit.name}"/>
 </form>
-<a th:href="${'/types'}" th:text="#{page.prev}"/>
+<a class="w3-previous" th:href="${'/types'}" th:text="#{page.prev}"/>
 </body>
 </html>

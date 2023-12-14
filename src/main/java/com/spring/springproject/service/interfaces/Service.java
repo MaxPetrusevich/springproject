@@ -13,4 +13,5 @@ public interface Service<T> {
     void update(T object);
 
     void delete(Integer id);
+
 }

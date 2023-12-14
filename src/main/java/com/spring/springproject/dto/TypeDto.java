@@ -1,5 +1,6 @@
 package com.spring.springproject.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 @Data

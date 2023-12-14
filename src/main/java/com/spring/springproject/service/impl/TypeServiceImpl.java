@@ -1,10 +1,10 @@
 package com.spring.springproject.service.impl;
 
 import com.spring.springproject.dto.TypeDto;
+import com.spring.springproject.entities.Category;
 import com.spring.springproject.entities.Type;
 import com.spring.springproject.repositories.TypeRepository;
 import com.spring.springproject.service.interfaces.TypeService;
-import com.spring.springproject.specifications.TypeSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,14 +12,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class TypeServiceImpl implements TypeService {
     private final ModelMapper modelMapper;
     private final TypeRepository repository;
@@ -33,22 +31,15 @@ public class TypeServiceImpl implements TypeService {
 
     @Override
     public Page<TypeDto> findAll(Pageable pageable, String name) {
-        if (!StringUtils.isEmptyOrWhitespace(name)) {
-            Page<Type> types = repository.findAll(TypeSpecification.searchType(name), pageable);
+            Page<Type> types = repository.findAll(Type.builder()
+                    .name(name)
+                    .category(Category.builder().name("").build())
+                    .build(), pageable);
             List<TypeDto> typeDtoList = types
                     .stream()
                     .map(type -> modelMapper.map(type, TypeDto.class))
                     .toList();
             return new PageImpl<>(typeDtoList, pageable, types.getTotalElements());
-        } else {
-            Page<Type> types = repository.findAll(pageable);
-            List<TypeDto> typeDtoList = types
-                    .stream()
-                    .map(type -> modelMapper.map(type, TypeDto.class))
-                    .toList();
-            return new PageImpl<>(typeDtoList, pageable, types.getTotalElements());
-        }
-
     }
 
     @Override
@@ -69,6 +60,7 @@ public class TypeServiceImpl implements TypeService {
     }
 
     @Override
+    @Transactional
     public TypeDto save(TypeDto object) {
         Type type = modelMapper.map(object, Type.class);
         type = repository.save(type);
@@ -76,8 +68,9 @@ public class TypeServiceImpl implements TypeService {
     }
 
     @Override
+    @Transactional
     public void update(TypeDto object) {
-        repository.save(modelMapper.map(object, Type.class));
+        repository.update(modelMapper.map(object, Type.class));
     }
 
     @Override
@@ -87,15 +80,17 @@ public class TypeServiceImpl implements TypeService {
 
 
     @Override
+    @Transactional
     public void update(Integer id, String name) {
         Type type = repository.findById(id).orElse(null);
         if (type != null) {
             type.setName(name);
-            repository.save(type);
+            repository.update(type);
         }
     }
 
     @Override
+    @Transactional
     public TypeDto save(String name) {
         Type type = new Type();
         type.setName(name);

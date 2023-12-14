@@ -5,7 +5,6 @@ import com.spring.springproject.entities.Store;
 import com.spring.springproject.repositories.StoreRepository;
 import com.spring.springproject.repositories.TechniqueRepository;
 import com.spring.springproject.service.interfaces.StoreService;
-import com.spring.springproject.specifications.StoreSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,7 +12,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -61,7 +59,7 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public void update(StoreDto object) {
-        repository.save(modelMapper.map(object, Store.class));
+        repository.update(modelMapper.map(object, Store.class));
     }
 
     @Override
@@ -83,7 +81,7 @@ public class StoreServiceImpl implements StoreService {
         if (store != null) {
             store.setName(name);
             store.setAddress(address);
-            repository.save(store);
+            repository.update(store);
         }
     }
 
@@ -98,20 +96,11 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public Page<StoreDto> findAll(Pageable pageable, String name, String address) {
-        if (!StringUtils.isEmptyOrWhitespace(name) || !StringUtils.isEmptyOrWhitespace(address)) {
-            Page<Store> stores = repository.findAll(StoreSpecification.searchStore(name, address), pageable);
+            Page<Store> stores = repository.findAll(Store.builder().name(name).address(address).build(), pageable);
             List<StoreDto> storeDtoList = stores
                     .stream()
                     .map(store -> modelMapper.map(store, StoreDto.class))
                     .toList();
             return new PageImpl<>(storeDtoList, pageable, stores.getTotalElements());
-        } else {
-            Page<Store> stores = repository.findAll(pageable);
-            List<StoreDto> storeDtoList = stores
-                    .stream()
-                    .map(store -> modelMapper.map(store, StoreDto.class))
-                    .toList();
-            return new PageImpl<>(storeDtoList, pageable, stores.getTotalElements());
-        }
     }
 }

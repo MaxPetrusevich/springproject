@@ -1,5 +1,6 @@
 package com.spring.springproject.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.util.Set;
@@ -25,4 +26,6 @@ public class TechniqueDto {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private CategoryDto category;
+    @EqualsAndHashCode.Exclude
+    private String image;
 }

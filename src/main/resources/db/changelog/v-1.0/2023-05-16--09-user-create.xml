@@ -13,6 +13,10 @@
                 <constraints unique="true"/>
             </column>
             <column name="password" type="varchar(255)"/>
+            <column name="name" type="varchar(30"/>
+            <column name="surname" type="varchar(30)"/>
+            <column name="email" type="varchar(30)"/>
+            <column name="image" type="text"/>
 
         </createTable>
         <insert tableName="users">

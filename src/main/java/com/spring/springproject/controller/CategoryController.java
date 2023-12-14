@@ -54,7 +54,7 @@ public class CategoryController {
     @PostMapping(CATEGORY_URL)
     public String edit(@RequestParam(CAT_ID) Integer id, @RequestParam(TYPE_ID) Integer[] typeIdes, @RequestParam(NAME) String name) {
         CategoryDto categoryDto = categoryService.findById(id);
-        categoryService.save(name, typeIdes, categoryDto);
+        categoryService.update(name, typeIdes, categoryDto);
         return REDIRECT + CATEGORIES_URL;
     }
 

@@ -7,17 +7,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title th:text="#{type.list.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link th:href="@{/category/catList.css}" rel="stylesheet" />
 </head>
 <body>
 <header>
-    <a th:text="#{language.en}"
+    <a class="w3-a" th:text="#{language.en}"
        th:href="@{/types(page=${page},size=${size}, name =${name}, language=${'en'})}"/>
-    <a th:text="#{language.ru}"
+    <a class="w3-a" th:text="#{language.ru}"
        th:href="@{/types(page=${page},size=${size}, name =${name}, language=${'ru'})}"/>
 </header>
-<form th:action="${'/types'}" th:method="get">
+<form class="form1" th:action="${'/types'}" th:method="get">
     <input th:type="search" th:name="name" th:placeholder="#{name.placeholder}">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+    <button class="w3-button w3-white w3-border" style="margin-top: -3px" th:type="submit"
             th:text="#{confirm.name}"/>
 </form>
 <form th:action="${'/types'}" th:method="get">
@@ -85,6 +86,6 @@
         </div>
     </div>
 </div>
-<a th:href="${'/home'}" style="alignment: center" th:text="#{home.page}"/>
+<a class="w3-back" th:href="${'/home'}" style="alignment: center" th:text="#{home.page}"/>
 </body>
 </html>

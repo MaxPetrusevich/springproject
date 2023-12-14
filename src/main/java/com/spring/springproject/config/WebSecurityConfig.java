@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static com.spring.springproject.controller.Constants.*;
-
+//сделать проверку при импорте из json
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -30,19 +30,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .csrf()
-                .disable()
+                .csrf().disable()
                 .authorizeRequests()
-                //Доступ только для пользователей с ролью Администратор
-                .antMatchers(CONFIG_MATCHER).hasAnyAuthority(ADMIN, USER)
-                /*//Все остальные страницы требуют аутентификации
+                .antMatchers(CONFIG_MATCHER, "/registration", "/login").hasAnyAuthority(ADMIN, USER)
+                .antMatchers("/auth/**").permitAll() // Разрешение на использование ресурсов из static/auth
                 .anyRequest().authenticated()
-                */.and()
-                //Настройка для входа в систему
-                .formLogin().permitAll()
-                //Перенарпавление на главную страницу после успешного входа
-                //.loginProcessingUrl("/checkUser")
-                //.permitAll()
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .permitAll()
+                .and()
+                .logout()
+                .permitAll()
+                .logoutSuccessUrl(LOGIN)
+                .and()
+                .formLogin()
+                .loginPage("/registration") // Указание пользовательской страницы регистрации
+                .permitAll()
                 .and()
                 .logout()
                 .permitAll()

@@ -3,11 +3,63 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.springframework.org/schema/security">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title th:text="#{technique.list.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+    <script>
+        function downloadFile() {
+            // Замените URL на ваш реальный URL файла на сервере
+            var fileUrl = '/downloadFile';
+
+            // Используем библиотеку file-saver.js для скачивания файла
+            fetch(fileUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    // Запрашиваем у пользователя выбор директории для сохранения файла
+                    saveAs(blob, 'file.json');
+                })
+                .catch(error => {
+                    console.error('Ошибка при скачивании файла:', error);
+                });
+        }
+    </script>
+    <script>
+        function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                fetch('/import-json', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('File uploaded successfully:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error uploading file:', error);
+                    });
+            } else {
+                console.error('No file selected');
+            }
+        }
+    </script>
+
 </head>
 <body>
+
+
 <header>
     <a th:text="#{language.en}"
        th:href="@{/techniques(page=${page},size=${size}, startPrice =${startPrice}, endPrice =${endPrice}, language=${'en'})}"/>
@@ -19,6 +71,15 @@
     <input th:type="number" th:name="endPrice" th:placeholder="#{end.price.placeholder}">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
             th:text="#{confirm.name}"/>
+</form>
+<form onsubmit="event.preventDefault(); downloadFile();">
+    <div>
+        <button type="submit" >Скачать json</button>
+    </div>
+</form>
+<form id="fileForm" enctype="multipart/form-data">
+    <input type="file" id="fileInput" name="file" accept=".json">
+    <button type="button" onclick="uploadFile()">Загрузить</button>
 </form>
 <form th:action="${'/techniques'}" method="get">
     <input th:type="hidden" th:name="startPrice" th:value="${null}">

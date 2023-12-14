@@ -6,16 +6,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title th:text="#{home.name}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link th:href="@{/category/homePage.css}" rel="stylesheet" />
 
 </head>
 <body>
 <header>
-    <a th:text="#{language.en}"
+    <a class="w3-a" th:text="#{language.en}"
        th:href="@{/home(language=${'en'})}"/>
-    <a th:text="#{language.ru}"
+    <a class="w3-a" th:text="#{language.ru}"
        th:href="@{/home(language=${'ru'})}"/>
 </header>
-<p th:text="#{start.choose}"/>
+<p class="homeP" th:text="#{start.choose}"/>
 <form th:action="@{'/home/view'}" th:method="get">
     <select class="w3-select" th:name="listName">
         <option th:value="1" selected th:text="#{technique.name}"/>
@@ -26,10 +27,10 @@
         <option th:value="6" th:text="#{store.name}"/>
         <option sec:authorize="hasAuthority('ADMIN')"  th:value="7" th:text="#{user.name}"/>
     </select>
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{view.name}"/>
+    <button class="w3-button w3-white w3-border" style="margin: 10px auto; display: block" th:type="submit" th:text="#{view.name}"/>
 </form>
 <form method="post" th:action="@{/logout}">
-    <div>
+    <div class="button">
         <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{logout.name}"/>
     </div>
 </form>

@@ -1,5 +1,6 @@
 package com.spring.springproject.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -46,4 +47,10 @@ public class Technique implements Serializable {
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private Category category;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "technique", cascade = CascadeType.ALL)
+    private Set<OrderTechnique> orderTechniques = new HashSet<>();
+    @Column(name = "image")
+    private String image;
 }

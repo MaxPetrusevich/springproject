@@ -8,6 +8,6 @@ public interface CategoryService extends Service<CategoryDto> {
 
     Page<CategoryDto> findAll(Pageable pageable, String name);
 
+void update(String name, Integer[] typeIdes, CategoryDto categoryDto);
     CategoryDto save(String name, Integer[] typeIdes, CategoryDto categoryDto);
-
 }

@@ -1,5 +1,6 @@
 package com.spring.springproject.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.util.Set;
@@ -15,6 +16,7 @@ public class CategoryDto {
 
     private String name;
     @ToString.Exclude
+    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<TypeDto> types;
 }

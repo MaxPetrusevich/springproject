@@ -1,5 +1,6 @@
 package com.spring.springproject.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,6 +29,7 @@ public class Category implements Serializable {
     @OneToMany(mappedBy = "category")
     private Set<Type> types = new HashSet<Type>();
     @ToString.Exclude
+    @JsonIgnore
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "category")
     private Set<Technique> techniques = new HashSet<Technique>();

@@ -1,5 +1,6 @@
 package com.spring.springproject.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -8,7 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -30,6 +30,7 @@ public class Store implements Serializable {
     @Column(name = "store_address")
     private String address;
     @ToString.Exclude
+    @JsonIgnore
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "storeList")
     private Set<Technique> techniques = new HashSet<Technique>();
