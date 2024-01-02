@@ -5,21 +5,119 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title th:text="#{technique.edit.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 0 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        header a:hover {
+            background-color: #555;
+        }
+
+        #language-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        form {
+            margin: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .w3-checkbox label {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        input[type="text"], input[type="checkbox"] {
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .w3-bar {
+            margin-top: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
 <header>
-    <a th:text="#{language.en}"
-       th:href="@{/techniques/edit(language=${'en'}, techId =${unit.id})}"/>
-    <a th:text="#{language.ru}"
-       th:href="@{/techniques/edit(language=${'ru'}, techId =${unit.id})}"/>
+    <div id="language-buttons">
+        <a th:text="#{language.en}"
+           th:href="@{/admin/techniques/edit(language=${'en'}, techId =${unit.id})}"/>
+        <a th:text="#{language.ru}"
+           th:href="@{/admin/techniques/edit(language=${'ru'}, techId =${unit.id})}"/>
+    </div>
+    <a th:href="${'/admin/techniques'}" th:text="#{page.prev}"/>
+
 </header>
-<form class="w3-container"  th:action="${'/techniques/edit'}" th:method="post">
+<form class="w3-container" th:action="${'/admin/techniques/edit'}" th:method="post">
     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
     <label th:text="#{price.name}"/>
-    <input class="w3-input" th:type="number" th:name="price" th:value="${unit.price}">
+    <input class="w3-input" th:type="number" required th:name="price" th:value="${unit.price}">
     <label th:text="#{category.name}"/>
     <div th:if="${categories} ne null">
-        <select  class="w3-select" th:name="category">
+        <select class="w3-select" required th:name="category">
             <option th:each="cat, iter:${categories}" th:selected="${cat.id eq unit.category.id}" th:value="${cat.id}">
                 <p th:text="${cat.name}"/>
             </option>
@@ -27,7 +125,7 @@
     </div>
     <label th:text="#{model.name}"/>
     <div th:if="${models} ne null">
-        <select class="w3-select" th:name="model">
+        <select class="w3-select" required th:name="model">
             <option th:each="mod1, iter:${models}" th:selected="${mod1.id eq unit.model.id}" th:value="${mod1.id}">
                 <p th:text="${mod1.name}"/>
             </option>
@@ -35,8 +133,9 @@
     </div>
     <label th:text="#{producer.name}"/>
     <div th:if="${producers} ne null">
-        <select class="w3-select" th:name="producer">
-            <option th:each="prod, iter:${producers}" th:selected="${prod.id eq unit.producer.id}" th:value="${prod.id}">
+        <select class="w3-select" required th:name="producer">
+            <option th:each="prod, iter:${producers}" th:selected="${prod.id eq unit.producer.id}"
+                    th:value="${prod.id}">
                 <p th:text="${prod.name}"/>
                 <p th:text="${prod.country}"/>
             </option>
@@ -54,6 +153,5 @@
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{submit.name}"/>
 </form>
 
-<a th:href="${'/techniques'}" th:text="#{page.prev}"/>
 </body>
 </html>

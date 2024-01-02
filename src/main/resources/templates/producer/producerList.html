@@ -6,22 +6,105 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title th:text="#{producer.list.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link th:href="@{/category/catList.css}" rel="stylesheet" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        header a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        header a:hover {
+            background-color: #555;
+        }
+
+        #language-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+
+        form {
+            margin: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .w3-bar {
+            margin-top: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
 <header>
-    <a class="w3-a" th:text="#{language.en}"
-       th:href="@{/producers(page=${page},size=${size}, name =${name}, country=${country}, language=${'en'})}"/>
-    <a class="w3-a" th:text="#{language.ru}"
-       th:href="@{/producers(page=${page},size=${size}, name =${name},country=${country}, language=${'ru'})}"/>
+    <div id="language-buttons">
+        <a class="w3-a" th:text="#{language.en}"
+           th:href="@{/admin/producers(page=${page},size=${size}, name =${name}, country=${country}, language=${'en'})}"/>
+        <a class="w3-a" th:text="#{language.ru}"
+           th:href="@{/admin/producers(page=${page},size=${size}, name =${name},country=${country}, language=${'ru'})}"/>
+    </div>
+    <a class="w3-back" th:href="${'/admin/home'}" th:text="#{home.page}"></a>
+
 </header>
-<form class="form1" th:action="${'/producers'}" method="post">
+<form class="form1" th:action="${'/admin/producers'}" method="post">
     <input th:type="search" th:name="name" th:placeholder="#{name.placeholder}">
     <input th:type="search" th:name="country" th:placeholder="#{country.placeholder}">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
             th:text="#{confirm.name}"/>
 </form>
-<form th:action="${'/producers'}" method="post">
+<form th:action="${'/admin/producers'}" method="post">
     <input th:type="hidden" th:name="name" th:value="${null}">
     <input th:type="hidden" th:name="country" th:value="${null}">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
@@ -43,13 +126,13 @@
             <td th:text="${unit.name}"/>
             <td th:text="${unit.country}"/>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="${'/producers/edit'}" th:method="get">
+                <form th:action="${'/admin/producers/edit'}" th:method="get">
                     <input th:type="hidden" th:name="producerId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"/>
                 </form>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="${'/producers/delete'}" th:method="post">
+                <form th:action="${'/admin/producers/delete'}" th:method="post">
                     <input th:type="hidden" th:name="producerId" th:value="${unit.id}">
 
                     <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"/>
@@ -59,7 +142,7 @@
         </tbody>
     </table>
 </div>
-<form sec:authorize="hasAuthority('ADMIN')" th:action="${'/producers/add'}" th:method="get">
+<form sec:authorize="hasAuthority('ADMIN')" th:action="${'/admin/producers/add'}" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
             th:text="#{add.producer}"/>
 </form>
@@ -67,7 +150,7 @@
     <div class="w3-bar">
         <div class="w3-center">
             <div th:if="${page} ne 1" style="display:inline-block;">
-                <a th:href="@{/producers(page=${page}-1,size=${size}, name = ${name}, country = ${country})}"
+                <a th:href="@{/admin/producers(page=${page}-1,size=${size}, name = ${name}, country = ${country})}"
                    th:text="#{page.prev}"/>
             </div>
 
@@ -77,7 +160,7 @@
                     ${i}
                 </a>
 
-                <a th:href="@{/producers(page=${i},size=${size},name = ${name}, country = ${country})}"
+                <a th:href="@{/admin/producers(page=${i},size=${size},name = ${name}, country = ${country})}"
                    th:text="${i}"
                    th:if="${page} ne ${i}">
                     ${i}
@@ -85,13 +168,12 @@
             </div>
 
             <div th:if="${page} lt ${totalPage}" style="display:inline-block;">
-                <a th:href="@{/producers(page=${page}+1,size=${size},name = ${name}, country = ${country})}"
+                <a th:href="@{/admin/producers(page=${page}+1,size=${size},name = ${name}, country = ${country})}"
                    th:text="#{page.next}"/>
             </div>
 
         </div>
     </div>
 </div>
-<a class="w3-back" th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"/>
 </body>
 </html>

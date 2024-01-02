@@ -3,18 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Page</title>
+  <title th:text="#{login.page}">Login Page</title>
   <link th:href="@{/auth/login.css}" rel="stylesheet" />
+  <script>
+    function validateLoginForm() {
+      var username = document.forms["form1"]["username"].value;
+      var password = document.forms["form1"]["password"].value;
+
+      if (username === "" || password === "") {
+        alert("Требуется указать имя пользователя и пароль");
+        return false;
+      }
+
+      // Можно добавить дополнительную логику клиентской валидации по необходимости
+
+      return true;
+    }
+  </script>
+  <style>
+    .error{
+      color: red;
+    }
+  </style>
 </head>
 <body>
 <div class="login-container">
-  <h2>Login</h2>
-  <p>Not registered yet? <a class="register-link" th:href="@{/registration}">Register here</a></p>
-  <form class="form1">
-    <input type="text" class="w3-input" placeholder="Username">
-    <input type="password" class="w3-input" placeholder="Password">
-    <button type="submit" class="w3-button">Login</button>
+  <div class="language-container">
+    <a class="language-link" th:text="#{language.en}" th:href="@{/login(language=${'en'})}">English</a>
+    <a class="language-link" th:text="#{language.ru}" th:href="@{/login(language=${'ru'})}">Русский</a>
+  </div>
+  <h2 th:text="#{login.name}">Login</h2>
+  <a class="register-link" th:href="@{'/registration'}" th:text="#{register.not}">Register here</a>
+  <form class="form1" th:action="@{'/login'}" th:method="post" onsubmit="validateLoginForm()">
+    <input type="text" required name ="username" class="w3-input" th:placeholder="#{username.name}">
+    <input type="password" required name="password" class="w3-input" th:placeholder="#{password.name}">
+    <button type="submit" class="w3-button" th:text="#{confirm.name}"></button>
   </form>
+  <p class="error" th:if="${error}" th:text="#{login.error}"></p>
 </div>
 </body>
 </html>

@@ -48,6 +48,7 @@ public class Technique implements Serializable {
     @JoinColumn(name = "category_id")
     private Category category;
     @ToString.Exclude
+    @JsonIgnore
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "technique", cascade = CascadeType.ALL)
     private Set<OrderTechnique> orderTechniques = new HashSet<>();

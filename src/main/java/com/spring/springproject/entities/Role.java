@@ -1,5 +1,6 @@
 package com.spring.springproject.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,8 +26,9 @@ public class Role implements Serializable {
     @EqualsAndHashCode.Exclude
     @Column(name = "name")
     private String name;
-
+@JsonIgnore
     @EqualsAndHashCode.Exclude
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 }

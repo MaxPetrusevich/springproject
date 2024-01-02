@@ -2,7 +2,15 @@
     margin: 0;
     padding: 0;
 }
+.language-container {
+    margin-top: 10px;
+}
 
+.language-link {
+    margin-right: 10px;
+    text-decoration: none;
+    color: #333;
+}
 body {
     background: linear-gradient(45deg, rgb(10, 209, 164), rgb(11, 176, 181));
     display: flex;

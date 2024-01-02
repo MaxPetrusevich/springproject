@@ -3,57 +3,154 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <title th:text="#{technique.add.title}"/>
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title th:text="#{technique.add.title}"/>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 0 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        header a:hover {
+            background-color: #555;
+        }
+
+        #language-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        form {
+            margin: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .w3-checkbox label {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        input[type="text"], input[type="checkbox"] {
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .w3-bar {
+            margin-top: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
 <header>
-  <a th:text="#{language.en}"
-     th:href="@{/techniques/add(language=${'en'})}"/>
-  <a th:text="#{language.ru}"
-     th:href="@{/techniques/add(language=${'ru'})}"/>
-</header>
-<form class="w3-container"  th:action="${'/techniques/add'}" th:method="post">
-  <label th:text="#{price.name}"/>
-  <input class="w3-input" required th:type="number" th:name="price" th:placeholder="#{price.placeholder}">
-  <label th:text="#{category.name}"/>
-  <div th:if="${categories} ne null">
-    <select class="w3-select" required th:name="category">
-      <option th:each="cat, iter:${categories}"  th:value="${cat.id}">
-        <p th:text="${cat.name}"/>
-      </option>
-    </select>
-  </div>
-  <label th:text="#{model.name}"/>
-  <div th:if="${models} ne null">
-    <select class="w3-select" required th:name="model">
-      <option th:each="mod1, iter:${models}"  th:value="${mod1.id}">
-        <p th:text="${mod1.name}"/>
-      </option>
-    </select>
-  </div>
-  <label th:text="#{producer.name}"/>
-  <div th:if="${producers} ne null">
-    <select class="w3-select" required th:name="producer">
-      <option th:each="prod, iter:${producers}"  th:value="${prod.id}">
-        <p th:text="${prod.name}"/>
-        <p th:text="${prod.country}"/>
-      </option>
-    </select>
-  </div>
-  <label th:text="#{store.list.title}"/>
-  <div th:if="${stores} ne null">
-    <input th:type="hidden" th:if="${stores.size() == 0}" th:name="storeId" th:value="${null}">
-    <div th:each="store, iter:${stores}">
-      <input class="w3-check" th:type="checkbox" th:name="storeId" th:value="${store.id}">
-      <label th:text="${store.name + ';' +store.address}"/>
+    <div id="language-buttons">
+        <a th:text="#{language.en}"
+           th:href="@{/admin/techniques/add(language=${'en'})}"/>
+        <a th:text="#{language.ru}"
+           th:href="@{/admin/techniques/add(language=${'ru'})}"/>
     </div>
-  </div>
-  <input th:type="hidden" th:if="${stores eq null}" th:name="storeId" th:value="${null}">
-  <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{submit.name}"/>
+    <a th:href="${'/admin/techniques'}" th:text="#{page.prev}"/>
+
+</header>
+<form class="w3-container" th:action="${'/admin/techniques/add'}" th:method="post">
+    <label th:text="#{price.name}"/>
+    <input class="w3-input" required th:type="number" th:name="price" th:placeholder="#{price.placeholder}">
+    <label th:text="#{category.name}"/>
+    <div th:if="${categories} ne null">
+        <select class="w3-select" required th:name="category">
+            <option th:each="cat, iter:${categories}" th:value="${cat.id}">
+                <p th:text="${cat.name}"/>
+            </option>
+        </select>
+    </div>
+    <label th:text="#{model.name}"/>
+    <div th:if="${models} ne null">
+        <select class="w3-select" required th:name="model">
+            <option th:each="mod1, iter:${models}" th:value="${mod1.id}">
+                <p th:text="${mod1.name}"/>
+            </option>
+        </select>
+    </div>
+    <label th:text="#{producer.name}"/>
+    <div th:if="${producers} ne null">
+        <select class="w3-select" required th:name="producer">
+            <option th:each="prod, iter:${producers}" th:value="${prod.id}">
+                <p th:text="${prod.name}"/>
+                <p th:text="${prod.country}"/>
+            </option>
+        </select>
+    </div>
+    <label th:text="#{store.list.title}"/>
+    <div th:if="${stores} ne null">
+        <input th:type="hidden" th:if="${stores.size() == 0}" th:name="storeId" th:value="${null}">
+        <div th:each="store, iter:${stores}">
+            <input class="w3-check" th:type="checkbox" th:name="storeId" th:value="${store.id}">
+            <label th:text="${store.name + ';' +store.address}"/>
+        </div>
+    </div>
+    <input th:type="hidden" th:if="${stores eq null}" th:name="storeId" th:value="${null}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit" th:text="#{submit.name}"/>
 </form>
 
-<a th:href="${'/techniques'}" th:text="#{page.prev}"/>
 </body>
 </html>

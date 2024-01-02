@@ -7,10 +7,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import static com.spring.springproject.controller.Constants.*;
+import java.util.Set;
 //сделать проверку при импорте из json
 @Configuration
 @EnableWebSecurity
@@ -32,26 +33,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers(CONFIG_MATCHER, "/registration", "/login").hasAnyAuthority(ADMIN, USER)
-                .antMatchers("/auth/**").permitAll() // Разрешение на использование ресурсов из static/auth
+                .antMatchers ("/registration", "/login", "/registration/confirm").permitAll()
+                .antMatchers( "/auth/**", "/tech/**", "/category/**", "customer/**").permitAll()
+                .antMatchers("/admin/**").hasAuthority("ADMIN")
+                .antMatchers("/customer/**").hasAuthority("USER")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/login")
-                .loginProcessingUrl("/login")
+                .failureUrl("/login?error=true")
+                .successHandler((request, response, authentication) -> {
+                    Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+                    if (roles.contains("ADMIN")) {
+                        response.sendRedirect("/admin/home");
+                    } else {
+                        response.sendRedirect("/customer/home");
+                    }
+                })
                 .permitAll()
                 .and()
                 .logout()
                 .permitAll()
-                .logoutSuccessUrl(LOGIN)
-                .and()
-                .formLogin()
-                .loginPage("/registration") // Указание пользовательской страницы регистрации
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll()
-                .logoutSuccessUrl(LOGIN);
+                .logoutSuccessUrl("/login");
     }
 
     @Autowired

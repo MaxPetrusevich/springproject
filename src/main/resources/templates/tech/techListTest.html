@@ -1,47 +1,409 @@
 <!DOCTYPE html>
 <html lang="all" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Computer Equipment</title>
-  <link rel="stylesheet" href="./style.css">
+    <meta charset="UTF-8">
+    <title>Computer Equipment</title>
+    <link rel="stylesheet" th:href="@{/tech/list.css}">
+    <style>
+        /* Add the styles directly in the HTML file */
+        /* Reset styles for all elements */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Remove default list styling for ul elements */
+        ul {
+            list-style: none;
+        }
+
+        /* Remove default text decoration for links and set color to black */
+        a {
+            text-decoration: none;
+            color: black;
+        }
+
+        /* Common styles for product items */
+        .item {
+            flex: 0 1 calc(30% - 20px);
+            margin: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 30px;
+            background: #F9F8F8;
+            transition: transform 0.2s linear;
+        }
+
+        .item:hover {
+            transform: scale(1.05);
+        }
+
+        /* Styles for product image and text overlay */
+        .photo {
+            position: relative;
+            overflow: hidden;
+            height: 200px; /* Adjust the height as needed */
+        }
+
+        .photo__text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            padding: 5px;
+        }
+
+        .photo__text span {
+            display: block;
+            color: #FFF;
+            font-family: 'Open Sans';
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 27px;
+            letter-spacing: 0.36px;
+        }
+
+        /* Styles for product details */
+        .photo img {
+            width: 100%;
+            height: auto;
+        }
+
+        .first-in-row {
+            margin-left: 0;
+        }
+
+        .item h3 {
+            color: #274C5B;
+            font-family: Roboto;
+            font-size: 22px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 35.2px;
+            letter-spacing: 0.36px;
+            padding-bottom: 11px;
+            margin-left: 30px;
+            border-bottom: 1px solid #D4D4D4;
+        }
+
+        /* Styles for product prices */
+        .price {
+            display: flex;
+            margin-left: 30px;
+            margin-top: 9px;
+        }
+
+        .price__left {
+            display: flex;
+        }
+
+        .noprice {
+            color: #B8B8B8;
+            font-family: 'Open Sans';
+            font-size: 17px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 32.4px;
+            letter-spacing: 0.36px;
+            text-decoration-line: line-through;
+            margin-right: 10px;
+        }
+
+        .prices span {
+            color: #274C5B;
+            font-family: 'Open Sans';
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 32.4px;
+            letter-spacing: 0.36px;
+            margin-right: 87px;
+        }
+
+        .price__right {
+            display: flex;
+            align-items: center;
+        }
+
+        .price__right img {
+            width: 85px;
+            height: 19px;
+        }
+
+        /* Container styles */
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            margin-top: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 20px;
+        }
+
+        /* Header styles */
+        .head {
+            padding: 10px 0;
+            background-color: #78e5a7;
+            display: flex;
+            justify-content: space-between; /* Change to space-between to push items to the edges */
+            margin: 0 auto; /* Center the container */
+        }
+
+        .ul {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .ul li {
+            margin-bottom: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            position: relative;
+        }
+
+        .ul li:nth-child(2) {
+            margin-right: auto; /* Auto margin for flexible space */
+        }
+
+        .ul a {
+            padding: 10px 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .ul a:hover,
+        .back:hover,
+        a:hover {
+            background-color: #42e38a;
+        }
+
+        .back {
+            position: absolute;
+            top: 0;
+            left: 20px;
+            font-size: 16px;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .container0 {
+
+        }
+
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pagination-item {
+            margin: 0 5px;
+            display: inline-block;
+        }
+
+        .pagination-link {
+            padding: 10px;
+            background-color: #42e38a;
+            color: #fff;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .pagination-link:hover {
+            background-color: #2fa768;
+        }
+
+        .current {
+            background-color: #2fa768;
+        }
+
+        .add-to-cart-button {
+            display: block;
+            margin: 0 auto; /* Center the button horizontally */
+            padding: 10px 20px;
+            background-color: #42e38a;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .add-to-cart-button:hover {
+            background-color: #2fa768;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+
+        form input {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        form button {
+            padding: 10px 20px;
+            background-color: #42e38a;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #2fa768;
+        }
+
+        /* Styles for hidden filter form */
+        form.hidden {
+            display: inline-block; /* Display the hidden form inline with the visible form */
+        }
+
+        /* Add this class to the second form to hide it initially */
+        form.hidden input,
+        form.hidden button {
+            display: none;
+        }
+        header {
+            padding: 10px 0;
+            background-color: #78e5a7;
+            display: flex;
+            justify-content: space-between; /* Keep the space between items */
+            align-items: center; /* Vertically center items */
+            margin: 0 auto; /* Center the container */
+        }
+        #language-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        #language-buttons a {
+            padding: 10px 15px;
+            background-color: #42e38a;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #language-buttons a:hover {
+            background-color: #2fa768;
+        }
+    </style>
 </head>
 <body>
 <header>
-  <a class="back" href="">Back to Main Menu</a>
-  <div class="head">
-    <ul class="ul">
-      <li><a href="#">About Us</a></li>
-      <li><a href="#">User Account</a></li>
-    </ul>
-  </div>
+    <div class="head">
+        <ul class="ul">
+            <a class="back" th:href="@{'/logout'}" th:text="#{exit.name}"></a>
+            <li><a th:href="@{/customer/profile}" th:text="#{user.account.name}"></a></li>
+            <li><a th:href="@{'/customer/cart'}" th:text="#{cart.name}"></a></li> <!-- New Cart element -->
+        </ul>
+    </div>
+    <div id="language-buttons">
+        <a th:text="#{language.en}"
+           th:href="@{/customer/home(page=${page},size=${size}, startPrice=${startPrice}, endPrice=${endPrice}, categoryName=${categoryName},modelName=${modelName}, producerName=${producerName}, language=${'en'})}"/>
+        <a th:text="#{language.ru}"
+           th:href="@{/customer/home(page=${page},size=${size}, startPrice=${startPrice}, endPrice=${endPrice}, categoryName=${categoryName},modelName=${modelName}, producerName=${producerName}, language=${'ru'})}"/>
+    </div>
+
 </header>
-<div class="container" th:each="item : ${items}">
-  <div class="item">
-    <div class="photo">
-      <div class="photo__text">
-        <span>Computer Equipment</span>
-      </div>
-      <img th:src="${item.image}" alt="#">
-    </div>
-    <h3 th:text="${item.name}"></h3>
-    <div class="specs">
-      <p th:text="'Model: ' + ${item.model}"></p>
-      <p th:text="'Manufacturer: ' + ${item.producer}"></p>
-      <p th:text="'Country: ' + ${item.producer.country}"></p>
-      <p th:text="'Category: ' + ${item.category}"></p>
-      <div th:if="${unit.category ne null}">
-        <div th:each="type, it:${unit.category.types}">
-          <p th:text="${type.name}"/>
+<div>
+
+    <form th:action="${'/customer/home'}" method="get">
+        <input th:type="number" th:name="startPrice" th:placeholder="#{start.price.placeholder}">
+        <input th:type="number" th:name="endPrice" th:placeholder="#{end.price.placeholder}">
+        <input th:type="text" th:name="categoryName" th:placeholder="#{category.name}">
+        <input th:type="text" th:name="modelName" th:placeholder="#{model.name}">
+        <input th:type="text" th:name="producerName" th:placeholder="#{producer.name}">
+        <button class="w3-button w3-white w3-border" style="margin-top: 0" th:type="submit"
+                th:text="#{confirm.name}"/>
+    </form>
+
+    <form th:action="${'/customer/home'}" method="get">
+        <input th:type="hidden" th:name="startPrice" th:value="${null}">
+        <input th:type="hidden" th:name="endPrice" th:value="${null}">
+        <input th:type="hidden" th:name="categoryName" th:value="${null}">
+        <input th:type="hidden" th:name="modelName" th:value="${null}">
+        <input th:type="hidden" th:name="producerName" th:value="${null}">
+        <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{clear.filter}"/>
+    </form>
+    <div class="container0">
+        <div class="container">
+            <div th:each="item, iterStat : ${items}" class="item"
+                 th:classappend="${iterStat.index % 3 == 0}? 'first-in-row' : ''">
+                <div class="photo">
+                    <div class="photo__text">
+                        <span>Computer Equipment</span>
+                        <img width="40" th:src="@{/tech/{id}/avatar(id=${item.id})}" alt="Technique Image"/>
+                    </div>
+                </div>
+                <div class="specs">
+                    <p th:if="${item.model ne null}" th:text="#{model.name}+' '+ ${item.model.name}"></p>
+                    <p th:if="${item.producer ne null}" th:text="#{producer.name} + ' ' + ${item.producer.name}"></p>
+                    <p th:if="${item.producer ne null}" th:text="#{producer.country} + ' ' + ${item.producer.country}"></p>
+                    <p th:if="${item.category ne null}" th:text="#{category.name} + ' ' + ${item.category.name}"></p>
+                    <div th:if="${item.category ne null}">
+                        <div th:each="type, it:${item.category.types}">
+                            <p th:if="${type ne null}" th:text="${type.name}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="availability">
+                    <p th:text="#{available.name}">:</p>
+                    <ul>
+                        <li th:each="store : ${item.storeList}" th:text="${store}"></li>
+                    </ul>
+                </div>
+                <form th:method="post" th:action="@{'/customer/cart'}">
+                    <input type="hidden" name="techId" th:value="${item.id}"/>
+                    <input type="hidden" name="prev" th:value="${#httpServletRequest.requestURI}">
+                    <button class="add-to-cart-button" th:text="#{cart.add}"></button>
+                </form>
+            </div>
         </div>
-      </div>
     </div>
-    <div class="availability">
-      <p>Available at:</p>
-      <ul>
-        <li th:each="store : ${item.stores}" th:text="${store}"></li>
-      </ul>
-    </div>
-  </div>
 </div>
+<div th:if="${items.size() > 0}">
+    <div class="pagination">
+        <div class="w3-center">
+            <div th:if="${page} ne 1" class="pagination-item">
+                <a th:href="@{/customer/home(page=${page}-1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName})}"
+                   th:text="#{page.prev}" class="pagination-link"/>
+            </div>
+
+            <div th:each="i : ${#numbers.sequence(1, totalPage)}" class="pagination-item">
+                <a th:text="${i}" th:if="${page} eq ${i}" class="pagination-link current"/>
+                <a th:href="@{/customer/home(page=${i},size=${size}, startPrice=${startPrice}, endPrice = ${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName})}"
+                   th:text="${i}" th:if="${page} ne ${i}" class="pagination-link"/>
+            </div>
+
+            <div th:if="${page} lt ${totalPage}" class="pagination-item">
+                <a th:href="@{/customer/home(page=${page}+1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName})}"
+                   th:text="#{page.next}" class="pagination-link"/>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

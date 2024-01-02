@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="#{user.edit}"></title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        form {
+            text-align: center;
+            width: 300px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+            text-align: left;
+        }
+
+        input {
+            margin-bottom: 15px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .edit-user-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        header a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        header a:hover {
+            background-color: #555;
+        }
+
+        #language-buttons {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+    <script >
+        function validateForm() {
+            var firstName = document.getElementsByName('firstname')[0].value;
+            var lastName = document.getElementsByName('surname')[0].value;
+            var email = document.getElementsByName('email')[0].value;
+            var username = document.getElementsByName('username')[0].value;
+
+
+            var errorMessages = [];
+
+            if (!validateField(firstName, 'error.firstName')) {
+                errorMessages.push('[[#{error.firstName}]]');
+            }
+
+            if (!validateField(lastName, 'error.lastName')) {
+                errorMessages.push('[[#{error.lastName}]]');
+            }
+
+            if (!validateField(email, 'error.email')) {
+                errorMessages.push('[[#{error.email}]]');
+            }
+
+
+            var errorContainer = document.getElementById('errorMessages');
+            errorContainer.innerHTML = '';
+
+            if (errorMessages.length > 0) {
+                for (var i = 0; i < errorMessages.length; i++) {
+                    errorContainer.innerHTML += '<p class="error">' + errorMessages[i] + '</p>';
+                }
+                return false; // блокировать отправку формы, если есть ошибки
+            }
+
+            return true;
+        }
+
+        function validateField(value, errorMessageKey) {
+            var namePattern = /^[A-Za-zА-Яа-я]{2,15}$/;
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+            if (errorMessageKey === 'error.email') {
+                return emailPattern.test(value);
+            }  else {
+                return namePattern.test(value);
+            }
+        }
+    </script>
+</head>
+<body>
+
+<header>
+    <div id="language-buttons">
+        <a th:text="#{language.en}" th:href="@{/admin/edit-user/${userDto.id}(language=${'en'})}">English</a>
+        <a th:text="#{language.ru}" th:href="@{/admin/edit-user/${userDto.id}( language=${'ru'})}">Русский</a>
+    </div>
+    <a th:href="@{'/admin/users'}" th:text="#{page.prev}"/>
+</header>
+
+<div th:if="${userDto != null}">
+    <h2 th:text="#{user.edit}"></h2>
+    <form th:action="@{'/admin/edit-user/' + ${userDto.id}}" method="post" onsubmit="return validateForm()">
+        <label for="username" th:text="#{username.name}"></label>
+        <input type="text" th:field="${userDto.username}" id="username" readonly />
+
+        <label for="name" th:text="#{firstname.name}"></label>
+        <input type="text" required th:field="${userDto.name}" id="name" />
+
+        <label for="surname" th:text="#{surname.name}"></label>
+        <input type="text" required th:field="${userDto.surname}" id="surname" />
+
+        <label for="email" th:text="#{email.name}"></label>
+        <input type="email" required th:field="${userDto.email}" id="email" />
+        <input typ="hidden" th:field="${userDto.password}" th:value="${userDto.password}">
+
+        <button class="edit-user-btn" type="submit" th:text="#{changes.save}"></button>
+    </form>
+    <div class="errorMessages"></div>
+</div>
+
+</body>
+</html>

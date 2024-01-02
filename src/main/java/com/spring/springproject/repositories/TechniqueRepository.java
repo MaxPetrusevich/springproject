@@ -3,6 +3,7 @@ package com.spring.springproject.repositories;
 import com.spring.springproject.entities.Technique;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -39,16 +40,23 @@ public interface TechniqueRepository extends JpaRepository<Technique, Integer> {
     @Transactional
     void deleteById(@Param("id") Integer id);
 
-    @Query(value = "SELECT t FROM Technique t WHERE t.price BETWEEN :startPrice AND :endPrice " +
-            "AND LOWER(t.producer.name) LIKE LOWER(CONCAT('%', :#{#technique.producer.name}, '%')) " +
-            "AND LOWER(t.model.name) LIKE LOWER(CONCAT('%', :#{#technique.model.name}, '%')) " +
-            "AND LOWER(t.category.name) LIKE LOWER(CONCAT('%', :#{#technique.category.name}, '%')) ORDER BY t.id DESC ",
-            countQuery = "SELECT COUNT(t) FROM Technique t WHERE t.price BETWEEN :startPrice AND :endPrice " +
-                    "AND LOWER(t.producer.name) LIKE LOWER(CONCAT('%', :#{#technique.producer.name}, '%')) " +
-                    "AND LOWER(t.model.name) LIKE LOWER(CONCAT('%', :#{#technique.model.name}, '%')) " +
-                    "AND LOWER(t.category.name) LIKE LOWER(CONCAT('%', :#{#technique.category.name}, '%'))")
-    Page<Technique> findAll(@Param("technique") Technique technique, @Param("startPrice") Double startPrice, @Param("endPrice") Double endPrice, Pageable pageable);
-
+  /*  @Query(value = "SELECT t FROM Technique t WHERE " +
+            "(:startPrice IS NULL OR t.price BETWEEN :startPrice AND :endPrice) " +
+            "AND (:producerName Like '' OR LOWER(t.producer.name) LIKE CONCAT('%', :producerName, '%')) " +
+            "AND (:modelName Like '' OR LOWER(t.model.name) LIKE CONCAT('%', :modelName, '%')) " +
+            "AND (:categoryName Like '' OR LOWER(t.category.name) LIKE CONCAT('%', :categoryName, '%')) ORDER BY t.id DESC ",
+    countQuery = "SELECT COUNT(t) FROM Technique t WHERE t.price BETWEEN :startPrice AND :endPrice " +
+            "AND (:producerName Like '' OR LOWER(t.producer.name) LIKE CONCAT('%', :producerName, '%')) " +
+            "AND (:modelName Like '' OR LOWER(t.model.name) LIKE CONCAT('%', :modelName, '%')) " +
+            "AND (:categoryName Like '' OR LOWER(t.category.name) LIKE CONCAT('%', :categoryName, '%'))")
+    Page<Technique> findAll(
+            @Param("startPrice") Double startPrice,
+            @Param("endPrice") Double endPrice,
+            @Param("producerName") String producerName,
+            @Param("modelName") String modelName,
+            @Param("categoryName") String categoryName,
+            Pageable pageable);*/
+  Page<Technique> findAll(Specification<Technique> specification, Pageable pageable);
     @Transactional
     @Modifying
     @Query(value = "INSERT INTO tech_store (tech_id, store_id) " +

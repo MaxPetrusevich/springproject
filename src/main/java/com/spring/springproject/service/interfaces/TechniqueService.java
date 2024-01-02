@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 
 public interface TechniqueService extends Service<TechniqueDto> {
@@ -15,9 +16,12 @@ public interface TechniqueService extends Service<TechniqueDto> {
     TechniqueDto save(Integer producerId, Integer modelId, Integer categoryId,
                       Double price, Integer[] storeIdes);
 
-    Page<TechniqueDto> findAll(Pageable pageable, Double startPrice, Double endPrice);
+    Page<TechniqueDto> findAll(Pageable pageable, Double startPrice, Double endPrice, String categoryName,
+                               String producerName, String modelName);
 
     public void saveDataToJsonFile();
 
     void importDataFromJson(MultipartFile file) throws IOException;
+    Optional<TechniqueDto> updateImage(Integer id, MultipartFile image);
+    Optional<byte[]> findAvatar(Integer id);
 }

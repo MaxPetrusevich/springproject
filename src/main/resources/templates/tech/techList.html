@@ -7,11 +7,90 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title th:text="#{technique.list.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
 
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        header a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        header a:hover {
+            background-color: #555;
+        }
+
+        #language-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+
+        form {
+            margin: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .w3-bar {
+            margin-top: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+    </style>
     <script>
         function downloadFile() {
             // Замените URL на ваш реальный URL файла на сервере
-            var fileUrl = '/downloadFile';
+            var fileUrl = '/admin/downloadFile';
 
             // Используем библиотеку file-saver.js для скачивания файла
             fetch(fileUrl)
@@ -31,45 +110,65 @@
             const file = fileInput.files[0];
 
             if (file) {
-                const formData = new FormData();
-                formData.append('file', file);
+                // Check if the file has a valid format (e.g., JSON)
+                const allowedFormats = ['json'];
+                const fileExtension = getFileExtension(file.name);
 
-                fetch('/import-json', {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
+                if (allowedFormats.includes(fileExtension)) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    fetch('/admin/import-json', {
+                        method: 'POST',
+                        body: formData
                     })
-                    .then(data => {
-                        console.log('File uploaded successfully:', data);
-                    })
-                    .catch(error => {
-                        console.error('Error uploading file:', error);
-                    });
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+/*
+                            alert('File uploaded successfully: ' + JSON.stringify(data));
+*/
+                            // Refresh the page after successful upload
+                            window.location.reload();
+                        });
+                } else {
+                    alert('Invalid file format. Allowed formats: ' + allowedFormats.join(', '));
+                }
             } else {
-                console.error('No file selected');
+                alert('No file selected');
             }
         }
+
+        function getFileExtension(filename) {
+            return filename.slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2);
+        }
     </script>
+
 
 </head>
 <body>
 
 
 <header>
+    <div id="language-buttons">
     <a th:text="#{language.en}"
-       th:href="@{/techniques(page=${page},size=${size}, startPrice =${startPrice}, endPrice =${endPrice}, language=${'en'})}"/>
+       th:href="@{/admin/techniques(page=${page},size=${size}, startPrice =${startPrice}, endPrice =${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName}, language=${'en'})}"/>
     <a th:text="#{language.ru}"
-       th:href="@{/techniques(page=${page},size=${size}, startPrice =${startPrice}, endPrice =${endPrice}, language=${'ru'})}"/>
+       th:href="@{/admin/techniques(page=${page},size=${size}, startPrice =${startPrice}, endPrice =${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName}, language=${'ru'})}"/>
+    </div>
+    <a class="w3-back" th:href="${'/admin/home'}" th:text="#{home.page}"></a>
 </header>
-<form th:action="${'/techniques'}" method="get">
+<form th:action="${'/admin/techniques'}" method="get">
     <input th:type="number" th:name="startPrice" th:placeholder="#{start.price.placeholder}">
     <input th:type="number" th:name="endPrice" th:placeholder="#{end.price.placeholder}">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+    <input th:type="text" th:name="categoryName" th:placeholder="#{category.name}">
+    <input th:type="text" th:name="modelName" th:placeholder="#{model.name}">
+    <input th:type="text" th:name="producerName" th:placeholder="#{producer.name}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 0" th:type="submit"
             th:text="#{confirm.name}"/>
 </form>
 <form onsubmit="event.preventDefault(); downloadFile();">
@@ -81,9 +180,12 @@
     <input type="file" id="fileInput" name="file" accept=".json">
     <button type="button" onclick="uploadFile()">Загрузить</button>
 </form>
-<form th:action="${'/techniques'}" method="get">
+<form th:action="${'/admin/techniques'}" method="get">
     <input th:type="hidden" th:name="startPrice" th:value="${null}">
     <input th:type="hidden" th:name="endPrice" th:value="${null}">
+    <input th:type="hidden" th:name="categoryName" th:value="${null}">
+    <input th:type="hidden" th:name="modelName" th:value="${null}">
+    <input th:type="hidden" th:name="producerName" th:value="${null}">
     <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{clear.filter}"/>
 </form>
 <div th:if="${list.size() eq 0}">
@@ -123,23 +225,29 @@
                     </div>
                 </div>
             </td>
-            <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="${'/techniques/edit'}" th:method="GET">
+            <td>
+                <form th:action="${'/admin/techniques/edit'}" th:method="GET">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"/>
                 </form>
             </td>
-            <td sec:authorize="hasAuthority('ADMIN')">
-                <form th:action="${'/techniques/delete'}" th:method="POST">
+            <td>
+                <form th:action="${'/admin/techniques/delete'}" th:method="POST">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
                     <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"/>
+                </form>
+            </td>
+            <td>
+                <form th:action="${'/admin/techniques/image'}" th:method="GET">
+                    <input th:type="hidden" th:name="techId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{image.name}"/>
                 </form>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
-<form sec:authorize="hasAuthority('ADMIN')" th:action="${'/techniques/add'}" th:method="get">
+<form  th:action="${'/admin/techniques/add'}" th:method="get">
     <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
             th:text="#{add.technique}"/>
 </form>
@@ -147,7 +255,7 @@
     <div class="w3-bar">
         <div class="w3-center">
             <div th:if="${page} ne 1" style="display: inline-block">
-                <a th:href="@{/techniques(page=${page}-1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}"
+                <a th:href="@{/admin/techniques(page=${page}-1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName})}"
                    th:text="#{page.prev}"/>
             </div>
 
@@ -157,7 +265,7 @@
                     ${i}
                 </a>
 
-                <a th:href="@{/techniques(page=${i},size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}"
+                <a th:href="@{/admin/techniques(page=${i},size=${size}, startPrice=${startPrice}, endPrice = ${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName})}"
                    th:text="${i}"
                    th:if="${page} ne ${i}">
                     ${i}
@@ -165,13 +273,12 @@
             </div>
 
             <div th:if="${page} lt ${totalPage}" style="display: inline-block">
-                <a th:href="@{/techniques(page=${page}+1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice})}"
+                <a th:href="@{/admin/techniques(page=${page}+1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName})}"
                    th:text="#{page.next}"/>
             </div>
 
         </div>
     </div>
 </div>
-<a th:href="${'/home'}" th:text="#{home.page}" style="alignment: center"/>
 </body>
 </html>

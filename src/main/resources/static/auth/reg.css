@@ -12,6 +12,15 @@ body {
     height: 100vh;
     font-family: Arial, sans-serif;
 }
+.language-container {
+    margin-top: 10px;
+}
+
+.language-link {
+    margin-right: 10px;
+    text-decoration: none;
+    color: #333;
+}
 
 .register-container {
     background-color: #fff;

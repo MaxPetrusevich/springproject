@@ -48,11 +48,14 @@ public class TechniqueController {
     public String findAll(Model model,
                           @RequestParam(defaultValue = "1", required = false) int page,
                           @RequestParam(defaultValue = "3", required = false) int size,
-                          @RequestParam(defaultValue = "", required = false) Double startPrice,
-                          @RequestParam(defaultValue = "", required = false) Double endPrice) throws JsonProcessingException {
+                          @RequestParam( required = false) Double startPrice,
+                          @RequestParam( required = false) Double endPrice,
+                          @RequestParam( required = false) String categoryName,
+                          @RequestParam( required = false)String producerName,
+                          @RequestParam( required = false)String modelName) throws JsonProcessingException {
         Pageable pageable = Pageable.ofSize(size);
         pageable = pageable.withPage(page - 1);
-        Page<TechniqueDto> techniqueDtoPage = techniqueService.findAll(pageable, startPrice, endPrice);
+        Page<TechniqueDto> techniqueDtoPage = techniqueService.findAll(pageable, startPrice, endPrice, categoryName,producerName,modelName);
         model.addAttribute(PAGE, page);
         model.addAttribute(SIZE, size);
         model.addAttribute(START_PRICE, startPrice);
@@ -100,7 +103,7 @@ public class TechniqueController {
         return T_ADD;
     }
 
-    @PostMapping("/import-json")
+    @PostMapping("/admin/import-json")
     @ResponseBody
     public ResponseEntity<String> importJsonData(@RequestParam("file") MultipartFile file) {
         try {
@@ -117,7 +120,7 @@ public class TechniqueController {
         model.addAttribute(PRODUCERS, producerService.findAll());
         model.addAttribute(STORES, storeService.findAll());
     }
-    @GetMapping("/downloadFile")
+    @GetMapping("/admin/downloadFile")
     public ResponseEntity<InputStreamResource> downloadFile() throws IOException {
         techniqueService.saveDataToJsonFile();
         // Замените путь к файлу на реальный путь на вашем сервере
@@ -134,5 +137,15 @@ public class TechniqueController {
                 .contentLength(file.length())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
+    }
+    @PostMapping("/admin/techniques/image")
+    public String uploadTechnique( @RequestParam("image") MultipartFile multipartFile, @RequestParam("techId")Integer techId){
+        techniqueService.updateImage(techId, multipartFile);
+        return "redirect:/admin/techniques";
+    }
+    @GetMapping("/admin/techniques/image")
+    public String toUploadTechnique(@RequestParam("techId")Integer techId, Model model){
+        model.addAttribute("techId",techId);
+        return "tech/techImage";
     }
 }

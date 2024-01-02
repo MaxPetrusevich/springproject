@@ -53,5 +53,7 @@ public interface OrderTechniqueRepository extends JpaRepository<OrderTechnique, 
                                  @Param("minOrderAmount") Double minOrderAmount,
                                  @Param("maxOrderAmount") Double maxOrderAmount,
                                  Pageable pageable);
+    @Query("select ot from OrderTechnique ot where ot.technique.id = :techId and ot.order.id = :orderId")
+    Optional<OrderTechnique> findByTechniqueIdAndOrderId(@Param("techId") Integer techId, @Param("orderId") Integer orderId);
 }
 

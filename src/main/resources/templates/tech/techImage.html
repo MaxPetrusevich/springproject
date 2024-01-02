@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Your Page Title</title>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 20px;
+      background-color: #333;
+      color: #fff;
+    }
+
+    header a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+      font-size: 16px;
+      padding: 8px 12px;
+      border-radius: 4px;
+    }
+
+    header a:hover {
+      background-color: #555;
+    }
+
+    #language-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .edit-container {
+      background-color: #fff;
+      color: #000;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 80%;
+      margin: 20px auto;
+      text-align: center;
+    }
+
+    h2 {
+      color: #000;
+      font-family: Roboto;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    #image {
+      display: none;
+    }
+
+    .upload-btn-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+
+    .btn {
+      border: 2px solid #000;
+      color: #000;
+      background-color: #fff;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .upload-btn-wrapper #image {
+      font-size: 100px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+    }
+
+    .upload-btn-wrapper:hover {
+      cursor: pointer;
+    }
+
+    .w3-button {
+      width: 100%;
+      padding: 10px;
+      background-color: #000;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .w3-button:hover {
+      background-color: #000;
+    }
+
+    /* Add the styles from the second code snippet here */
+    form {
+      margin: 10px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div id="language-buttons">
+    <a th:text="#{language.en}" th:href="@{/admin/techniques/image(language=${'en'}, techId=${techId})}"/>
+    <a th:text="#{language.ru}" th:href="@{/admin/techniques/image(language=${'ru'}, techId=${techId})}"/>
+  </div>
+  <a th:href="${'/admin/techniques'}" th:text="#{page.prev}"/>
+</header>
+
+<div class="edit-container">
+  <h2 th:text="#{tech.image.change}"></h2>
+  <form th:method="post" th:action="@{'/admin/techniques/image'}" enctype="multipart/form-data">
+    <div class="upload-btn-wrapper">
+      <label for="image" class="btn" th:text="#{image.choose}"></label>
+      <input id="image" type="file" name="image">
+      <input type="hidden" name="techId" th:value="${techId}"/>
+    </div>
+    <br>
+    <button type="submit" class="w3-button" th:text="#{confirm.name}"></button>
+  </form>
+
+  <!-- Display current image -->
+  <div>
+    <h3>Current Image:</h3>
+    <img width="480" th:src="@{/tech/{id}/avatar(id=${techId})}" alt="Technique Image"/>
+    <!-- Add any additional information or styling for the current image -->
+  </div>
+</div>
+</body>
+</html>

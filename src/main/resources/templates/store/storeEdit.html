@@ -3,26 +3,121 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <title th:text="#{store.edit.title}"/>
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link th:href="@{/category/catAdd.css}" rel="stylesheet" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title th:text="#{store.edit.title}"/>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 0 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        header a:hover {
+            background-color: #555;
+        }
+
+        #language-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        form {
+            margin: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .w3-checkbox label {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        input[type="text"], input[type="checkbox"] {
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .w3-bar {
+            margin-top: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
 <header>
-  <a class="w3-a" th:text="#{language.en}"
-     th:href="@{/stores/edit(language=${'en'}, storeId =${unit.id})}"/>
-  <a class="w3-a" th:text="#{language.ru}"
-     th:href="@{/stores/edit(language=${'ru'}, storeId =${unit.id})}"/>
+    <div id="language-buttons">
+        <a class="w3-a" th:text="#{language.en}"
+           th:href="@{/admin/stores/edit(language=${'en'}, storeId =${unit.id})}"/>
+        <a class="w3-a" th:text="#{language.ru}"
+           th:href="@{/admin/stores/edit(language=${'ru'}, storeId =${unit.id})}"/>
+    </div>
+    <a class="w3-previous" th:href="${'/admin/stores'}" th:text="#{page.prev}"/>
 </header>
-<form class="w3-container"  th:action="${'/stores/edit'}" th:method="post">
-  <input th:type="hidden" th:name="storeId" th:value="${unit.id}">
-  <label th:text="#{name.name}"/>
-  <input class="w3-input" th:type="text" th:name="name" th:value="${unit.name}">
-  <label th:text="#{address.name}"/>
-  <input class="w3-input" th:type="text" th:name="address" th:value="${unit.address}">
-  <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border" th:text="#{submit.name}"/>
+<form class="w3-container" th:action="${'/admin/stores/edit'}" th:method="post">
+    <input th:type="hidden" th:name="storeId" th:value="${unit.id}">
+    <label th:text="#{name.name}"/>
+    <input class="w3-input" th:type="text" required th:name="name" th:value="${unit.name}">
+    <label th:text="#{address.name}"/>
+    <input class="w3-input" th:type="text" required th:name="address" th:value="${unit.address}">
+    <button th:type="submit" style="margin-top: 10px" class="w3-button w3-white w3-border" th:text="#{submit.name}"/>
 </form>
-<a class="w3-previous" th:href="${'/stores'}" th:text="#{page.prev}"/>
 </body>
 </html>

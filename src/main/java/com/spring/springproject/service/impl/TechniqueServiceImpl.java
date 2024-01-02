@@ -2,12 +2,14 @@ package com.spring.springproject.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.springproject.dto.TechniqueDto;
-import com.spring.springproject.entities.Category;
-import com.spring.springproject.entities.Model;
-import com.spring.springproject.entities.Producer;
-import com.spring.springproject.entities.Technique;
+import com.spring.springproject.dto.UserDto;
+import com.spring.springproject.entities.*;
+import com.spring.springproject.repositories.OrderTechniqueRepository;
 import com.spring.springproject.repositories.TechniqueRepository;
+import com.spring.springproject.repositories.specifications.TechniqueSpecifications;
 import com.spring.springproject.service.interfaces.*;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,17 +17,17 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TechniqueServiceImpl implements TechniqueService {
 
     private final ModelMapper modelMapper;
@@ -34,18 +36,8 @@ public class TechniqueServiceImpl implements TechniqueService {
     private final StoreService storeService;
     private final ModelService modelService;
     private final ProducerService producerService;
-
-    @Autowired
-    public TechniqueServiceImpl(ModelMapper modelMapper, TechniqueRepository repository,
-                                CategoryService categoryService, StoreService storeService,
-                                ModelService modelService, ProducerService producerService) {
-        this.modelMapper = modelMapper;
-        this.repository = repository;
-        this.categoryService = categoryService;
-        this.storeService = storeService;
-        this.modelService = modelService;
-        this.producerService = producerService;
-    }
+    private final ImageServiceImpl imageService;
+    private final OrderTechniqueRepository orderTechniqueRepository;
 
 
     @Override
@@ -81,6 +73,14 @@ public class TechniqueServiceImpl implements TechniqueService {
 
     @Override
     public void delete(Integer id) {
+        Technique technique = repository.findById(id).orElse(null);
+        if (technique != null) {
+            technique.getOrderTechniques().forEach(
+                    orderTechnique -> {
+                        orderTechniqueRepository.delete(orderTechnique);
+                    }
+            );
+        }
         repository.deleteById(id);
     }
 
@@ -94,7 +94,7 @@ public class TechniqueServiceImpl implements TechniqueService {
         }
         Technique technique = modelMapper.map(techniqueDto, Technique.class);
         repository.update(technique);
-        technique.getStoreList().forEach(store->{
+        technique.getStoreList().forEach(store -> {
                     repository.saveStoreTech(store.getId(), technique.getId());
                 }
         );
@@ -108,7 +108,7 @@ public class TechniqueServiceImpl implements TechniqueService {
         setParams(producerId, modelId, categoryId, price, storeIdes, techniqueDto);
         Technique technique = modelMapper.map(techniqueDto, Technique.class);
         repository.saveTechnique(technique);
-        technique.getStoreList().forEach(store->{
+        technique.getStoreList().forEach(store -> {
                     repository.saveStoreTech(store.getId(), technique.getId());
                 }
         );
@@ -117,15 +117,12 @@ public class TechniqueServiceImpl implements TechniqueService {
     }
 
     @Override
-    public Page<TechniqueDto> findAll(Pageable pageable, Double startPrice, Double endPrice) {
+    public Page<TechniqueDto> findAll(Pageable pageable, Double startPrice, Double endPrice, String categoryName,
+                                      String producerName, String modelName) {
         startPrice = startPrice == null ? 0 : startPrice;
-        endPrice = endPrice == null ? 9999999 : endPrice;
-        Page<Technique> techniquesPage = repository.findAll(Technique.builder()
-                        .producer(Producer.builder().name("").build())
-                        .model(Model.builder().name("").build())
-                        .category(Category.builder().name("").build())
-                        .build(),
-                startPrice, endPrice, pageable);
+        endPrice = endPrice == null ? Double.MAX_VALUE : endPrice;
+        Page<Technique> techniquesPage =
+                repository.findAll(TechniqueSpecifications.filterByCriteria(startPrice, endPrice, producerName, modelName, categoryName), pageable);
         List<TechniqueDto> techniqueDtoList = techniquesPage
                 .stream()
                 .map(technique -> modelMapper.map(technique, TechniqueDto.class))
@@ -163,5 +160,36 @@ public class TechniqueServiceImpl implements TechniqueService {
         if (storeIdes != null) {
             Arrays.stream(storeIdes).forEach(storeId -> techniqueDto.getStoreList().add(storeService.findById(storeId)));
         }
+    }
+
+    @SneakyThrows
+    private void uploadImage(MultipartFile image) {
+        if (image.isEmpty()) {
+            imageService.upload(image.getOriginalFilename(), image.getInputStream());
+        }
+    }
+
+    @Transactional
+    @Override
+    public Optional<TechniqueDto> updateImage(Integer id, MultipartFile image) {
+        return repository.findById(id)
+                .map(entity -> {
+                    uploadImage(image);
+                    Optional.ofNullable(image)
+                            .filter(Predicate.not(MultipartFile::isEmpty))
+                            .ifPresent(avatar -> entity.setImage("\\tech\\" + avatar.getOriginalFilename()));
+                    return entity;
+                })
+                .map(repository::saveAndFlush)
+                .map(technique -> modelMapper.map(technique, TechniqueDto.class));
+    }
+
+    @Override
+    public Optional<byte[]> findAvatar(Integer id) {
+        return repository.findById(id)
+                .map(Technique::getImage)
+                .filter(StringUtils::hasText)
+                .flatMap(imageService::get);
+
     }
 }

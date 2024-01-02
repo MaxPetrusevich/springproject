@@ -1,21 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Account</title>
-    <link th:href="@{/customer/profile.css}" rel="stylesheet" />
+    <title th:text="#{user.account.name}"></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        ul {
+            list-style: none;
+        }
 
+        /* Remove default text decoration for links and set color to black */
+        a {
+            text-decoration: none;
+            color: black;
+        }
+
+        body {
+            background: linear-gradient(45deg, rgb(10, 209, 164), rgb(11, 176, 181));
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        /* Header styles */
+        .head {
+            padding: 10px 20px; /* Adjust padding as needed */
+            background-color: #78e5a7;
+            display: flex;
+            justify-content: space-between; /* Change to space-between to push items to the edges */
+            width: 100%; /* Set width to 100% */
+        }
+
+        .ul {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .ul li {
+            margin-bottom: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            position: relative;
+        }
+
+        .ul li:nth-child(2) {
+            margin-right: auto; /* Auto margin for flexible space */
+        }
+
+        .ul a {
+            padding: 10px 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .ul a:hover,
+        .back:hover,
+        a:hover {
+            background-color: #42e38a;
+        }
+        .avatar {
+            width: 120px; /* Измените ширину по необходимости */
+            height: 120px; /* Измените высоту по необходимости */
+            border-radius: 50%; /* Сделать его круглым */
+            object-fit: cover; /* Гарантировать, что изображение заполняет всю область */
+            margin-right: 15px; /* Подстройте отступ по необходимости */
+        }
+
+        .user-info-container {
+            display: flex; /* Устанавливаем контейнер в режим гибкого блока (flex container) */
+            align-items: center; /* Выравниваем элементы по центру по вертикали */
+            justify-content: space-between; /* Равномерно распределяем пространство между элементами */
+            text-align: left; /* Выравниваем текст слева */
+        }
+
+        .user-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+            margin: 20px auto; /* Центрируем контейнер по горизонтали */
+        }
+        /* New styles for input fields */
+        input {
+            width: calc(100% - 16px);
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        /* New styles for the form container */
+        .form-container {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-container label {
+            margin-bottom: 8px;
+        }
+
+        .form-container button {
+            background-color: #42e38a;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .form-container button:hover {
+            background-color: #2fa768;
+        }
+
+    </style>
+    <script th:inline="javascript">
+        function validateForm() {
+            var firstName = document.getElementsByName('firstname')[0].value;
+            var lastName = document.getElementsByName('surname')[0].value;
+            var email = document.getElementsByName('email')[0].value;
+            var username = document.getElementsByName('username')[0].value;
+
+
+            var errorMessages = [];
+
+            if (!validateField(firstName, 'error.firstName')) {
+                errorMessages.push('[[#{error.firstName}]]');
+            }
+
+            if (!validateField(lastName, 'error.lastName')) {
+                errorMessages.push('[[#{error.lastName}]]');
+            }
+
+            if (!validateField(email, 'error.email')) {
+                errorMessages.push('[[#{error.email}]]');
+            }
+
+
+            var errorContainer = document.getElementById('errorMessages');
+            errorContainer.innerHTML = '';
+
+            if (errorMessages.length > 0) {
+                for (var i = 0; i < errorMessages.length; i++) {
+                    errorContainer.innerHTML += '<p class="error">' + errorMessages[i] + '</p>';
+                }
+                return false; // блокировать отправку формы, если есть ошибки
+            }
+
+            return true;
+        }
+
+        function validateField(value, errorMessageKey) {
+            var namePattern = /^[A-Za-zА-Яа-я]{2,15}$/;
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+            if (errorMessageKey === 'error.email') {
+                return emailPattern.test(value);
+            }  else {
+                return namePattern.test(value);
+            }
+        }
+    </script>
 </head>
+
 <body>
+<header>
+    <div class="head">
+        <ul class="ul">
+            <a class="back" th:href="@{/logout}" th:text="#{exit.name}"></a>
+            <li><a th:href="@{/customer/profile/orders}" th:text="#{order.history}"></a></li>
+            <li><a th:href="@{/customer/profile/avatar}" th:text="#{avatar.change}"></a></li>
+            <li><a th:href="@{/customer/profile/password}" th:text="#{password.change}"></a></li>
+            <li><a th:href="@{/customer/profile}" th:text="#{user.account.name}"></a></li>
+            <li><a th:href="@{/customer/home}" th:text="#{products.name}"></a></li>
+        </ul>
+    </div>
+</header>
 <div class="user-container">
-    <h2>Welcome, [Username]</h2>
-    <div class="options-container">
-        <a href="#" class="option-link">Personal Information</a>
-        <a href="#" class="option-link">Shopping Cart</a>
-        <a href="#" class="option-link">Order History</a>
-        <a href="#" class="option-link logout-link">Logout</a>
+    <div class="user-info-container">
+        <img class="avatar"width="40" th:src="@{/user/{id}/avatar(id=${user.id})}" alt="User Avatar">
+        <h2 th:text="#{welcome.name}"> <span th:text="${user.name}"></span></h2>
+    </div>
+
+    <!-- New form container for personal data -->
+    <div id="personalDataForm" class="form-container">
+        <form th:action="@{'/customer/profile/edit'}" th:method="post" onsubmit="return validateForm()">
+            <label for="name" th:text="#{firstname.name}"></label>
+            <input type="text" id="name" name="name" th:value="${user.name}">
+
+            <label for="surname" th:text="#{surname.name}"></label>
+            <input type="text" id="surname" name="surname" th:value="${user.surname}">
+
+            <label for="email" th:text="#{email.name}"></label>
+            <input type="email" id="email" name="email" th:value="${user.email}">
+
+            <button type="submit" th:text="#{changes.save}"></button>
+        </form>
+        <div id="errorMessages"></div>
     </div>
 </div>
 </body>
+
 </html>
