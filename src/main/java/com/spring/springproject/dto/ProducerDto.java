@@ -6,9 +6,13 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EqualsAndHashCode(of = {"id"})
 public class ProducerDto {
+    @EqualsAndHashCode.Include
     private Integer id;
+    @EqualsAndHashCode.Exclude
+
     private String name;
+    @EqualsAndHashCode.Exclude
+
     private String country;
 }

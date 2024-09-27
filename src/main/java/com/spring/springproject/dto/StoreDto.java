@@ -8,10 +8,14 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EqualsAndHashCode(of = {"id"})
 public class StoreDto {
+    @EqualsAndHashCode.Include
     private Integer id;
+    @EqualsAndHashCode.Exclude
     private String name;
+    @EqualsAndHashCode.Exclude
     private String address;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<TechniqueDto> techniques;
 }

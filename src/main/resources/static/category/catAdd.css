@@ -1,0 +1,82 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background: linear-gradient(45deg, rgb(10, 209, 164), rgb(11, 176, 181));
+    margin-top: 20px;
+}
+
+a{
+    text-decoration: none;
+}
+
+header{
+    position: absolute;
+    top: 0;
+    right: 20px;
+}
+
+.w3-a:hover{
+    color: blue;
+}
+
+.w3-a:active{
+    color: blue;
+}
+
+.w3-input{
+    max-width: 245px;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.w3-container{
+    width: 275px;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.w3-button{
+    margin-top: 15px;
+    border-radius: 15px;
+}
+
+.w3-button.w3-white{
+    position: absolute;
+    top: 0;
+    left: 10px;
+    margin-top: 0;
+    border-radius: 0;
+}
+
+.w3-checkbox{
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.w3-previous{
+    position: absolute;
+    top: 0;
+    left: 10px;
+}
+
+.w3-select{
+    width: 300px;
+    margin: 0 auto;
+    display: block;
+}
+
+.button{
+    display: block;
+    margin: 10px auto;
+}
+
+.homeP{
+    margin: 10px auto;
+    width: 170px;
+}

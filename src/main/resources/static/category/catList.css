@@ -1,0 +1,46 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+a{
+    text-decoration: none;
+}
+
+header{
+    position: absolute;
+    top: 0;
+    right: 20px;
+}
+
+.w3-a:hover{
+    color: blue;
+}
+
+.w3-a:active{
+    color: blue;
+}
+
+.form1{
+    width: 23%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.w3-table-all tbody tr:hover:nth-child(1){
+    background-color: #6ce09c;
+}
+
+.w3-table-all tbody tr:hover:nth-child(2){
+    background-color: #6ce09c;
+}
+
+.w3-table-all tbody tr:hover:nth-child(3){
+    background-color: #6ce09c;
+}
+
+.w3-back{
+    position: absolute;
+    top: 0;
+    left: 20px;
+}

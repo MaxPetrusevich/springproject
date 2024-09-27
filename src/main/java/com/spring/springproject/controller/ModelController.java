@@ -1,76 +1,75 @@
 package com.spring.springproject.controller;
 
 import com.spring.springproject.dto.ModelDto;
-import com.spring.springproject.dto.TypeDto;
 import com.spring.springproject.service.interfaces.ModelService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.thymeleaf.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import static com.spring.springproject.controller.Constants.*;
 
 
 @Controller
 public class ModelController {
+
+
     private final ModelService modelService;
 
     @Autowired
     public ModelController(ModelService modelService) {
         this.modelService = modelService;
     }
-    @GetMapping("/model-list")
-    public String findAll(Model model) {
-        model.addAttribute("list", modelService.findAll());
-        return "model/modelList";
+
+    @RequestMapping(MODELS_URL)
+    public String findAll(Model model,
+                          @RequestParam(required = false, defaultValue = "") String name,
+                          @RequestParam(required = false, defaultValue = "1") int page,
+                          @RequestParam(required = false, defaultValue = "3") int size) {
+        Pageable pageable = Pageable.ofSize(size);
+        pageable = pageable.withPage(page - 1);
+        Page<ModelDto> modelPage = modelService.findAll(pageable, name);
+        model.addAttribute(PAGE, page);
+        model.addAttribute(SIZE, size);
+        model.addAttribute(NAME, name);
+        model.addAttribute(TOTAL_PAGE, modelPage.getTotalPages());
+        model.addAttribute(LIST, modelPage.getContent());
+        return MOD_LIST;
     }
 
-    @GetMapping("/model-edit")
-    public String editRedirect(Model model, HttpServletRequest request) {
-        String modelId = request.getParameter("modelId");
-        ModelDto modelDto = null;
-        if (!StringUtils.isEmptyOrWhitespace(modelId)) {
-            Integer id = Integer.parseInt(modelId);
-            modelDto = modelService.findById(id);
-        }
-        model.addAttribute("unit", modelDto);
-        return "model/modelEdit";
+    @GetMapping(MODEL_URL)
+    public String editRedirect(Model model, @RequestParam(MODEL_ID) Integer id) {
+        ModelDto modelDto = modelService.findById(id);
+        model.addAttribute(UNIT, modelDto);
+        return MOD_EDIT;
     }
 
-    @PostMapping("/model-edit")
-    public String edit(HttpServletRequest request, Model model) {
-        String modelId = request.getParameter("modelId");
-        ModelDto modelDto = null;
-        if (!StringUtils.isEmptyOrWhitespace(modelId)) {
-            Integer id = Integer.parseInt(modelId);
-            modelDto = modelService.findById(id);
-        }
-        modelDto.setName(request.getParameter("name"));
-        modelService.update(modelDto);
-        return findAll(model);
+    @PostMapping(MODEL_URL)
+    public String edit(@RequestParam(MODEL_ID) Integer id, @RequestParam(NAME) String name) {
+        modelService.update(id, name);
+        return REDIRECT + MODELS_URL;
     }
 
-    @PostMapping("/model-delete")
-    public String delete(HttpServletRequest request, Model model){
-        String modelId = request.getParameter("modelId");
-
-        if (!StringUtils.isEmptyOrWhitespace(modelId)) {
-            Integer id = Integer.parseInt(modelId);
-            modelService.delete(id);
-        }
-        return findAll(model);
+    @PostMapping(DEL_MODEL)
+    public String delete(@RequestParam(MODEL_ID) Integer id) {
+        modelService.delete(id);
+        return REDIRECT + MODELS_URL;
     }
 
-    @GetMapping("/model-add")
-    public String add(){
-        return "/model/modelAdd";
+    @GetMapping(NEW_MODEL)
+    public String add() {
+        return MODEL_MODEL_ADD;
     }
-    @PostMapping("/model-add")
-    public String add(HttpServletRequest request, Model model){
-        ModelDto modelDto = new ModelDto();
-        modelDto.setName(request.getParameter("name"));
-        modelDto = modelService.save(modelDto);
-        return findAll(model);
+
+    @PostMapping(NEW_MODEL)
+    public String add(@RequestParam(NAME) String name) {
+        modelService.save(name);
+        return REDIRECT + MODELS_URL;
     }
+
 }

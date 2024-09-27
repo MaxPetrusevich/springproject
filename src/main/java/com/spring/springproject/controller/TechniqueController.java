@@ -1,19 +1,33 @@
 package com.spring.springproject.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.springproject.dto.TechniqueDto;
 import com.spring.springproject.service.interfaces.*;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
+import java.io.*;
+import java.util.List;
+
+import static com.spring.springproject.controller.Constants.*;
 
 
 @Controller
 public class TechniqueController {
+
+
     private final TechniqueService techniqueService;
     private final CategoryService categoryService;
     private final StoreService storeService;
@@ -30,101 +44,108 @@ public class TechniqueController {
         this.producerService = producerService;
     }
 
-    @GetMapping("/technique-list")
-    public String findAll(Model model) {
-        model.addAttribute("list", techniqueService.findAll());
-        return "tech/techList";
+    @RequestMapping(TECHNIQUES)
+    public String findAll(Model model,
+                          @RequestParam(defaultValue = "1", required = false) int page,
+                          @RequestParam(defaultValue = "3", required = false) int size,
+                          @RequestParam( required = false) Double startPrice,
+                          @RequestParam( required = false) Double endPrice,
+                          @RequestParam( required = false) String categoryName,
+                          @RequestParam( required = false)String producerName,
+                          @RequestParam( required = false)String modelName) throws JsonProcessingException {
+        Pageable pageable = Pageable.ofSize(size);
+        pageable = pageable.withPage(page - 1);
+        Page<TechniqueDto> techniqueDtoPage = techniqueService.findAll(pageable, startPrice, endPrice, categoryName,producerName,modelName);
+        model.addAttribute(PAGE, page);
+        model.addAttribute(SIZE, size);
+        model.addAttribute(START_PRICE, startPrice);
+        model.addAttribute(END_PRICE, endPrice);
+        model.addAttribute(TOTAL_PAGE, techniqueDtoPage.getTotalPages());
+        model.addAttribute(LIST, techniqueDtoPage.getContent());
+        return T_LIST;
     }
 
-    @GetMapping ("/technique-edit")
-    public String editRedirect(Model model, HttpServletRequest request) {
-        String techId = request.getParameter("techId");
-        if (techId != null) {
-            Integer id = Integer.parseInt(techId);
-            model.addAttribute("unit", techniqueService.findById(id));
-        }
-        addAllAttibutes(model);
-        return "tech/techEdit";
+    @GetMapping(TECHNIQUE)
+    public String editRedirect(Model model, @RequestParam(TECH_ID) Integer id) {
+        model.addAttribute(UNIT, techniqueService.findById(id));
+        addAllAttributes(model);
+        return T_EDIT;
     }
 
-    @PostMapping( "/technique-edit")
-    public String edit(Model model, HttpServletRequest request) {
-        String techId = request.getParameter("techId");
-        TechniqueDto techniqueDto = null;
-        if (!StringUtils.isEmptyOrWhitespace(techId)) {
-            Integer id = Integer.parseInt(techId);
-            techniqueDto = techniqueService.findById(id);
-        }
-        convertEditAndAddParams(request, techniqueDto);
+    @PostMapping(TECHNIQUE)
+    public String edit(@RequestParam(TECH_ID) Integer id,
+                       @RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
+                       @RequestParam(CATEGORY) Integer categoryId, @RequestParam(PRICE) Double price,
+                       @RequestParam(name = STORE_ID, required = false) Integer[] storeIdes) {
+        techniqueService.update(producerId, modelId, categoryId, price, storeIdes, id);
+        return REDIRECT + TECHNIQUES;
 
-        techniqueService.update(techniqueDto);
-        return findAll(model);
     }
 
-    private void convertEditAndAddParams(HttpServletRequest request, TechniqueDto techniqueDto) {
-        String producerId = request.getParameter("producer");
-        if (!StringUtils.isEmptyOrWhitespace(producerId)) {
-            Integer id = Integer.parseInt(producerId);
-            techniqueDto.setProducer(producerService.findById(id));
-        }
-        String modelId = request.getParameter("model");
-        if (!StringUtils.isEmptyOrWhitespace(modelId)) {
-            Integer id = Integer.parseInt(modelId);
-            techniqueDto.setModel(modelService.findById(id));
-        }
-        String categoryId = request.getParameter("category");
-        if (!StringUtils.isEmptyOrWhitespace(categoryId)) {
-            Integer id = Integer.parseInt(categoryId);
-            techniqueDto.setCategory(categoryService.findById(id));
-        }
-        String price = request.getParameter("price");
-        if (!StringUtils.isEmptyOrWhitespace(price)) {
-            techniqueDto.setPrice(Double.parseDouble(price));
-        }
-        String[] storeIdes = request.getParameterValues("storeId");
-        techniqueDto.getStoreList().removeAll(techniqueDto.getStoreList());
-        if (storeIdes != null) {
-            for (String storeId :
-                    storeIdes) {
-                if (!StringUtils.isEmptyOrWhitespace(storeId)) {
-                    Integer id = Integer.parseInt(storeId);
-                    techniqueDto.getStoreList().add(storeService.findById(id));
-                }
-            }
-        }
+
+    @PostMapping(value = DEL_TECHNIQUE)
+    public String delete(@RequestParam(TECH_ID) Integer id) {
+        techniqueService.delete(id);
+        return REDIRECT + TECHNIQUES;
     }
 
-    @RequestMapping(value = "/technique-delete", method = RequestMethod.POST)
-    public String delete(Model model, HttpServletRequest request) {
-        String techId = request.getParameter("techId");
-        if (!StringUtils.isEmptyOrWhitespace(techId)) {
-            Integer id = Integer.parseInt(techId);
-            techniqueService.delete(id);
-        }
-        return findAll(model);
+    @PostMapping(NEW_TECHNIQUE)
+    public String add(@RequestParam(PRODUCER) Integer producerId, @RequestParam(MODEL) Integer modelId,
+                      @RequestParam(CATEGORY) Integer categoryId, @RequestParam(PRICE) Double price,
+                      @RequestParam(name = STORE_ID, required = false) Integer[] storeIdes) {
+        techniqueService.save(producerId, modelId, categoryId, price, storeIdes);
+        return REDIRECT + TECHNIQUES;
     }
 
-    @PostMapping("/technique-add")
-    public String add(Model model, HttpServletRequest request) {
-        TechniqueDto techniqueDto = new TechniqueDto();
-        techniqueDto.setStoreList(new HashSet<>());
-        convertEditAndAddParams(request, techniqueDto);
-        techniqueDto = techniqueService.save(techniqueDto);
-        return findAll(model);
-    }
-
-    @GetMapping("/technique-add")
+    @GetMapping(NEW_TECHNIQUE)
     public String add(Model model) {
-        addAllAttibutes(model);
-        return "tech/techAdd";
+        addAllAttributes(model);
+        return T_ADD;
     }
 
-    private void addAllAttibutes(Model model) {
-        model.addAttribute("categories", categoryService.findAll());
-        model.addAttribute("models", modelService.findAll());
-        model.addAttribute("producers", producerService.findAll());
-        model.addAttribute("stores", storeService.findAll());
+    @PostMapping("/admin/import-json")
+    @ResponseBody
+    public ResponseEntity<String> importJsonData(@RequestParam("file") MultipartFile file) {
+        try {
+            techniqueService.importDataFromJson(file);
+            return ResponseEntity.status(HttpStatus.OK).body("File uploaded successfully");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file");
+        }
     }
+    private void addAllAttributes(Model model) {
+        model.addAttribute(CATEGORIES, categoryService.findAll());
+        model.addAttribute(MODELS, modelService.findAll());
+        model.addAttribute(PRODUCERS, producerService.findAll());
+        model.addAttribute(STORES, storeService.findAll());
+    }
+    @GetMapping("/admin/downloadFile")
+    public ResponseEntity<InputStreamResource> downloadFile() throws IOException {
+        techniqueService.saveDataToJsonFile();
+        // Замените путь к файлу на реальный путь на вашем сервере
+        String filePath = "data.json";
+        File file = new File(filePath);
 
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=file.zip");
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+    @PostMapping("/admin/techniques/image")
+    public String uploadTechnique( @RequestParam("image") MultipartFile multipartFile, @RequestParam("techId")Integer techId){
+        techniqueService.updateImage(techId, multipartFile);
+        return "redirect:/admin/techniques";
+    }
+    @GetMapping("/admin/techniques/image")
+    public String toUploadTechnique(@RequestParam("techId")Integer techId, Model model){
+        model.addAttribute("techId",techId);
+        return "tech/techImage";
+    }
 }

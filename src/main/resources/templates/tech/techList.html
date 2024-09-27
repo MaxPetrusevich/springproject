@@ -1,59 +1,284 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/schema/security">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>TechList</title>
+    <title th:text="#{technique.list.title}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        header a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        header a:hover {
+            background-color: #555;
+        }
+
+        #language-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+
+        form {
+            margin: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .w3-bar {
+            margin-top: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+    </style>
+    <script>
+        function downloadFile() {
+            // Замените URL на ваш реальный URL файла на сервере
+            var fileUrl = '/admin/downloadFile';
+
+            // Используем библиотеку file-saver.js для скачивания файла
+            fetch(fileUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    // Запрашиваем у пользователя выбор директории для сохранения файла
+                    saveAs(blob, 'file.json');
+                })
+                .catch(error => {
+                    console.error('Ошибка при скачивании файла:', error);
+                });
+        }
+    </script>
+    <script>
+        function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (file) {
+                // Check if the file has a valid format (e.g., JSON)
+                const allowedFormats = ['json'];
+                const fileExtension = getFileExtension(file.name);
+
+                if (allowedFormats.includes(fileExtension)) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    fetch('/admin/import-json', {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+/*
+                            alert('File uploaded successfully: ' + JSON.stringify(data));
+*/
+                            // Refresh the page after successful upload
+                            window.location.reload();
+                        });
+                } else {
+                    alert('Invalid file format. Allowed formats: ' + allowedFormats.join(', '));
+                }
+            } else {
+                alert('No file selected');
+            }
+        }
+
+        function getFileExtension(filename) {
+            return filename.slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2);
+        }
+    </script>
+
+
 </head>
 <body>
+
+
+<header>
+    <div id="language-buttons">
+    <a th:text="#{language.en}"
+       th:href="@{/admin/techniques(page=${page},size=${size}, startPrice =${startPrice}, endPrice =${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName}, language=${'en'})}"/>
+    <a th:text="#{language.ru}"
+       th:href="@{/admin/techniques(page=${page},size=${size}, startPrice =${startPrice}, endPrice =${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName}, language=${'ru'})}"/>
+    </div>
+    <a class="w3-back" th:href="${'/admin/home'}" th:text="#{home.page}"></a>
+</header>
+<form th:action="${'/admin/techniques'}" method="get">
+    <input th:type="number" th:name="startPrice" th:placeholder="#{start.price.placeholder}">
+    <input th:type="number" th:name="endPrice" th:placeholder="#{end.price.placeholder}">
+    <input th:type="text" th:name="categoryName" th:placeholder="#{category.name}">
+    <input th:type="text" th:name="modelName" th:placeholder="#{model.name}">
+    <input th:type="text" th:name="producerName" th:placeholder="#{producer.name}">
+    <button class="w3-button w3-white w3-border" style="margin-top: 0" th:type="submit"
+            th:text="#{confirm.name}"/>
+</form>
+<form onsubmit="event.preventDefault(); downloadFile();">
+    <div>
+        <button type="submit" >Скачать json</button>
+    </div>
+</form>
+<form id="fileForm" enctype="multipart/form-data">
+    <input type="file" id="fileInput" name="file" accept=".json">
+    <button type="button" onclick="uploadFile()">Загрузить</button>
+</form>
+<form th:action="${'/admin/techniques'}" method="get">
+    <input th:type="hidden" th:name="startPrice" th:value="${null}">
+    <input th:type="hidden" th:name="endPrice" th:value="${null}">
+    <input th:type="hidden" th:name="categoryName" th:value="${null}">
+    <input th:type="hidden" th:name="modelName" th:value="${null}">
+    <input th:type="hidden" th:name="producerName" th:value="${null}">
+    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{clear.filter}"/>
+</form>
+<div th:if="${list.size() eq 0}">
+    <p th:text="#{found.nothing}"/>
+</div>
 <div th:if="${list.size() > 0}">
     <table class="w3-table-all">
         <thead class="w3-light-grey">
-        <th>Id</th>
-        <th>Price</th>
-        <th>Category</th>
-        <th>Producer</th>
-        <th>ProducerCountry</th>
-        <th>Model</th>
-        <th>Types</th>
-        <th>Stores</th>
+        <th th:text="#{id.name}"/>
+        <th th:text="#{price.name}"/>
+        <th th:text="#{category.name}"/>
+        <th th:text="#{producer.name}"/>
+        <th th:text="#{producer.country}"/>
+        <th th:text="#{model.name}"/>
+        <th th:text="#{type.list.title}"/>
+        <th th:text="#{store.list.title}"/>
         </thead>
         <tbody>
         <tr th:each="unit, iter: ${list}">
-            <td th:text="${unit.id}"></td>
-            <td th:text="${unit.price}"></td>
-            <td th:if="${unit.category ne null}" th:text="${unit.category.name}"></td>
-            <td th:if="${unit.producer ne null}" th:text="${unit.producer.name}"></td>
-            <td th:if="${unit.producer ne null}" th:text="${unit.producer.country}"></td>
-            <td th:if="${unit.model ne null}" th:text="${unit.model.name}"></td>
-            <td th:if="${unit.category ne null}" th:each="type, it:${unit.category.types}">
-                <p th:text="${type.name}"></p>
-            </td>
-            <td th:if="${unit.storeList ne null}" th:each="store, it:${unit.storeList}">
-                <p th:text="${store.name}"></p>
-                <p th:text="${store.address}"></p>
+            <td th:text="${unit.id}"/>
+            <td th:text="${unit.price}"/>
+            <td><p th:if="${unit.category ne null}" th:text="${unit.category.name}"/></td>
+            <td><p th:if="${unit.producer ne null}" th:text="${unit.producer.name}"/></td>
+            <td><p th:if="${unit.producer ne null}" th:text="${unit.producer.country}"/></td>
+            <td><p th:if="${unit.model ne null}" th:text="${unit.model.name}"/></td>
+            <td>
+                <div th:if="${unit.category ne null}">
+                    <div th:each="type, it:${unit.category.types}">
+                        <p th:text="${type.name}"/>
+                    </div>
+                </div>
             </td>
             <td>
-                <form th:action="technique-edit" th:method="GET">
+                <div th:if="${unit.storeList ne null}">
+                    <div th:each="store, it:${unit.storeList}">
+                        <p th:text="${store.name + ';' + store.address}"/>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <form th:action="${'/admin/techniques/edit'}" th:method="GET">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
-                    <button class="w3-button w3-white w3-border" th:type="submit">Edit</button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{edit.name}"/>
                 </form>
             </td>
             <td>
-                <form th:action="technique-delete" th:method="POST">
+                <form th:action="${'/admin/techniques/delete'}" th:method="POST">
                     <input th:type="hidden" th:name="techId" th:value="${unit.id}">
-                    <button class="w3-button w3-white w3-border" th:type="submit">Delete</button>
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{delete.name}"/>
+                </form>
+            </td>
+            <td>
+                <form th:action="${'/admin/techniques/image'}" th:method="GET">
+                    <input th:type="hidden" th:name="techId" th:value="${unit.id}">
+                    <button class="w3-button w3-white w3-border" th:type="submit" th:text="#{image.name}"/>
                 </form>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
-<form th:action="technique-add" th:method="get">
-    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit">Add new technique</button>
+<form  th:action="${'/admin/techniques/add'}" th:method="get">
+    <button class="w3-button w3-white w3-border" style="margin-top: 10px" th:type="submit"
+            th:text="#{add.technique}"/>
 </form>
+<div th:if="${list.size() > 0}">
+    <div class="w3-bar">
+        <div class="w3-center">
+            <div th:if="${page} ne 1" style="display: inline-block">
+                <a th:href="@{/admin/techniques(page=${page}-1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName})}"
+                   th:text="#{page.prev}"/>
+            </div>
 
-<a th:href="home">To home page</a>
+            <div th:each="i : ${#numbers.sequence( 1, totalPage)}" style="display: inline-block">
+                <a th:text="${i}"
+                   th:if="${page} eq ${i}">
+                    ${i}
+                </a>
+
+                <a th:href="@{/admin/techniques(page=${i},size=${size}, startPrice=${startPrice}, endPrice = ${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName})}"
+                   th:text="${i}"
+                   th:if="${page} ne ${i}">
+                    ${i}
+                </a>
+            </div>
+
+            <div th:if="${page} lt ${totalPage}" style="display: inline-block">
+                <a th:href="@{/admin/techniques(page=${page}+1,size=${size}, startPrice=${startPrice}, endPrice = ${endPrice}, categoryName=${categoryName},modelName=${modelName}, prodcerName=${producerName})}"
+                   th:text="#{page.next}"/>
+            </div>
+
+        </div>
+    </div>
+</div>
 </body>
 </html>

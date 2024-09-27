@@ -1,0 +1,177 @@
+/* Add this CSS to your list.css file */
+/* Reset styles for all elements */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Remove default list styling for ul elements */
+ul {
+    list-style: none;
+}
+
+/* Remove default text decoration for links and set color to black */
+a {
+    text-decoration: none;
+    color: black;
+}
+
+/* Common styles for product items */
+.item {
+    flex: 0 1 calc(33.33% - 20px); /* Each item takes up one-third of the container width */
+    margin: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 30px;
+    background: #F9F8F8;
+    transition: transform 0.2s linear;
+}
+
+.item:hover {
+    transform: scale(1.05);
+}
+
+/* Styles for product image and text overlay */
+.photo {
+    position: relative;
+    overflow: hidden;
+}
+
+.photo__text {
+    position: absolute;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    width: 100%;
+    text-align: center;
+    padding: 5px;
+}
+
+.photo__text span {
+    display: flex;
+    justify-content: center;
+    width: 78px;
+    color: #FFF;
+    font-family: 'Open Sans';
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 27px;
+    letter-spacing: 0.36px;
+}
+
+/* Styles for product details */
+.photo img {
+    width: 100%; /* Make the image fill the container width */
+    height: auto; /* Maintain aspect ratio */
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.item h3 {
+    color: #274C5B;
+    font-family: Roboto;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 35.2px;
+    letter-spacing: 0.36px;
+    padding-bottom: 11px;
+    margin-left: 30px;
+    border-bottom: 1px solid #D4D4D4;
+}
+
+/* Styles for product prices */
+.price {
+    display: flex;
+    margin-left: 30px;
+    margin-top: 9px;
+}
+
+.price__left {
+    display: flex;
+}
+
+.noprice {
+    color: #B8B8B8;
+    font-family: 'Open Sans';
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 32.4px;
+    letter-spacing: 0.36px;
+    text-decoration-line: line-through;
+    margin-right: 10px;
+}
+
+.prices span {
+    color: #274C5B;
+    font-family: 'Open Sans';
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32.4px;
+    letter-spacing: 0.36px;
+    margin-right: 87px;
+}
+
+.price__right {
+    display: flex;
+    align-items: center;
+}
+
+.price__right img {
+    width: 85px;
+    height: 19px;
+}
+
+/* Container styles */
+.container {
+    max-width: 1440px;
+    margin: 0 auto;
+    margin-top: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Align items to the start of the container */
+    align-items: flex-start; /* Align items to the start of the container */
+    gap: 20px;
+}
+
+/* Header styles */
+.head {
+    width: 100%;
+    background-color: #78e5a7;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Navigation styles */
+.ul {
+    display: flex;
+    gap: 60px;
+}
+
+.ul li {
+    margin-bottom: 20px;
+    margin-top: 20px;
+    font-size: 20px;
+}
+
+.ul a {
+    padding: 20px;
+}
+
+.ul a:hover,
+a:hover {
+    background-color: #42e38a;
+}
+
+/* Back button styles */
+.back {
+    position: absolute;
+    top: 0;
+    left: 20px;
+    font-size: 20px;
+    padding: 20px;
+}

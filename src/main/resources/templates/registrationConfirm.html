@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="#{confirmation.page}">Confirmation Page</title>
+  <link th:href="@{/auth/reg.css}" rel="stylesheet" />
+
+  <!-- Add additional styles for the form -->
+  <style>
+    .form1 {
+      max-width: 400px;
+      margin: auto;
+    }
+
+    .w3-input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
+
+    .w3-button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .w3-button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+<div class="confirmation-container">
+  <h2 th:text="#{confirmation.name}">Confirmation</h2>
+  <p th:text="#{confirmation.message}"></p>
+  <form class="form1" th:action="@{'/registration/confirm'}" th:method="post">
+    <input type="text" class="w3-input" th:placeholder="#{confirmation.code}" name="code" required>
+    <button type="submit" class="w3-button" th:text="#{confirm.name}"></button>
+  </form>
+  <div id="errorMessages"></div>
+</div>
+
+</body>
+</html>

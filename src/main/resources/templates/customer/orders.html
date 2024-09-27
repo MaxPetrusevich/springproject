@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="#{order.history}"></title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Remove default list styling for ul elements */
+    ul {
+      list-style: none;
+    }
+
+    /* Remove default text decoration for links and set color to black */
+    a {
+      text-decoration: none;
+      color: black;
+    }
+
+    h2 {
+      color: #274C5B;
+      font-family: Roboto;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    /* Header styles */
+    .head {
+      padding: 10px 20px; /* Adjust padding as needed */
+      background-color: #78e5a7;
+      display: flex;
+      justify-content: space-between; /* Change to space-between to push items to the edges */
+      width: 100%; /* Set width to 100% */
+    }
+
+    .ul {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .ul li {
+      margin-bottom: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+      position: relative;
+    }
+
+    .ul li:nth-child(2) {
+      margin-right: auto; /* Auto margin for flexible space */
+    }
+
+    .ul a {
+      padding: 10px 20px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .ul a:hover,
+    .back:hover,
+    a:hover {
+      background-color: #42e38a;
+    }
+
+    body {
+      background: linear-gradient(45deg, rgb(10, 209, 164), rgb(11, 176, 181));
+    }
+
+    .main-container {
+      display: flex;
+      justify-content: center; /* Center the content horizontally */
+      align-items: center; /* Center the content vertically */
+      height: 100vh; /* Set the height to 100% of the viewport height */
+    }
+
+    .user-container {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 55%;
+      text-align: center;
+      margin-top: 20px;
+      margin: 0 auto; /* Center the container horizontally */
+    }
+
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between; /* Выравниваем кнопки и блок item-details по краям */
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 5px;
+      background: #F9F8F8;
+      transition: transform 0.2s linear;
+    }
+
+    .cart-item:hover {
+      transform: scale(1.05);
+    }
+
+    .cart-item img {
+      max-width: 80px;
+      height: auto;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .item-details {
+      flex-grow: 1;
+      text-align: left;
+    }
+
+    .item-details p {
+      margin-bottom: 5px; /* Добавляем пробел между блоками <p> */
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end; /* Выравниваем кнопки по правому краю */
+      margin-top: 10px;
+    }
+
+    .quantity-btn {
+      background-color: #42e38a;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .quantity-btn:hover {
+      background-color: #2fa768;
+    }
+
+    .quantity {
+      margin: 0 10px;
+      font-weight: bold;
+    }
+
+
+    .options-container {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center; /* Center the content horizontally */
+      align-items: center; /* Center the content vertically */
+    }
+
+    .option-link {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      background-color: rgb(10, 209, 164);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .option-link:hover {
+      background-color: rgb(11, 176, 181);
+    }
+
+    .checkout-link {
+      display: block;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #42e38a;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .checkout-link:hover {
+      background-color: #2fa768;
+    }
+
+    .logout-link {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <ul class="ul">
+      <a class="back" th:href="@{/logout}" th:text="#{exit.name}"></a>
+      <li><a th:href="@{/customer/profile/orders}" th:text="#{order.history}"></a></li>
+      <li><a th:href="@{/customer/profile/avatar}" th:text="#{avatar.change}"></a></li>
+      <li><a th:href="@{/customer/profile/password}" th:text="#{password.change}"></a></li>
+      <li><a th:href="@{/customer/profile}" th:text="#{user.account.name}"></a></li>
+      <li><a th:href="@{/customer/home}" th:text="#{products.name}"></a></li>
+    </ul>
+  </div>
+</header>
+<div class="main-container">
+  <div class="user-container">
+    <h2 th:text="#{order.history}"></h2>
+
+    <div th:each="order : ${orders}" class="cart-item">
+      <div class="item-details">
+        <p th:text="${#dates.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></p>
+        <p th:text="#{amount.name} + ' ' + ${order.amount}"></p>
+        <p th:text="#{status.name} + ' ' + ${order.status}"></p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

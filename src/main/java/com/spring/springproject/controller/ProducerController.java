@@ -2,16 +2,22 @@ package com.spring.springproject.controller;
 
 import com.spring.springproject.dto.ProducerDto;
 import com.spring.springproject.service.interfaces.ProducerService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.thymeleaf.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import static com.spring.springproject.controller.Constants.*;
 
 @Controller
 public class ProducerController {
+
+
     private final ProducerService producerService;
 
     @Autowired
@@ -19,59 +25,54 @@ public class ProducerController {
         this.producerService = producerService;
     }
 
-    @GetMapping("/producer-list")
-    public String findAll(Model model) {
-        model.addAttribute("list", producerService.findAll());
-        return "producer/producerList";
+    @RequestMapping(PRODUCERS_URL)
+    public String findAll(Model model,
+                          @RequestParam(defaultValue = "3", required = false) int size,
+                          @RequestParam(defaultValue = "1", required = false) int page,
+                          @RequestParam(defaultValue = "", required = false) String name,
+                          @RequestParam(defaultValue = "", required = false) String country) {
+        Pageable pageable = Pageable.ofSize(size);
+        pageable = pageable.withPage(page - 1);
+        Page<ProducerDto> producerPage = producerService.findAll(pageable, name, country);
+        model.addAttribute(PAGE, page);
+        model.addAttribute(SIZE, size);
+        model.addAttribute(NAME, name);
+        model.addAttribute(COUNTRY, country);
+        model.addAttribute(TOTAL_PAGE, producerPage.getTotalPages());
+        model.addAttribute(LIST, producerPage.getContent());
+        return PROD_LIST;
     }
 
-    @GetMapping("/producer-edit")
-    public String editRedirect(Model model, HttpServletRequest request) {
-        String producerId = request.getParameter("producerId");
-        ProducerDto producerDto = null;
-        if (!StringUtils.isEmptyOrWhitespace(producerId)) {
-            Integer id = Integer.parseInt(producerId);
-            producerDto = producerService.findById(id);
-        }
-        model.addAttribute("unit", producerDto);
-        return "producer/producerEdit";
+    @GetMapping(PRODUCER_URL)
+    public String editRedirect(Model model, @RequestParam(PRODUCER_ID) Integer id) {
+        ProducerDto producerDto = producerService.findById(id);
+        model.addAttribute(UNIT, producerDto);
+        return PROD_EDIT;
     }
 
-    @PostMapping("/producer-edit")
-    public String edit(HttpServletRequest request, Model model) {
-        String producerId = request.getParameter("producerId");
-        ProducerDto producerDto = null;
-        if (!StringUtils.isEmptyOrWhitespace(producerId)) {
-            Integer id = Integer.parseInt(producerId);
-            producerDto = producerService.findById(id);
-        }
-        producerDto.setName(request.getParameter("name"));
-        producerDto.setCountry(request.getParameter("country"));
-        producerService.update(producerDto);
-        return findAll(model);
+    @PostMapping(PRODUCER_URL)
+    public String edit(@RequestParam(PRODUCER_ID) Integer id, @RequestParam(NAME) String name,
+                       @RequestParam(COUNTRY) String country) {
+        producerService.update(id, name, country);
+        return REDIRECT + PRODUCERS_URL;
     }
 
-    @PostMapping("/producer-delete")
-    public String delete(HttpServletRequest request, Model model){
-        String producerId = request.getParameter("producerId");
-
-        if (!StringUtils.isEmptyOrWhitespace(producerId)) {
-            Integer id = Integer.parseInt(producerId);
-            producerService.delete(id);
-        }
-        return findAll(model);
+    @PostMapping(DEL_PRODUCER)
+    public String delete(@RequestParam(PRODUCER_ID) Integer id) {
+        producerService.delete(id);
+        return REDIRECT + PRODUCERS_URL;
     }
 
-    @GetMapping("/producer-add")
-    public String add(){
-        return "/producer/producerAdd";
+    @GetMapping(NEW_PRODUCER)
+    public String add() {
+        return PROD_ADD;
     }
-    @PostMapping("/producer-add")
-    public String add(HttpServletRequest request, Model model){
-        ProducerDto producerDto = new ProducerDto();
-        producerDto.setName(request.getParameter("name"));
-        producerDto.setCountry(request.getParameter("country"));
-        producerDto = producerService.save(producerDto);
-        return findAll(model);
+
+    @PostMapping(NEW_PRODUCER)
+    public String add(@RequestParam(NAME) String name, @RequestParam(COUNTRY) String country) {
+        producerService.save(name, country);
+        return REDIRECT + PRODUCERS_URL;
     }
+
+
 }
