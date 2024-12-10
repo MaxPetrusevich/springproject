@@ -1,34 +1,29 @@
 package com.spring.springproject.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
 @Entity
-@Table(name = "roles")
-public class Role implements Serializable {
-    public Role(String name) {
-        this.name = name;
-    }
+@Table(name = "role")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
+    @Column(name = "ID")
+    private Long id;
 
-    @EqualsAndHashCode.Exclude
-    @Column(name = "name")
-    private String name;
-@JsonIgnore
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users;
+    @Column(name = "role", nullable = false)
+    private String roleName;
+
+    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
+    private List<User> users;
 }

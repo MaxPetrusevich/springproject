@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="customer/layout :: head"></head>
+<body>
+<div th:replace="customer/layout :: layout(~{::main})">
+    <main>
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-center mb-4">Подтверждение оплаты</h4>
+
+                            <div class="payment-details">
+                                <div class="row mb-3">
+                                    <div class="col-sm-4 text-muted">Услуга:</div>
+                                    <div class="col-sm-8 fw-bold" th:text="${service.name}">
+                                        Название услуги
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-sm-4 text-muted">Категория:</div>
+                                    <div class="col-sm-8" th:text="${service.category.category}">
+                                        Категория
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-sm-4 text-muted">Учреждение:</div>
+                                    <div class="col-sm-8" th:text="${service.establishment.name}">
+                                        Учреждение
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-sm-4 text-muted">Дата заявки:</div>
+                                    <div class="col-sm-8"
+                                         th:text="${#temporals.format(bid.date, 'dd.MM.yyyy')}">
+                                        01.01.2024
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4 text-muted">Сумма к оплате:</div>
+                                    <div class="col-sm-8">
+                                        <span class="h4 text-primary" th:text="${payment.sum + ' BYN'}">
+                                            0 BYN
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info" role="alert">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                После подтверждения оплаты вы будете перенаправлены на страницу оплаты.
+                            </div>
+
+                            <form th:action="@{/customer/payments/process}" method="post"
+                                  class="d-grid gap-2">
+                                <input type="hidden" name="bidId" th:value="${bid.id}">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    Перейти к оплате
+                                </button>
+                                <a href="/customer/services" class="btn btn-outline-secondary">
+                                    Отмена
+                                </a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html> 

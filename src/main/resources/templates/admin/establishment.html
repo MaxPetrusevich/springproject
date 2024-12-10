@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: head"></head>
+<body>
+<div th:replace="admin/layout :: layout(~{::main})">
+    <main>
+        <div class="container-fluid py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Учреждения</h1>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#establishmentModal">
+                    <i class="bi bi-plus-lg"></i> Добавить учреждение
+                </button>
+            </div>
+
+            <!-- Таблица -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Название</th>
+                                <th>Адрес</th>
+                                <th>Телефон</th>
+                                <th>Email</th>
+                                <th>Действия</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="establishment : ${establishments}">
+                                <td th:text="${establishment.id}"></td>
+                                <td th:text="${establishment.name}"></td>
+                                <td th:text="${establishment.address}"></td>
+                                <td th:text="${establishment.phone}"></td>
+                                <td th:text="${establishment.email}"></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-primary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#establishmentModal"
+                                                th:data-id="${establishment.id}"
+                                                th:data-name="${establishment.name}"
+                                                th:data-address="${establishment.address}"
+                                                th:data-phone="${establishment.phone}"
+                                                th:data-email="${establishment.email}"
+                                                onclick="editEstablishment(this)">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                th:data-bs-target="'#deleteModal' + ${establishment.id}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Модальное окно удаления -->
+                                    <div class="modal fade" th:id="'deleteModal' + ${establishment.id}">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Подтверждение удаления</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Вы действительно хотите удалить учреждение?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                                    <form th:action="@{/admin/establishments/{id}/delete(id=${establishment.id})}" method="post">
+                                                        <input type="hidden" name="_method" value="DELETE">
+                                                        <button type="submit" class="btn btn-danger">Удалить</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Пагинация -->
+                    <nav th:if="${establishments.totalPages > 1}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${establishments.first ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/establishments(page=${establishments.number - 1})}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, establishments.totalPages - 1)}"
+                                th:classappend="${establishments.number == i ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/admin/establishments(page=${i})}" th:text="${i + 1}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${establishments.last ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/establishments(page=${establishments.number + 1})}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно создания/редактирования -->
+        <div class="modal fade" id="establishmentModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle">Добавить учреждение</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form id="establishmentForm" method="post">
+                        <div class="modal-body">
+                            <input type="hidden" id="establishmentId" name="id">
+                            <div class="mb-3">
+                                <label for="establishmentName" class="form-label">Название</label>
+                                <input type="text" class="form-control" id="establishmentName" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="establishmentAddress" class="form-label">Адрес</label>
+                                <input type="text" class="form-control" id="establishmentAddress" name="address" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="establishmentPhone" class="form-label">Телефон</label>
+                                <input type="text" class="form-control" id="establishmentPhone" name="phone" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="establishmentEmail" class="form-label">Email</label>
+                                <input type="text" class="form-control" id="establishmentEmail" name="email" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Скрипт для работы с модальным окном -->
+<script>
+    function editEstablishment(button) {
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const address = button.getAttribute('data-address');
+        const phone = button.getAttribute('data-phone');
+        const email = button.getAttribute('data-email');
+        document.getElementById('modalTitle').textContent = 'Редактировать учреждение';
+        document.getElementById('establishmentId').value = id;
+        document.getElementById('establishmentName').value = name;
+        document.getElementById('establishmentAddress').value = address;
+        document.getElementById('establishmentPhone').value = phone;
+        document.getElementById('establishmentEmail').value = email;
+        const form = document.getElementById('establishmentForm');
+        form.action = '/admin/establishments/' + id;
+
+        // Добавляем поле _method для PUT запроса
+        let methodInput = form.querySelector('input[name="_method"]');
+        if (!methodInput) {
+            methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            form.appendChild(methodInput);
+        }
+        methodInput.value = 'PUT';
+    }
+
+    // При открытии модального окна для создания
+    document.getElementById('establishmentModal').addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        if (!button.hasAttribute('data-id')) {
+            // Если это создание нового учреждения
+            document.getElementById('modalTitle').textContent = 'Добавить учреждение';
+            document.getElementById('establishmentForm').reset();
+            document.getElementById('establishmentId').value = '';
+            document.getElementById('establishmentForm').action = '/admin/establishments';
+
+            // Удаляем поле _method если оно есть
+            const methodInput = document.querySelector('input[name="_method"]');
+            if (methodInput) methodInput.remove();
+        }
+    });
+</script>
+</body>
+</html>

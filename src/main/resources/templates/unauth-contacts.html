@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<div th:replace="~{layout :: layout(~{::main})}">
+  <main>
+    <div class="container py-5">
+      <h1 class="mb-4">Контакты</h1>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card mb-4">
+            <div class="card-body">
+              <h5 class="card-title">Наш адрес</h5>
+              <p class="card-text">
+                <i class="bi bi-geo-alt-fill me-2"></i>
+                220030, г. Минск, ул. Советская, 11
+              </p>
+              <p class="card-text">
+                <i class="bi bi-telephone-fill me-2"></i>
+                +375 17 123-45-67
+              </p>
+              <p class="card-text">
+                <i class="bi bi-envelope-fill me-2"></i>
+                info@gosuslugi.by
+              </p>
+              <hr>
+              <h6>Режим работы:</h6>
+              <p class="mb-1">Понедельник - Пятница: 9:00 - 18:00</p>
+              <p class="mb-0">Суббота, Воскресенье: выходной</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Горячая линия</h5>
+              <p class="card-text">
+                Для срочных вопросов звоните:
+              </p>
+              <h3 class="text-primary">
+                <i class="bi bi-telephone-fill me-2"></i>
+                150
+              </h3>
+              <small class="text-muted">
+                Звонок бесплатный по всей территории Республики Беларусь
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Напишите нам</h5>
+              <form>
+                <div class="mb-3">
+                  <label class="form-label">Ваше имя</label>
+                  <input type="text" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Тема</label>
+                  <select class="form-select" required>
+                    <option value="">Выберите тему</option>
+                    <option>Техническая поддержка</option>
+                    <option>Вопрос по ус��угам</option>
+                    <option>Жалоба</option>
+                    <option>Предложение</option>
+                    <option>Другое</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Сообщение</label>
+                  <textarea class="form-control" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-send"></i> Отправить
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <changeSet id="03-add-indexes" author="your_name">
+        <!-- Индексы для поиска пользователей -->
+        <createIndex tableName="users" indexName="idx_user_identify_number">
+            <column name="identify_number"/>
+        </createIndex>
+        <createIndex tableName="users" indexName="idx_user_role">
+            <column name="role_id"/>
+        </createIndex>
+
+        <!-- Индексы для поиска граждан -->
+        <createIndex tableName="citizens" indexName="idx_citizen_identify_number">
+            <column name="identify_number"/>
+        </createIndex>
+        <createIndex tableName="citizens" indexName="idx_citizen_name">
+            <column name="last_name"/>
+            <column name="first_name"/>
+        </createIndex>
+
+        <!-- Индексы для услуг -->
+        <createIndex tableName="services" indexName="idx_service_category">
+            <column name="category_id"/>
+        </createIndex>
+        <createIndex tableName="services" indexName="idx_service_establishment">
+            <column name="establishment_id"/>
+        </createIndex>
+        <createIndex tableName="services" indexName="idx_service_name">
+            <column name="name"/>
+        </createIndex>
+
+        <!-- Индексы для заявок -->
+        <createIndex tableName="bids" indexName="idx_bid_citizen">
+            <column name="citizen_id"/>
+        </createIndex>
+        <createIndex tableName="bids" indexName="idx_bid_service">
+            <column name="service_id"/>
+        </createIndex>
+        <createIndex tableName="bids" indexName="idx_bid_status">
+            <column name="status_id"/>
+        </createIndex>
+        <createIndex tableName="bids" indexName="idx_bid_date">
+            <column name="date"/>
+        </createIndex>
+
+        <!-- Индексы для платежей -->
+        <createIndex tableName="payments" indexName="idx_payment_bid">
+            <column name="bid_id"/>
+        </createIndex>
+        <createIndex tableName="payments" indexName="idx_payment_status">
+            <column name="status_id"/>
+        </createIndex>
+        <createIndex tableName="payments" indexName="idx_payment_date">
+            <column name="date"/>
+        </createIndex>
+
+        <!-- Индексы для документов -->
+        <createIndex tableName="documents" indexName="idx_document_type">
+            <column name="type_id"/>
+        </createIndex>
+        <createIndex tableName="documents" indexName="idx_document_bid">
+            <column name="bid_id"/>
+        </createIndex>
+        <createIndex tableName="documents" indexName="idx_document_loading_date">
+            <column name="loading_date"/>
+        </createIndex>
+        <createIndex tableName="documents" indexName="idx_document_hash">
+            <column name="hash"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog> 

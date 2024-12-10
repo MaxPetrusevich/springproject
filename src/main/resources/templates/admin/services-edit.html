@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: head"></head>
+<body>
+<div th:replace="admin/layout :: layout(~{::main})">
+    <main>
+        <div class="container-fluid py-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0" th:text="${service.id == null ? 'Создание услуги' : 'Редактирование услуги'}">
+                                Услуга
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="${service.id == null ? '/admin/services' : '/admin/services/' + service.id}"
+                                  th:object="${service}"
+                                  method="post">
+
+                                <div class="mb-3">
+                                    <label class="form-label">Название</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           th:field="*{name}"
+                                           th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}"
+                                         th:errors="*{name}">
+                                        Ошибка
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Описание</label>
+                                    <textarea class="form-control"
+                                              th:field="*{description}"
+                                              rows="3"
+                                              th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'">
+                                        </textarea>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}"
+                                         th:errors="*{description}">
+                                        Ошибка
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Стоимость</label>
+                                    <input type="number"
+                                           class="form-control"
+                                           th:field="*{price}"
+                                           th:classappend="${#fields.hasErrors('price')} ? 'is-invalid'">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('price')}"
+                                         th:errors="*{price}">
+                                        Ошибка
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Категория</label>
+                                    <select class="form-select"
+                                            th:field="*{category}"
+                                            th:classappend="${#fields.hasErrors('category')} ? 'is-invalid'">
+                                        <option value="">Выберите категорию</option>
+                                        <option th:each="category : ${categories}"
+                                                th:value="${category.id}"
+                                                th:text="${category.category}">
+                                        </option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('category')}"
+                                         th:errors="*{category}">
+                                        Ошибка
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Учреждение</label>
+                                    <select class="form-select"
+                                            th:field="*{establishment}"
+                                            th:classappend="${#fields.hasErrors('establishment')} ? 'is-invalid'">
+                                        <option value="">Выберите учреждение</option>
+                                        <option th:each="establishment : ${establishments}"
+                                                th:value="${establishment.id}"
+                                                th:text="${establishment.name}">
+                                        </option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('establishment')}"
+                                         th:errors="*{establishment}">
+                                        Ошибка
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+                                    <a th:href="@{/admin/services}" class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left"></i> Назад
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-lg"></i> Сохранить
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

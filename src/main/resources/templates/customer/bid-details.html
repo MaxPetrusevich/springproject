@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="customer/layout :: html(~{::content})">
+<body>
+    <div th:fragment="content">
+        <div class="container py-4">
+            <!-- Заголовок -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-file-text"></i>
+                    Заявка №<span th:text="${bid.id}">1</span>
+                </h2>
+                <a th:href="@{/history}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> К списку заявок
+                </a>
+            </div>
+
+            <div class="row">
+                <!-- Основная информация -->
+                <div class="col-md-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-transparent">
+                            <h5 class="card-title mb-0">Информация о заявке</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted">Услуга</label>
+                                    <p class="mb-0" th:text="${bid.service.name}">Название услуги</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted">Категория</label>
+                                    <p class="mb-0" th:text="${bid.service.category.category}">Категория</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted">Дата подачи</label>
+                                    <p class="mb-0" th:text="${#temporals.format(bid.date, 'dd.MM.yyyy')}">01.01.2024</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted">Статус</label>
+                                    <span class="badge"
+                                          th:text="${bid.status.status}"
+                                          th:classappend="${
+                                            bid.status.status eq 'НОВАЯ' and 'bg-primary' or
+                                            bid.status.status eq 'В ОБРАБОТКЕ' and 'bg-warning' or
+                                            bid.status.status eq 'ВЫПОЛНЕНА' and 'bg-success' or
+                                            'bg-danger'
+                                          }">
+                                        Статус
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Документы -->
+                    <div class="card shadow-sm mb-4" th:if="${not #lists.isEmpty(documents)}">
+                        <div class="card-header bg-transparent">
+                            <h5 class="card-title mb-0">Документы</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                <a th:each="doc : ${documents}"
+                                   th:href="@{/documents/{id}/download(id=${doc.id})}"
+                                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                                        <span th:text="${doc.type.type}">Документ</span>
+                                    </div>
+                                    <small class="text-muted" 
+                                           th:text="${#temporals.format(doc.loadingDate, 'dd.MM.yyyy')}">
+                                        01.01.2024
+                                    </small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Боковая панель -->
+                <div class="col-md-4">
+                    <!-- Информация об оплате -->
+                    <div class="card shadow-sm mb-4" th:if="${bid.payment != null}">
+                        <div class="card-header bg-transparent">
+                            <h5 class="card-title mb-0">Оплата</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted">Сумма:</span>
+                                <strong th:text="${#numbers.formatDecimal(bid.payment.sum, 1, 2) + ' руб.'}">
+                                    0.00 руб.
+                                </strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted">Статус:</span>
+                                <span class="badge"
+                                      th:classappend="${bid.payment.status.status == 'ОПЛАЧЕНО' ? 'bg-success' : 'bg-warning'}"
+                                      th:text="${bid.payment.status.status}">
+                                    Статус оплаты
+                                </span>
+                            </div>
+                            <a th:if="${bid.payment.status.status == 'ОПЛАЧЕНО'}"
+                               th:href="@{/payments/{id}/receipt(id=${bid.payment.id})}"
+                               class="btn btn-outline-primary w-100">
+                                <i class="bi bi-download"></i> Скачать квитанцию
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- История статусов -->
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-transparent">
+                            <h5 class="card-title mb-0">История изменений</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush">
+                                <div th:each="status : ${statusHistory}"
+                                     class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1" th:text="${status.status}">Статус</h6>
+                                        <small class="text-muted" 
+                                               th:text="${#temporals.format(status.date, 'dd.MM.yyyy HH:mm')}">
+                                            01.01.2024 12:00
+                                        </small>
+                                    </div>
+                                    <small class="text-muted" th:text="${status.comment}">
+                                        Комментарий к статусу
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

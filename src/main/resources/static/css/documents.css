@@ -1,0 +1,46 @@
+/* Карточки документов */
+.document-card {
+    transition: all 0.3s ease;
+}
+
+.document-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
+
+/* Иконки типов файлов */
+.file-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.file-icon.pdf { color: #dc3545; }
+.file-icon.doc { color: #0d6efd; }
+.file-icon.img { color: #198754; }
+
+/* Анимация загрузки */
+.upload-progress {
+    height: 3px;
+    background-color: #e9ecef;
+    margin-top: 0.5rem;
+}
+
+.upload-progress-bar {
+    height: 100%;
+    background-color: #0d6efd;
+    transition: width 0.3s ease;
+}
+
+/* Стили для drag & drop */
+.drop-zone {
+    border: 2px dashed #dee2e6;
+    border-radius: 0.25rem;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.drop-zone.dragover {
+    border-color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.05);
+} 

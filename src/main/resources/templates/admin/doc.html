@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: head"></head>
+<body>
+<div th:replace="admin/layout :: layout(~{::main})">
+    <main>
+        <div class="container-fluid py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Документы</h1>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#documentModal">
+                    <i class="bi bi-plus-lg"></i> Добавить документ
+                </button>
+            </div>
+
+            <!-- Таблица -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Название</th>
+                                <th>Тип</th>
+                                <th>Заявка</th>
+                                <th>Дата загрузки</th>
+                                <th>Действия</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="document : ${documents}">
+                                <td th:text="${document.id}"></td>
+                                <td th:text="${document.name}"></td>
+                                <td th:text="${document.type?.type}"></td>
+                                <td th:text="${'Заявка №' + document.bid?.id}"></td>
+                                <td th:text="${#temporals.format(document.loadingDate, 'dd.MM.yyyy HH:mm')}"></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a th:href="@{/admin/documents/{id}/download(id=${document.id})}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                th:data-bs-target="'#deleteModal' + ${document.id}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Модальное окно удаления -->
+                                    <div class="modal fade" th:id="'deleteModal' + ${document.id}">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Подтверждение удаления</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Вы действительно хотите удалить документ?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                                    <form th:action="@{/admin/documents/{id}/delete(id=${document.id})}"
+                                                          method="post">
+                                                        <input type="hidden" name="_method" value="DELETE">
+                                                        <button type="submit" class="btn btn-danger">Удалить</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Пагинация -->
+                    <nav th:if="${documents.totalPages > 1}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${documents.first ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/documents(page=${documents.number - 1})}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, documents.totalPages - 1)}"
+                                th:classappend="${documents.number == i ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/admin/documents(page=${i})}" th:text="${i + 1}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${documents.last ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/documents(page=${documents.number + 1})}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно создания -->
+        <div class="modal fade" id="documentModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Загрузка документа</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="/admin/documents" method="post" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Название</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="typeId" class="form-label">Тип документа</label>
+                                <select class="form-select" id="typeId" name="typeId" required>
+                                    <option value="">Выберите тип</option>
+                                    <option th:each="type : ${types}"
+                                            th:value="${type.id}"
+                                            th:text="${type.type}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bidId" class="form-label">Заявка</label>
+                                <select class="form-select" id="bidId" name="bidId" required>
+                                    <option value="">Выберите заявку</option>
+                                    <option th:each="bid : ${bids}"
+                                            th:value="${bid.id}"
+                                            th:text="${'Заявка №' + bid.id}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="file" class="form-label">Файл</label>
+                                <input type="file" class="form-control" id="file" name="file" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn btn-primary">Загрузить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

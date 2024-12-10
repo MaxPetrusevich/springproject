@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="admin/layout :: html(content=~{::content})">
+<body>
+    <div th:fragment="content">
+        <h2>
+            <th:block th:if="${citizen.id != null}">
+                <span>Редактирование гражданина</span>
+            </th:block>
+            <th:block th:unless="${citizen.id != null}">
+                <span>Новый гражданин</span>
+            </th:block>
+        </h2>
+
+        <form th:action="@{${citizen.id == null ? '/admin/citizens' : '/admin/citizens/' + citizen.id}}"
+              th:object="${citizen}" method="post" class="needs-validation" novalidate>
+            
+            <input type="hidden" name="_method" th:value="${citizen.id == null ? 'POST' : 'PUT'}" />
+
+            <div class="row">
+                <!-- Личные данные -->
+                <div class="col-md-6">
+                    <h4>Личные данные</h4>
+                    
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Фамилия</label>
+                        <input type="text" class="form-control" id="lastName" 
+                               th:field="*{lastName}" required>
+                        <div class="invalid-feedback">
+                            Пожалуйста, введите фамилию
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="firstName" 
+                               th:field="*{firstName}" required>
+                        <div class="invalid-feedback">
+                            Пожалуйста, введите имя
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="middleName" class="form-label">Отчество</label>
+                        <input type="text" class="form-control" id="middleName" 
+                               th:field="*{middleName}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="identifyNumber" class="form-label">ИИН</label>
+                        <input type="text" class="form-control" id="identifyNumber" 
+                               th:field="*{identifyNumber}" required 
+                               pattern="[0-9]{12}" maxlength="12">
+                        <div class="invalid-feedback">
+                            ИИН должен содержать 12 цифр
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Паспортные данные и контакты -->
+                <div class="col-md-6">
+                    <h4>Паспортные данные</h4>
+                    
+                    <div class="mb-3">
+                        <label for="passportSeries" class="form-label">Серия паспорта</label>
+                        <input type="text" class="form-control" id="passportSeries" 
+                               th:field="*{passportSeries}" required>
+                        <div class="invalid-feedback">
+                            Введите серию паспорта
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="passportNumber" class="form-label">Номер паспорта</label>
+                        <input type="text" class="form-control" id="passportNumber" 
+                               th:field="*{passportNumber}" required>
+                        <div class="invalid-feedback">
+                            Введите номер паспорта
+                        </div>
+                    </div>
+
+                    <h4>Контактные данные</h4>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Телефон</label>
+                        <input type="tel" class="form-control" id="phone" 
+                               th:field="*{phone}" required>
+                        <div class="invalid-feedback">
+                            Введите номер телефона
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" 
+                               th:field="*{email}" required>
+                        <div class="invalid-feedback">
+                            Введите корректный email
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Адрес</label>
+                        <textarea class="form-control" id="address" 
+                                  th:field="*{address}" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Сохранить
+                    </button>
+                    <a th:href="@{/admin/citizens}" class="btn btn-secondary">
+                        <i class="bi bi-x-lg"></i> Отмена
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Скрипт для валидации формы -->
+    <script th:inline="javascript">
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+</body>
+</html>

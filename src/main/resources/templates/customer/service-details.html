@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="customer/layout :: html(~{::content})">
+<body>
+    <div th:fragment="content">
+        <!-- Hero секция -->
+        <div class="bg-primary text-white py-5 mb-4">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2">
+                                <li class="breadcrumb-item">
+                                    <a th:href="@{/services}" class="text-white-50">Услуги</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a th:href="@{/services(categoryId=${service.category.id})}" 
+                                       class="text-white-50" 
+                                       th:text="${service.category.category}">
+                                        Категория
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item active text-white" aria-current="page">
+                                    <span th:text="${service.name}">Услуга</span>
+                                </li>
+                            </ol>
+                        </nav>
+                        <h1 class="display-5 mb-3" th:text="${service.name}">
+                            Название услуги
+                        </h1>
+                        <p class="lead mb-0">
+                            <i class="bi bi-building me-2"></i>
+                            <span th:text="${service.establishment.name}">Учреждение</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <!-- Основная информация -->
+                <div class="col-lg-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-transparent">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-info-circle"></i> Описание услуги
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text" th:text="${service.description}">
+                                Описание услуги
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Необходимые документы -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-transparent">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-file-earmark-text"></i> Необходимые документы
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                <div th:each="doc : ${requiredDocuments}" 
+                                     class="list-group-item">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-file-earmark me-3 text-primary"></i>
+                                        <div>
+                                            <h6 class="mb-1" th:text="${doc.type}">Тип документа</h6>
+                                            <small class="text-muted" th:text="${doc.description}">
+                                                Описание документа
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Этапы получения -->
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-transparent">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-list-ol"></i> Этапы получения услуги
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline">
+                                <div class="timeline-item" th:each="step, iterStat : ${steps}">
+                                    <div class="timeline-badge">
+                                        <span th:text="${iterStat.count}">1</span>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h6 th:text="${step.title}">Название этапа</h6>
+                                        <p class="text-muted mb-0" th:text="${step.description}">
+                                            Описание этапа
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Боковая панель -->
+                <div class="col-lg-4">
+                    <!-- Форма подачи заявки -->
+                    <div class="card shadow-sm mb-4 sticky-top" style="top: 20px;">
+                        <div class="card-header bg-transparent">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-send"></i> Подать заявку
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/services/{id}/apply(id=${service.id})}" 
+                                  method="post"
+                                  class="needs-validation"
+                                  novalidate>
+                                <!-- Дополнительные поля формы, есл�� нужны -->
+                                <div class="alert alert-info" role="alert">
+                                    <i class="bi bi-info-circle-fill me-2"></i>
+                                    Перед подачей заявки убедитесь, что у вас есть все необходимые документы
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-send"></i> Подать заявку
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom CSS -->
+        <style>
+            /* Timeline */
+            .timeline {
+                position: relative;
+                padding-left: 50px;
+            }
+            .timeline::before {
+                content: '';
+                position: absolute;
+                left: 20px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                background: #e9ecef;
+            }
+            .timeline-item {
+                position: relative;
+                padding-bottom: 1.5rem;
+            }
+            .timeline-badge {
+                position: absolute;
+                left: -50px;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: #0d6efd;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+            }
+            .timeline-content {
+                background: #f8f9fa;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                margin-left: 1rem;
+                position: relative;
+            }
+            .timeline-content::before {
+                content: '';
+                position: absolute;
+                left: -0.5rem;
+                top: 1rem;
+                width: 1rem;
+                height: 1rem;
+                background: #f8f9fa;
+                transform: rotate(45deg);
+            }
+            /* Hover эффекты */
+            .card {
+                transition: transform .2s;
+            }
+            .card:hover {
+                transform: translateY(-5px);
+            }
+            .list-group-item {
+                transition: background-color .2s;
+            }
+            .list-group-item:hover {
+                background-color: #f8f9fa;
+            }
+            /* Breadcrumb */
+            .breadcrumb-item + .breadcrumb-item::before {
+                color: rgba(255,255,255,0.5);
+            }
+        </style>
+
+        <!-- JavaScript -->
+        <script>
+            // Валидация формы
+            (function() {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms)
+                    .forEach(function(form) {
+                        form.addEventListener('submit', function(event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
+        </script>
+    </div>
+</body>
+</html> 

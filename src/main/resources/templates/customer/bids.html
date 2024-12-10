@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="customer/layout :: html(~{::content})">
+<body>
+    <div th:fragment="content">
+        <!-- Hero секция -->
+        <div class="bg-primary text-white py-4 mb-4">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h1 class="display-5 mb-0">
+                            <i class="bi bi-file-text"></i> Мои заявки
+                        </h1>
+                        <div class="d-flex mt-3">
+                            <div class="me-4">
+                                <span class="d-block text-white-50">Всего заявок</span>
+                                <h2 class="mb-0" th:text="${bids.totalElements}">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Фильтры -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-funnel"></i> Фильтры
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" th:action="@{/customer/bids}" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">
+                                <i class="bi bi-flag"></i> Статус
+                            </label>
+                            <select class="form-select" name="status">
+                                <option value="">Все статусы</option>
+                                <option th:each="status : ${statuses}"
+                                        th:value="${status.id}"
+                                        th:text="${status.status}"
+                                        th:selected="${param.status != null and status.id == #strings.toString(param.status[0])}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Поиск
+                            </button>
+                            <a th:href="@{/customer/bids}" class="btn btn-light">
+                                <i class="bi bi-x-lg"></i> Сбросить
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Список заявок -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(bids.content)}" 
+                         class="alert alert-info d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        У вас пока нет заявок
+                    </div>
+                    
+                    <div th:unless="${#lists.isEmpty(bids.content)}" class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Услуга</th>
+                                    <th>Дата</th>
+                                    <th>Статус</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="bid : ${bids.content}">
+                                    <td th:text="${bid.id}">1</td>
+                                    <td>
+                                        <div th:if="${bid.service != null}">
+                                            <span th:text="${bid.service.name}">Услуга</span>
+                                            <small class="d-block text-muted" 
+                                                   th:text="${bid.service.establishment.name}">
+                                                Учреждение
+                                            </small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span th:text="${#temporals.format(bid.date, 'dd.MM.yyyy')}">
+                                            01.01.2024
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <th:block th:if="${bid.status != null}">
+                                            <span th:text="${bid.status.status}"
+                                                  th:class="${'badge bg-' + bid.status.color}">
+                                                Статус
+                                            </span>
+                                        </th:block>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a th:href="@{/customer/documents(bidId=${bid.id})}" 
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="Документы">
+                                                <i class="bi bi-file-earmark-text"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Пагинация -->
+                    <div th:replace="fragments/pagination :: pagination(${bids})"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom CSS -->
+        <style>
+            .badge {
+                font-weight: 500;
+            }
+            .btn-group .btn {
+                padding: 0.25rem 0.5rem;
+            }
+            .btn-group .btn i {
+                font-size: 1rem;
+            }
+            .table-hover tbody tr {
+                transition: background-color .2s;
+            }
+            .table-hover tbody tr:hover {
+                background-color: rgba(13, 110, 253, 0.05);
+            }
+        </style>
+    </div>
+</body>
+</html> 

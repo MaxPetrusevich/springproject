@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="admin/layout :: html(content=~{::content})">
+<body>
+    <div th:fragment="content">
+        <h2>Управление ролями</h2>
+        
+        <!-- Форма поиска и добавления -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <form class="d-flex" method="get" th:action="@{/admin/roles}">
+                    <input type="text" class="form-control me-2" name="roleName" 
+                           th:value="${param.roleName}" placeholder="Поиск по названию">
+                    <button type="submit" class="btn btn-primary">Поиск</button>
+                </form>
+            </div>
+            <div class="col-md-4 text-end">
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" 
+                        data-bs-target="#addRoleModal">
+                    <i class="bi bi-plus-lg"></i> Добавить роль
+                </button>
+            </div>
+        </div>
+
+        <!-- Таблица ролей -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название роли</th>
+                        <th>Количество пользователей</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${roles == null || #lists.isEmpty(roles.content)}">
+                        <td colspan="4" class="text-center">Роли не найдены</td>
+                    </tr>
+                    <tr th:each="role : ${roles.content}" th:if="${role != null}">
+                        <td th:text="${role.id}">1</td>
+                        <td th:text="${role.roleName ?: '-'}">ROLE_USER</td>
+                        <td th:text="${role.users != null ? #lists.size(role.users) : 0}">0</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-warning btn-sm" 
+                                    data-bs-toggle="modal" 
+                                    th:data-bs-target="'#editRoleModal' + ${role.id}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <form th:action="@{/admin/roles/{id}(id=${role.id})}" 
+                                  method="post" style="display: inline;">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn btn-danger btn-sm" 
+                                        onclick="return confirm('Вы уверены?')"
+                                        th:disabled="${role.users != null && #lists.size(role.users) > 0}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Пагинация -->
+        <div th:replace="fragments/pagination :: pagination(${roles})"></div>
+
+        <!-- Модальное окно добавления роли -->
+        <div class="modal fade" id="addRoleModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/admin/roles}" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Добавить роль</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="roleName" class="form-label">Название роли</label>
+                                <input type="text" class="form-control" id="roleName" 
+                                       name="roleName" required pattern="ROLE_[A-Z]+"
+                                       placeholder="ROLE_NAME">
+                                <div class="form-text">
+                                    Название роли должно начинаться с "ROLE_" и содержать только заглавные буквы
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" 
+                                    data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальные окна редактирования для каждой роли -->
+        <div th:each="role : ${roles.content}">
+            <div class="modal fade" th:id="'editRoleModal' + ${role.id}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{/admin/roles/{id}(id=${role.id})}" method="post">
+                            <input type="hidden" name="_method" value="PUT">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Редактировать роль</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="roleName" class="form-label">Название роли</label>
+                                    <input type="text" class="form-control" 
+                                           th:id="'roleName' + ${role.id}" 
+                                           name="roleName" 
+                                           th:value="${role.roleName}" required 
+                                           pattern="ROLE_[A-Z]+"
+                                           placeholder="ROLE_NAME">
+                                    <div class="form-text">
+                                        Название роли должно начинаться с "ROLE_" и содержать только заглавные буквы
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" 
+                                        data-bs-dismiss="modal">Отмена</button>
+                                <button type="submit" class="btn btn-primary">Сохранить</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

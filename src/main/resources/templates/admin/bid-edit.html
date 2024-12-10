@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="admin/layout :: html(~{::content})">
+<body>
+    <div th:fragment="content">
+        <div class="container-fluid">
+            <h2 class="mb-4">
+                <i class="bi bi-file-text"></i>
+                <th:block th:if="${bid.id != null}">
+                    <span>Редактирование заявки</span>
+                </th:block>
+                <th:block th:unless="${bid.id != null}">
+                    <span>Новая заявка</span>
+                </th:block>
+            </h2>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form th:action="@{${bid.id != null ? '/admin/bids/' + bid.id : '/admin/bids'}}"
+                          th:object="${bid}" 
+                          method="post" 
+                          class="needs-validation" 
+                          novalidate>
+                        
+                        <input type="hidden" name="_method" th:value="${bid.id != null ? 'PUT' : 'POST'}" />
+
+                        <!-- Гражданин -->
+                        <div class="mb-3">
+                            <label for="citizenId" class="form-label">Гражданин</label>
+                            <select class="form-select" 
+                                    id="citizenId" 
+                                    th:field="*{citizenId}"
+                                    required>
+                                <option value="">Выберите гражданина</option>
+                                <option th:each="citizen : ${citizens}"
+                                        th:value="${citizen.id}"
+                                        th:text="${citizen.lastName + ' ' + citizen.firstName + ' ' + citizen.middleName}">
+                                    ФИО гражданина
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Выберите гражданина
+                            </div>
+                        </div>
+
+                        <!-- Услуга -->
+                        <div class="mb-3">
+                            <label for="serviceId" class="form-label">Услуга</label>
+                            <select class="form-select" 
+                                    id="serviceId" 
+                                    th:field="*{serviceId}"
+                                    required>
+                                <option value="">Выберите услугу</option>
+                                <option th:each="service : ${services}"
+                                        th:value="${service.id}"
+                                        th:text="${service.name}">
+                                    Название услуги
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Выберите услугу
+                            </div>
+                        </div>
+
+                        <!-- Статус -->
+                        <div class="mb-3">
+                            <label for="statusId" class="form-label">Статус</label>
+                            <select class="form-select" 
+                                    id="statusId" 
+                                    th:field="*{statusId}"
+                                    required>
+                                <option value="">Выберите статус</option>
+                                <option th:each="status : ${statuses}"
+                                        th:value="${status.id}"
+                                        th:text="${status.status}">
+                                    Статус
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Выберите статус
+                            </div>
+                        </div>
+
+                        <!-- Дата -->
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Дата</label>
+                            <input type="date" 
+                                   class="form-control" 
+                                   id="date" 
+                                   th:field="*{date}"
+                                   required>
+                            <div class="invalid-feedback">
+                                Укажите дату
+                            </div>
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> Сохранить
+                            </button>
+                            <a th:href="@{/admin/bids}" class="btn btn-light ms-2">
+                                <i class="bi bi-x-lg"></i> Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript для валидации формы -->
+        <script>
+            (function() {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms)
+                    .forEach(function(form) {
+                        form.addEventListener('submit', function(event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
+        </script>
+    </div>
+</body>
+</html> 

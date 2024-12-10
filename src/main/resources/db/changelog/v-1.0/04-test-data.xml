@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <changeSet id="04-test-data" author="your_name">
+        <!-- Статусы заявок -->
+        <insert tableName="bid_statuses">
+            <column name="status">Новая</column>
+        </insert>
+        <insert tableName="bid_statuses">
+            <column name="status">В обработке</column>
+        </insert>
+        <insert tableName="bid_statuses">
+            <column name="status">Завершена</column>
+        </insert>
+
+        <!-- Роли -->
+        <insert tableName="roles">
+            <column name="role">ADMIN</column>
+        </insert>
+        <insert tableName="roles">
+            <column name="role">USER</column>
+        </insert>
+
+        <!-- Категории услуг -->
+        <insert tableName="categories">
+            <column name="category">Социальные услуги</column>
+        </insert>
+        <insert tableName="categories">
+            <column name="category">Медицинские услуги</column>
+        </insert>
+
+        <!-- Типы документов -->
+        <insert tableName="types">
+            <column name="type">Заявление</column>
+        </insert>
+        <insert tableName="types">
+            <column name="type">Квитанция</column>
+        </insert>
+        <insert tableName="types">
+            <column name="type">Справка</column>
+        </insert>
+
+        <!-- Учреждения -->
+        <insert tableName="establishments">
+            <column name="name">МФЦ</column>
+            <column name="address">ул. Ленина, 1</column>
+            <column name="phone">+7(999)999-99-99</column>
+        </insert>
+
+        <!-- Статусы платежей -->
+        <insert tableName="payment_statuses">
+            <column name="status">Новый</column>
+        </insert>
+        <insert tableName="payment_statuses">
+            <column name="status">Оплачен</column>
+        </insert>
+
+        <!-- Тестовый администратор -->
+        <insert tableName="users">
+            <column name="identify_number">admin</column>
+            <column name="password">$2a$10$rS5/VvpX89nL3YqsQEKGkOh0VpVvY5AoKGg9T8RzOZ5hpZyX8Qzoy</column>
+            <column name="role_id">1</column>
+        </insert>
+
+        <!-- Тестовый пользователь -->
+        <insert tableName="users">
+            <column name="identify_number">user</column>
+            <column name="password">$2a$10$rS5/VvpX89nL3YqsQEKGkOh0VpVvY5AoKGg9T8RzOZ5hpZyX8Qzoy</column>
+            <column name="role_id">2</column>
+        </insert>
+
+        <!-- Тестовый гражданин -->
+        <insert tableName="citizens">
+            <column name="first_name">Иван</column>
+            <column name="last_name">Иванов</column>
+            <column name="middle_name">Иванович</column>
+            <column name="identify_number">user</column>
+            <column name="phone">+7(999)888-77-66</column>
+            <column name="email">ivan@example.com</column>
+            <column name="address">ул. Пушкина, д. 10</column>
+        </insert>
+
+        <!-- Тестовая услуга -->
+        <insert tableName="services">
+            <column name="name">Оформление пособия</column>
+            <column name="description">Оформление социального пособия</column>
+            <column name="category_id">1</column>
+            <column name="establishment_id">1</column>
+        </insert>
+
+        <!-- Тестовая заявка -->
+        <insert tableName="bids">
+            <column name="date">2024-01-20</column>
+            <column name="citizen_id">1</column>
+            <column name="service_id">1</column>
+            <column name="status_id">1</column>
+        </insert>
+
+        <!-- Тестовый платеж -->
+        <insert tableName="payments">
+            <column name="sum">1000.00</column>
+            <column name="date">2024-01-20</column>
+            <column name="bid_id">1</column>
+            <column name="status_id">1</column>
+        </insert>
+
+        <!-- Тестовый документ -->
+        <insert tableName="documents">
+            <column name="name">Заявление на пособие</column>
+            <column name="file_path">2024/01/20/test.pdf</column>
+            <column name="original_filename">application.pdf</column>
+            <column name="file_size">1024</column>
+            <column name="mime_type">application/pdf</column>
+            <column name="hash">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</column>
+            <column name="loading_date">2024-01-20 12:00:00</column>
+            <column name="type_id">1</column>
+            <column name="bid_id">1</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog> 

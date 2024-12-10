@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: head"></head>
+<body>
+<div th:replace="admin/layout :: layout(~{::main})">
+    <main>
+        <h1 class="h3 mb-4">Панель управления</h1>
+
+        <!-- Статистика -->
+        <div class="row">
+            <!-- Пользователи -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-start border-primary border-4 shadow h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-uppercase fw-bold text-primary mb-1">
+                                    Пользователей
+                                </div>
+                                <div class="h5 mb-0 fw-bold" th:text="${usersCount}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-people fs-1 text-black-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Заявки -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-start border-success border-4 shadow h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-uppercase fw-bold text-success mb-1">
+                                    Активных заявок
+                                </div>
+                                <div class="h5 mb-0 fw-bold" th:text="${bidsCount}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-file-text fs-1 text-black-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Услуги -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-start border-info border-4 shadow h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-uppercase fw-bold text-info mb-1">
+                                    Услуг
+                                </div>
+                                <div class="h5 mb-0 fw-bold" th:text="${servicesCount}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-gear fs-1 text-black-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Документы -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-start border-warning border-4 shadow h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-uppercase fw-bold text-warning mb-1">
+                                    Документов
+                                </div>
+                                <div class="h5 mb-0 fw-bold" th:text="${documentsCount}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-file-earmark fs-1 text-black-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Добавить после статистики -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 fw-bold">Управление базой данных</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex gap-3">
+                            <a href="/admin/database/export" class="btn btn-primary">
+                                <i class="bi bi-download"></i> Получить состояние базы данных
+                            </a>
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#importModal">
+                                <i class="bi bi-upload"></i> Загрузить состояние базы данных
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно для загрузки -->
+        <div class="modal fade" id="importModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Загрузка состояния базы данных</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="/admin/database/import" method="post" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                Внимание! Это действие приведет к полной замене данных в базе.
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Выберите файл JSON</label>
+                                <input type="file" class="form-control" name="file" accept="application/json" required>
+                                <div class="form-text">Максимальный размер файла: 10 МБ</div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn btn-warning">Загрузить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Последние действия -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 fw-bold">Последние заявки</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Дата</th>
+                                    <th>Услуга</th>
+                                    <th>Пользователь</th>
+                                    <th>Статус</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="bid : ${recentBids}">
+                                    <td th:text="${bid.id}"></td>
+                                    <td th:text="${#temporals.format(bid.date, 'dd.MM.yyyy')}"></td>
+                                    <td th:text="${bid.service.name}"></td>
+                                    <td th:text="${bid.citizen.lastName + ' ' + bid.citizen.firstName}"></td>
+                                    <td>
+                                                <span class="badge"
+                                                      th:classappend="${'bg-' + bid.status.color}"
+                                                      th:text="${bid.status.status}">
+                                                </span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

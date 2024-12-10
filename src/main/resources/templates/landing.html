@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:with="title='Госуслуги'">
+<head th:replace="layout :: head"></head>
+<body class="bg-light">
+    <!-- Навигация -->
+    <div th:replace="layout :: nav"></div>
+
+    <div class="container py-5">
+        <!-- Hero секция -->
+        <div class="row min-vh-50 align-items-center mb-5">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Государственные услуги онлайн</h1>
+                <p class="lead mb-4">Получайте государственные услуги быстро и удобно, не выходя из дома</p>
+                <div class="d-grid gap-2 d-md-flex">
+                    <a href="/registration" class="btn btn-primary btn-lg px-4">
+                        <i class="bi bi-person-plus"></i> Зарегистрироваться
+                    </a>
+                    <a href="/login" class="btn btn-outline-primary btn-lg px-4">
+                        <i class="bi bi-box-arrow-in-right"></i> Войти
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="text-center">
+                    <svg width="400" height="400" viewBox="0 0 400 400" class="hero-logo">
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#0d6efd;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0099ff;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Основной круг -->
+                        <circle cx="200" cy="200" r="180" fill="url(#grad1)" opacity="0.1"/>
+                        <circle cx="200" cy="200" r="150" fill="url(#grad1)" opacity="0.2"/>
+                        <circle cx="200" cy="200" r="120" fill="url(#grad1)"/>
+                        
+                        <!-- Иконка здания -->
+                        <path d="M160 140h80v140h40v-80l40 40v100h-200v-100l40-40v80h40v-140z" 
+                              fill="white" 
+                              transform="translate(20, 0)"/>
+                        
+                        <!-- Декоративные элементы -->
+                        <circle cx="120" cy="100" r="20" fill="white" opacity="0.5"/>
+                        <circle cx="280" cy="100" r="15" fill="white" opacity="0.3"/>
+                        <circle cx="320" cy="200" r="25" fill="white" opacity="0.4"/>
+                        <circle cx="80" cy="200" r="25" fill="white" opacity="0.4"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Преимущества -->
+        <div class="row g-4 py-5">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary bg-gradient text-white mb-3">
+                            <i class="bi bi-clock fs-2"></i>
+                        </div>
+                        <h3 class="fs-4 mb-3">24/7 доступ</h3>
+                        <p class="text-muted mb-0">Подавайте заявки и получайте услуги в любое удобное время</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary bg-gradient text-white mb-3">
+                            <i class="bi bi-shield-check fs-2"></i>
+                        </div>
+                        <h3 class="fs-4 mb-3">Безопасность</h3>
+                        <p class="text-muted mb-0">Ваши данные надежно защищены современными технологиями</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary bg-gradient text-white mb-3">
+                            <i class="bi bi-lightning fs-2"></i>
+                        </div>
+                        <h3 class="fs-4 mb-3">Быстро и удобно</h3>
+                        <p class="text-muted mb-0">Экономьте время благодаря простому и понятному интерфейсу</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Популярные услуги -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2 class="text-center mb-4">Популярные услуги</h2>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <i class="bi bi-file-text text-primary fs-3 mb-3"></i>
+                                <h5 class="card-title">Получение справок</h5>
+                                <p class="card-text text-muted">Справки о регистрации, доходах и другие документы</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <i class="bi bi-house text-primary fs-3 mb-3"></i>
+                                <h5 class="card-title">Недвижимость</h5>
+                                <p class="card-text text-muted">Регистрация прав собственности и операции с недвижимостью</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <i class="bi bi-car-front text-primary fs-3 mb-3"></i>
+                                <h5 class="card-title">Транспорт</h5>
+                                <p class="card-text text-muted">Регистрация транспортных средств и водительские удостоверения</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <i class="bi bi-heart-pulse text-primary fs-3 mb-3"></i>
+                                <h5 class="card-title">Здравоохранение</h5>
+                                <p class="card-text text-muted">Запись к врачу и медицинские документы</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Как это работает -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2 class="text-center mb-4">Как это работает</h2>
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="step-circle bg-primary text-white mb-3">1</div>
+                            <h5>Регистрация</h5>
+                            <p class="text-muted">Создайте личный кабинет</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="step-circle bg-primary text-white mb-3">2</div>
+                            <h5>Выбор услуги</h5>
+                            <p class="text-muted">Выберите нужную услугу</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="step-circle bg-primary text-white mb-3">3</div>
+                            <h5>Подача заявки</h5>
+                            <p class="text-muted">Заполните форму заявки</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="step-circle bg-primary text-white mb-3">4</div>
+                            <h5>Получение услуги</h5>
+                            <p class="text-muted">Получите результат</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .min-vh-50 {
+            min-height: 50vh;
+        }
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .step-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .hero-logo {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .hero-logo {
+                width: 300px;
+                height: 300px;
+            }
+        }
+    </style>
+</body>
+</html> 

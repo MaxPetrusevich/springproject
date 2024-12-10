@@ -5,11 +5,11 @@ import io.swagger.v3.oas.annotations.info.Info;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "User API",
-                description = "User API for Admin", version = "1.0.0",
-                termsOfService = "http://localhost:8080"
+                title = "Госуслуги API",
+                version = "1.0",
+                description = "API для системы государственных услуг"
         )
 )
 public class OpenApiConfig {
-
+    // Убираем дублирующий bean customOpenAPI, так как вся конфигурация уже в аннотации
 }

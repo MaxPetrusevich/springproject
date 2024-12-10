@@ -1,27 +1,25 @@
 package com.spring.springproject.service.impl;
 
 import com.spring.springproject.entities.User;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
-@RequiredArgsConstructor
+import java.util.stream.Stream;
 
+@Getter
+@RequiredArgsConstructor
 public class UserDetailsImpl implements UserDetails {
     private final User user;
 
-    public User getUser(){
-        return user;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
+        return Stream.of(user.getRole())
+                .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
                 .collect(Collectors.toList());
     }
 
@@ -32,7 +30,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getUserName();
+        return user.getIdentifyNumber();
     }
 
     @Override

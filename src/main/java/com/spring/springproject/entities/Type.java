@@ -1,31 +1,31 @@
 package com.spring.springproject.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
+import java.util.List;
 
+@Entity
+@Table(name = "type")
 @Data
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table
-public class Type implements Serializable {
-    @Id
-    @EqualsAndHashCode.Include
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "type_id")
-    private Integer id;
+public class Type {
 
-    @EqualsAndHashCode.Exclude
-    @Column(name = "type_name")
-    private String name;
-    @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "type", nullable = false, length = 100)
+    private String type;
+
+    @Column(name = "description", length = 500)
+    private String description;
+
+    @OneToMany(mappedBy = "type")
+    private List<Document> documents;
 }

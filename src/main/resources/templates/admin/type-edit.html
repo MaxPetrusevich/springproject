@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="admin/layout :: html(~{::content})">
+<body>
+    <div th:fragment="content">
+        <!-- Hero секция -->
+        <div class="bg-primary text-white py-4 mb-4">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2">
+                                <li class="breadcrumb-item">
+                                    <a th:href="@{/admin/types}" class="text-white-50">Типы документов</a>
+                                </li>
+                                <li class="breadcrumb-item active text-white">
+                                    <span th:text="${type.id != null ? 'Редактирование' : 'Новый тип'}">
+                                        Редактирование
+                                    </span>
+                                </li>
+                            </ol>
+                        </nav>
+                        <h1 class="display-5 mb-0">
+                            <i class="bi bi-files"></i>
+                            <span th:text="${type.id != null ? 'Редактирование типа документа' : 'Новый тип документа'}">
+                                Тип документа
+                            </span>
+                        </h1>
+                    </div>
+                    <div class="col-auto">
+                        <a th:href="@{/admin/types}" class="btn btn-lg btn-light">
+                            <i class="bi bi-arrow-left"></i> К списку типов
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Основная форма -->
+                <div class="col-lg-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-transparent">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-files"></i> Данные типа документа
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="${type.id != null ? '/admin/types/' + type.id : '/admin/types'}"
+                                  method="post"
+                                  class="needs-validation"
+                                  novalidate>
+                                
+                                <!-- Название -->
+                                <div class="mb-3">
+                                    <label class="form-label">Название</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           name="type"
+                                           th:value="${type.type}"
+                                           required>
+                                    <div class="invalid-feedback">
+                                        Введите название типа
+                                    </div>
+                                </div>
+
+                                <!-- Описание -->
+                                <div class="mb-3">
+                                    <label class="form-label">Описание</label>
+                                    <textarea class="form-control" 
+                                              name="description" 
+                                              rows="5"
+                                              th:text="${type.description}"></textarea>
+                                </div>
+
+                                <!-- Кнопки -->
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a th:href="@{/admin/types}" class="btn btn-light">
+                                        <i class="bi bi-x-lg"></i> Отмена
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-lg"></i> Сохранить
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Боковая панель -->
+                <div class="col-lg-4">
+                    <!-- Список документов -->
+                    <div class="card shadow-sm" th:if="${type.id != null and not #lists.isEmpty(type.documents)}">
+                        <div class="card-header bg-transparent">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-file-earmark-text"></i> Документы
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush">
+                                <a th:each="doc : ${type.documents}"
+                                   th:href="@{/documents/{id}/download(id=${doc.id})}"
+                                   class="list-group-item list-group-item-action">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span th:text="${doc.name}">Документ</span>
+                                        <small class="text-muted" 
+                                               th:text="${#temporals.format(doc.loadingDate, 'dd.MM.yyyy')}">
+                                            01.01.2024
+                                        </small>
+                                    </div>
+                                    <small class="text-muted">
+                                        <i class="bi bi-download"></i> Скачать
+                                    </small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript -->
+        <script>
+            // Валидация формы
+            (function() {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms)
+                    .forEach(function(form) {
+                        form.addEventListener('submit', function(event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
+        </script>
+    </div>
+</body>
+</html> 

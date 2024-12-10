@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: head"></head>
+<body>
+    <div th:replace="admin/layout :: layout(~{::main})">
+        <main>
+            <div class="container-fluid py-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <th:block th:if="${document.id != null}">
+                                        <span>Редактирование документа</span>
+                                    </th:block>
+                                    <th:block th:unless="${document.id != null}">
+                                        <span>Загрузка нового документа</span>
+                                    </th:block>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="@{${document.id != null ? '/admin/documents/' + document.id : '/admin/documents'}}"
+                                      th:object="${document}" 
+                                      method="post" 
+                                      enctype="multipart/form-data"
+                                      class="needs-validation" 
+                                      novalidate>
+                                    
+                                    <input type="hidden" name="_method" th:value="${document.id != null ? 'PUT' : 'POST'}" />
+
+                                    <!-- Название документа -->
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Название</label>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="name" 
+                                               th:field="*{name}"
+                                               required>
+                                        <div class="invalid-feedback">
+                                            Введите название документа
+                                        </div>
+                                    </div>
+
+                                    <!-- Тип документа -->
+                                    <div class="mb-3">
+                                        <label for="typeId" class="form-label">Тип документа</label>
+                                        <select class="form-select" 
+                                                id="typeId" 
+                                                th:field="*{typeId}" 
+                                                required>
+                                            <option value="">Выберите тип документа</option>
+                                            <option th:each="type : ${types}"
+                                                    th:value="${type.id}"
+                                                    th:text="${type.type}">
+                                            </option>
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            Выберите тип документа
+                                        </div>
+                                    </div>
+
+                                    <!-- Заявка -->
+                                    <div class="mb-3">
+                                        <label for="bidId" class="form-label">Заявка</label>
+                                        <select class="form-select" 
+                                                id="bidId" 
+                                                th:field="*{bidId}"
+                                                required>
+                                            <option value="">Выберите заявку</option>
+                                            <option th:each="bid : ${bids}"
+                                                    th:value="${bid.id}"
+                                                    th:text="${'Заявка №' + bid.id}">
+                                            </option>
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            Выберите заявку
+                                        </div>
+                                    </div>
+
+                                    <!-- Файл -->
+                                    <div class="mb-3">
+                                        <label for="file" class="form-label">Файл</label>
+                                        <input type="file" 
+                                               class="form-control" 
+                                               id="file" 
+                                               name="file"
+                                               th:required="${document.id == null}">
+                                        <div class="invalid-feedback">
+                                            Выберите файл
+                                        </div>
+                                    </div>
+
+                                    <!-- Кнопки -->
+                                    <div class="d-flex justify-content-between">
+                                        <a th:href="@{/admin/documents}" class="btn btn-secondary">
+                                            <i class="bi bi-arrow-left"></i> Назад
+                                        </a>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-check-lg"></i> Сохранить
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Валидация формы -->
+    <script>
+        (function() {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+</body>
+</html>

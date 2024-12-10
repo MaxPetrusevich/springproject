@@ -1,142 +1,480 @@
 package com.spring.springproject.controller;
 
-import com.spring.springproject.dto.OrderDto;
-import com.spring.springproject.dto.UserDto;
-import com.spring.springproject.entities.Order;
-import com.spring.springproject.entities.Status;
-import com.spring.springproject.service.impl.OrderServiceImpl;
-import com.spring.springproject.service.impl.OrderTechniqueServiceImpl;
-import com.spring.springproject.service.interfaces.UserService;
+import com.spring.springproject.dto.*;
+import com.spring.springproject.entities.*;
+import com.spring.springproject.mapper.EntityMapper;
+import com.spring.springproject.service.BidService;
+import com.spring.springproject.service.DocumentService;
+import com.spring.springproject.service.impl.*;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.spring.springproject.controller.Constants.*;
 
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
+
     private final UserService userService;
-    private final OrderServiceImpl orderService;
-    private final ModelMapper mapper;
-    private final OrderTechniqueServiceImpl orderTechniqueService;
+    private final CitizenService citizenService;
+    private final BidService bidService;
+    private final CategoryService categoryService;
+    private final DocumentService documentService;
+    private final PaymentService paymentService;
+    private final PaymentStatusService paymentStatusService;
+    private final GovServiceService govServiceService;
+    private final BidStatusService bidStatusService;
+    private final RoleService roleService;
+    private final EntityMapper mapper;
+    private final EstablishmentService establishmentService;
 
+    // Dashboard
+    @GetMapping("")
+    public String dashboard(Model model) {
+        model.addAttribute("title", "Панель управления");
+        model.addAttribute("usersCount", userService.count());
+        model.addAttribute("bidsCount", bidService.countActive());
+        model.addAttribute("servicesCount", govServiceService.count());
+        model.addAttribute("documentsCount", documentService.count());
+        model.addAttribute("recentBids", bidService.findRecent(5));
+        return "admin/dashboard";
+    }
+
+    // Users management
     @GetMapping("/users")
-    public String users(Model model, @RequestParam(defaultValue = "1", required = false) int page,
-                        @RequestParam(defaultValue = "3", required = false) int size,
-                        @RequestParam(name = "name", required = false) String name,
-                        @RequestParam(name = "email", required = false) String email,
-                        @RequestParam(name = "surname", required = false) String surname,
-                        @RequestParam(name = "username", required = false) String username) {
-        Pageable pageable = Pageable.ofSize(size);
-        pageable = pageable.withPage(page - 1);
-        Page<UserDto> userDtoPage = userService.findAll(pageable, username, name, surname, email);
-        model.addAttribute(PAGE, page);
-        model.addAttribute(SIZE, size);
-        model.addAttribute("name", name);
-        model.addAttribute("username", username);
-        model.addAttribute("surname", surname);
-        model.addAttribute("email", email);
-        model.addAttribute(TOTAL_PAGE, userDtoPage.getTotalPages());
-        model.addAttribute(LIST, userDtoPage.getContent());
-        return "admin/users";
+    public ModelAndView listUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String identifyNumber,
+            @RequestParam(required = false) Long roleId
+    ) {
+        ModelAndView mav = new ModelAndView("admin/users");
+        Page<User> users = userService.findAll(
+                PageRequest.of(page, size),
+                identifyNumber,
+                roleId
+        );
+        mav.addObject("users", users);
+        mav.addObject("roles", roleService.findAll());
+        return mav;
     }
 
-    @GetMapping("/edit-user/{userId}")
-    public String showEditUserForm(@PathVariable Integer userId, Model model) {
-        UserDto userDto = userService.findById(userId);
-        model.addAttribute("userDto", userDto);
-        return "admin/editUser";
+    @GetMapping("/users/create")
+    public ModelAndView createUserForm() {
+        ModelAndView mav = new ModelAndView("admin/user-edit");
+        mav.addObject("user", new UserRequestDto());
+        mav.addObject("roles", roleService.findAll());
+        return mav;
     }
 
-    @PostMapping("/edit-user/{userId}")
-    public String editUser(@PathVariable Integer userId, UserDto updatedUserDto) {
-        updatedUserDto.setId(userId);
-        userService.update(updatedUserDto);
-        return "redirect:/admin/users"; // Redirect to user list or another appropriate page
+    @GetMapping("/users/{id}/edit")
+    public ModelAndView editUserForm(@PathVariable Long id) {
+        ModelAndView mav = new ModelAndView("admin/user-edit");
+        User user = userService.findById(id);
+        mav.addObject("user", mapper.toUserDto(user));
+        mav.addObject("roles", roleService.findAll());
+        return mav;
     }
 
-    @PostMapping("/delete-user/{userId}")
-    public String deleteUser(@PathVariable Integer userId) {
-        userService.delete(userId);
+    // Roles management
+    @GetMapping("/roles")
+    public ModelAndView listRoles(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String roleName
+    ) {
+        ModelAndView mav = new ModelAndView("admin/roles");
+        Page<Role> roles = roleService.findAll(
+                PageRequest.of(page, size),
+                roleName
+        );
+        mav.addObject("roles", roles);
+        return mav;
+    }
+
+
+    // Citizens management
+    @GetMapping("/citizens")
+    public ModelAndView listCitizens(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String identifyNumber
+    ) {
+        ModelAndView mav = new ModelAndView("admin/citizen");
+        Page<Citizen> citizens = citizenService.findAll(
+                PageRequest.of(page, size),
+                lastName,
+                firstName,
+                identifyNumber
+        );
+        mav.addObject("citizens", citizens);
+        return mav;
+    }
+
+    @GetMapping("/citizens/create")
+    public ModelAndView createCitizenForm() {
+        ModelAndView mav = new ModelAndView("admin/citizen-edit");
+        mav.addObject("citizen", new CitizenRequestDto());
+        return mav;
+    }
+
+    @GetMapping("/citizens/{id}/edit")
+    public ModelAndView editCitizenForm(@PathVariable Long id) {
+        ModelAndView mav = new ModelAndView("admin/citizen-edit");
+        Citizen citizen = citizenService.findById(id);
+        mav.addObject("citizen", mapper.toCitizenDto(citizen));
+        return mav;
+    }
+
+    // Bids management
+    @GetMapping("/bids")
+    public String listBids(Model model,
+                           @RequestParam(defaultValue = "0") int page,
+                           @RequestParam(defaultValue = "10") int size,
+                           @RequestParam(required = false) Long citizenId,
+                           @RequestParam(required = false) Long serviceId,
+                           @RequestParam(required = false) Long statusId) {
+
+        Page<Bid> bids = bidService.findAll(PageRequest.of(page, size), citizenId, serviceId, statusId);
+
+        // Подсчет статистики
+        long inProgressCount = bids.getContent().stream()
+                .filter(bid -> bid.getStatus() != null && "В ОБРАБОТКЕ".equals(bid.getStatus().getStatus()))
+                .count();
+
+        long completedCount = bids.getContent().stream()
+                .filter(bid -> bid.getStatus() != null && "ВЫПОЛНЕНА".equals(bid.getStatus().getStatus()))
+                .count();
+
+        model.addAttribute("title", "Заявки");
+        model.addAttribute("bids", bids);
+        model.addAttribute("inProgressCount", inProgressCount);
+        model.addAttribute("completedCount", completedCount);
+        model.addAttribute("statuses", bidStatusService.findAll());
+        model.addAttribute("citizens", citizenService.findAll());
+        model.addAttribute("services", govServiceService.findAll());
+
+        return "admin/bids";
+    }
+
+    // Categories management
+    @GetMapping("/categories")
+    public ModelAndView listCategories(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String category
+    ) {
+        ModelAndView mav = new ModelAndView("admin/categories");
+        Page<Category> categories = categoryService.findAll(
+                PageRequest.of(page, size),
+                category
+        );
+        mav.addObject("categories", categories);
+        return mav;
+    }
+
+    // Payments management
+    @GetMapping("/payments")
+    public ModelAndView listPayments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Long bidId,
+            @RequestParam(required = false) Long statusId
+    ) {
+        ModelAndView mav = new ModelAndView("admin/payments");
+        Page<Payment> payments = paymentService.findAll(
+                PageRequest.of(page, size),
+                bidId,
+                statusId
+        );
+        mav.addObject("payments", payments);
+        mav.addObject("paymentStatuses", paymentStatusService.findAll());
+        return mav;
+    }
+
+    @GetMapping("/payments/create")
+    public ModelAndView createPaymentForm() {
+        ModelAndView mav = new ModelAndView("admin/payment-edit");
+        mav.addObject("payment", new PaymentRequestDto());
+        mav.addObject("bids", bidService.findAll());
+        mav.addObject("paymentStatuses", paymentStatusService.findAll());
+        return mav;
+    }
+
+    @GetMapping("/payments/{id}/edit")
+    public ModelAndView editPaymentForm(@PathVariable Long id) {
+        ModelAndView mav = new ModelAndView("admin/payment-edit");
+        Payment payment = paymentService.findById(id).orElseThrow();
+        mav.addObject("payment", mapper.toPaymentDto(payment));
+        mav.addObject("bids", bidService.findAll());
+        mav.addObject("paymentStatuses", paymentStatusService.findAll());
+        return mav;
+    }
+
+    // POST endpoints
+    @PostMapping("/users")
+    public String createUser(@Valid @ModelAttribute UserRequestDto userDto) {
+        User user = mapper.toUser(userDto);
+        user.setRole(roleService.findById(userDto.getRoleId()));
+        user.setRole(roleService.findById(userDto.getRoleId()));
+        userService.save(user);
         return "redirect:/admin/users";
     }
 
-    @GetMapping("/add-user")
-    public String showAddUserForm() {
-        // Можете добавить атрибуты модели, если это необходимо
-        return "admin/addUser"; // Предполагается, что ваш шаблон Thymeleaf назван "add-user.html"
-    }
-
-    @PostMapping("/add-user")
-    public String addUser(@RequestParam("username") String username,
-                          @RequestParam("password") String password,
-                          @RequestParam("email") String email,
-                          @RequestParam("name") String name,
-                          @RequestParam("surname") String surname) {
-        UserDto userDto = UserDto.builder()
-                .name(name)
-                .surname(surname)
-                .email(email)
-                .username(username)
-                .password(password)
-                .build();
-        // Обработка userDto и добавление нового пользователя в базу данных
-        // Также можно добавить логику валидации
-        userService.save(userDto);
-        // Перенаправление на страницу со списком пользователей или любую другую подходящую страницу
+    @PostMapping("/users/{id}")
+    public String updateUser(@PathVariable Long id, @Valid @ModelAttribute UserRequestDto userDto) {
+        User user = mapper.toUser(userDto);
+        user.setId(id);
+        user.setRole(roleService.findById(userDto.getRoleId()));
+        userService.update(user);
         return "redirect:/admin/users";
     }
 
-    @GetMapping("/users/orders")
-    public String toUserOrders(@RequestParam(name = "userId", required = false) Integer userId,
-                               @RequestParam(defaultValue = "1", required = false) int page,
-                               @RequestParam(defaultValue = "3", required = false) int size,
-                               @RequestParam(name = "minAmount", required = false)Double minAmount,
-                               @RequestParam(name = "maxAmount", required = false)Double maxAmount,
-                               @RequestParam(name = "status", required = false) String statusString,
-                               @RequestParam(name = "startDate", required = false) Date startDate,
-                               @RequestParam(name = "endDate", required = false) Date endDate,
-                               Model model) {
-        Status status = statusString!= null? Status.valueOf(statusString):null;
-        UserDto user = userService.findById(userId);
-        Pageable pageable = Pageable.ofSize(size);
-        pageable = pageable.withPage(page - 1);
-        Page<OrderDto> orderDtoPage = orderService.findAll(pageable, user, minAmount, maxAmount, startDate, endDate, status);
-        model.addAttribute("userId" , userId);
-        model.addAttribute(PAGE, page);
-        model.addAttribute(SIZE, size);
-        model.addAttribute(TOTAL_PAGE, orderDtoPage.getTotalPages());
-        model.addAttribute("orders", orderDtoPage.getContent());
-        return "admin/orders";
-    }
-    @GetMapping("/users/orders/change")
-    public String toChangeOrderStatus(@RequestParam("orderId") Integer orderId, Model model){
-        OrderDto orderDto = orderService.getOrderById(orderId);
-        model.addAttribute("statusValues", Status.values());
-        model.addAttribute("orderDto", orderDto);
-        return "admin/changeOrderStatus";
+    @PostMapping("/users/{id}/delete")
+    public String deleteUser(@PathVariable Long id) {
+        userService.delete(id);
+        return "redirect:/admin/users";
     }
 
-    @PostMapping("/users/orders/change")
-    public String changeOrderStatus(@RequestParam Integer orderId, @RequestParam Status newStatus, Model model){
-        OrderDto order = orderService.getOrderById(orderId);
-
-        // Update the order status
-        order.setStatus(newStatus);
-
-        // Save the updated order
-        orderService.updateOrder(order);
-        return "redirect:/admin/users/";
+    @PostMapping("/users/{id}/reset-password")
+    public String resetUserPassword(@PathVariable Long id, @RequestParam String newPassword) {
+        userService.resetPassword(id, newPassword);
+        return "redirect:/admin/users";
     }
+
+    // Citizens
+    @PostMapping("/citizens")
+    public String createCitizen(@Valid @ModelAttribute CitizenRequestDto citizenDto) {
+        Citizen citizen = mapper.toCitizen(citizenDto);
+        citizenService.save(citizen);
+        return "redirect:/admin/citizens";
+    }
+
+    @PostMapping("/citizens/{id}")
+    public String updateCitizen(@PathVariable Long id, @Valid @ModelAttribute CitizenRequestDto citizenDto) {
+        Citizen citizen = mapper.toCitizen(citizenDto);
+        citizen.setId(id);
+        citizenService.update(citizen);
+        return "redirect:/admin/citizens";
+    }
+
+    @DeleteMapping("/citizens/{id}")
+    public String deleteCitizen(@PathVariable Long id) {
+        citizenService.delete(id);
+        return "redirect:/admin/citizens";
+    }
+
+    // Bids
+    @PostMapping("/bids")
+    public String createBid(@Valid @ModelAttribute BidRequestDto bidDto) {
+        Bid bid = mapper.toBid(bidDto);
+        bidService.save(bid);
+        return "redirect:/admin/bids";
+    }
+
+    @PostMapping("/bids/{id}")
+    public String updateBid(@PathVariable Long id, @Valid @ModelAttribute BidRequestDto bidDto) {
+        Bid bid = mapper.toBid(bidDto);
+        bidService.update(id, bid);
+        return "redirect:/admin/bids";
+    }
+
+    @PostMapping("/bids/{id}/delete")
+    public String deleteBid(@PathVariable Long id) {
+        bidService.delete(id);
+        return "redirect:/admin/bids";
+    }
+
+    // Categories
+    @PostMapping("/categories")
+    public String createCategory(@Valid @ModelAttribute CategoryRequestDto categoryDto) {
+        Category category = mapper.toCategory(categoryDto);
+        categoryService.save(category.getCategory());
+        return "redirect:/admin/categories";
+    }
+
+    @PostMapping("/categories/{id}")
+    public String updateCategory(@PathVariable Long id, @Valid @ModelAttribute CategoryRequestDto categoryDto) {
+        Category category = mapper.toCategory(categoryDto);
+        categoryService.update(id, category.getCategory());
+        return "redirect:/admin/categories";
+    }
+
+    @PostMapping("/categories/{id}/delete")
+    public String deleteCategory(@PathVariable Long id) {
+        categoryService.delete(id);
+        return "redirect:/admin/categories";
+    }
+
+    // Payments
+    @PostMapping("/payments")
+    public String createPayment(@Valid @ModelAttribute PaymentRequestDto paymentDto) {
+        Payment payment = mapper.toPayment(paymentDto);
+        paymentService.save(payment);
+        return "redirect:/admin/payments";
+    }
+
+    @PostMapping("/payments/{id}")
+    public String updatePayment(@PathVariable Long id, @Valid @ModelAttribute PaymentRequestDto paymentDto) {
+        Payment payment = mapper.toPayment(paymentDto);
+        paymentService.update(id, payment);
+        return "redirect:/admin/payments";
+    }
+
+    @DeleteMapping("/payments/{id}")
+    public String deletePayment(@PathVariable Long id) {
+        paymentService.delete(id);
+        return "redirect:/admin/payments";
+    }
+
+    // Roles
+    @PostMapping("/roles")
+    public String createRole(@Valid @ModelAttribute Role role) {
+        roleService.create(role);
+        return "redirect:/admin/roles";
+    }
+
+    @PostMapping("/roles/{id}")
+    public String updateRole(@PathVariable Long id, @Valid @ModelAttribute Role role) {
+        roleService.update(id, role);
+        return "redirect:/admin/roles";
+    }
+
+    @DeleteMapping("/roles/{id}")
+    public String deleteRole(@PathVariable Long id) {
+        roleService.delete(id);
+        return "redirect:/admin/roles";
+    }
+
+    // Обработка ошибок
+
+
+    @ExceptionHandler(Exception.class)
+    public ModelAndView handleError(Exception ex, HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView("error");
+        mav.addObject("message", ex.getMessage()); // Сообщение об ошибке
+        mav.addObject("status", 500); // Статус ошибки
+        mav.addObject("path", request.getRequestURI()); // URL, на котором произошла ошибка
+        mav.addObject("timestamp", LocalDateTime.now()); // Текущее время
+        return mav;
+    }
+
+
+    @GetMapping("/services")
+    public String listServices(Model model,
+                               @RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "10") int size,
+                               @RequestParam(required = false) Long categoryId,
+                               @RequestParam(required = false) Long establishmentId) {
+
+        Page<GovService> services = govServiceService.findAll(
+                PageRequest.of(page, size),
+                categoryId,
+                establishmentId
+        );
+        model.addAttribute("services", services);
+        model.addAttribute("categories", categoryService.findAll());
+        model.addAttribute("establishments", establishmentService.findAll());
+
+        return "admin/services";
+    }
+
+    @GetMapping("/services/create")
+    public String createServiceForm(Model model) {
+        model.addAttribute("service", new GovService());
+        model.addAttribute("categories", categoryService.findAll());
+        model.addAttribute("establishments", establishmentService.findAll());
+        return "admin/services-edit";
+    }
+
+    @GetMapping("/services/{id}/edit")
+    public String editServiceForm(@PathVariable Long id, Model model) {
+        GovService service = govServiceService.findById(id);
+        if (service == null) {
+            return "redirect:/admin/services";
+        }
+        model.addAttribute("service", service);
+        model.addAttribute("categories", categoryService.findAll());
+        model.addAttribute("establishments", establishmentService.findAll());
+        return "admin/services-edit";
+    }
+
+    @PostMapping("/services")
+    public String createService(@ModelAttribute GovService service) {
+        govServiceService.save(service);
+        return "redirect:/admin/services";
+    }
+
+    @PostMapping("/services/{id}")
+    public String updateService(@PathVariable Long id, @ModelAttribute GovService service) {
+        service.setId(id);
+        govServiceService.update(service);
+        return "redirect:/admin/services";
+    }
+
+    @PostMapping("/services/{id}/delete")
+    public String deleteService(@PathVariable Long id) {
+        govServiceService.delete(id);
+        return "redirect:/admin/services";
+    }
+
+    // Establishments management
+    @GetMapping("/establishments")
+    public String listEstablishments(Model model,
+                                     @RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size,
+                                     @RequestParam(required = false) String name) {
+
+        Page<Establishment> establishments = establishmentService.findAll(
+                PageRequest.of(page, size),
+                name
+        );
+
+        model.addAttribute("establishments", establishments);
+        return "admin/establishment";
+    }
+
+    @GetMapping("/establishments/create")
+    public String createEstablishmentForm(Model model) {
+        model.addAttribute("establishment", new Establishment());
+        return "admin/establishment-edit";
+    }
+
+    @GetMapping("/establishments/{id}/edit")
+    public String editEstablishmentForm(@PathVariable Long id, Model model) {
+        Establishment establishment = establishmentService.findById(id);
+        model.addAttribute("establishment", establishment);
+        return "admin/establishment-edit";
+    }
+
+    @PostMapping("/establishments")
+    public String createEstablishment(@Valid @ModelAttribute Establishment establishment) {
+        establishmentService.save(establishment);
+        return "redirect:/admin/establishments";
+    }
+
+    @PostMapping("/establishments/{id}")
+    public String updateEstablishment(@PathVariable Long id, @Valid @ModelAttribute Establishment establishment) {
+        establishment.setId(id);
+        establishmentService.update(establishment);
+        return "redirect:/admin/establishments";
+    }
+
+    @PostMapping("/establishments/{id}/delete")
+    public String deleteEstablishment(@PathVariable Long id) {
+        establishmentService.delete(id);
+        return "redirect:/admin/establishments";
+    }
+
+
 }

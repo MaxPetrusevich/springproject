@@ -1,0 +1,10 @@
+<td>
+    <span class="badge" 
+          th:with="statusName=${payment.status != null ? payment.status.status : 'UNKNOWN'}"
+          th:classappend="${statusName eq 'ОПЛАЧЕНО' ? 'bg-success' : 
+                         (statusName eq 'ОЖИДАЕТ ОПЛАТЫ' ? 'bg-warning' : 
+                         (statusName eq 'ОШИБКА ОПЛАТЫ' ? 'bg-danger' : 'bg-secondary'))}"
+          th:text="${statusName}">
+        Статус
+    </span>
+</td> 

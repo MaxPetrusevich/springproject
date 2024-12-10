@@ -1,0 +1,24 @@
+<nav th:fragment="pagination(page)" 
+     th:if="${page != null and page.totalPages > 1}" 
+     class="mt-3">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${page.first ? 'disabled' : ''}">
+            <a class="page-link" th:href="${page.first ? '#' : ''}"
+               th:attrappend="href=${!page.first ? '?page=' + (page.number - 1) : ''}">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        </li>
+        <li class="page-item" 
+            th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+            th:classappend="${page.number == i ? 'active' : ''}">
+            <a class="page-link" th:href="@{'?page=' + ${i}}" 
+               th:text="${i + 1}">1</a>
+        </li>
+        <li class="page-item" th:classappend="${page.last ? 'disabled' : ''}">
+            <a class="page-link" th:href="${page.last ? '#' : ''}"
+               th:attrappend="href=${!page.last ? '?page=' + (page.number + 1) : ''}">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+    </ul>
+</nav> 

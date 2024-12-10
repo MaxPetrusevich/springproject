@@ -1,100 +1,77 @@
 package com.spring.springproject.service.impl;
 
-import com.spring.springproject.dto.TypeDto;
-import com.spring.springproject.entities.Category;
 import com.spring.springproject.entities.Type;
 import com.spring.springproject.repositories.TypeRepository;
-import com.spring.springproject.service.interfaces.TypeService;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.spring.springproject.service.impl.specifications.TypeSpecification;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
-public class TypeServiceImpl implements TypeService {
-    private final ModelMapper modelMapper;
+@RequiredArgsConstructor
+public class TypeServiceImpl {
+
     private final TypeRepository repository;
 
-    @Autowired
-    public TypeServiceImpl(ModelMapper modelMapper, TypeRepository repository) {
-        this.modelMapper = modelMapper;
-        this.repository = repository;
+    
+    public Page<Type> findAll(Pageable pageable, String name) {
+        // Use the Specification for filtering by name
+        Page<Type> types = repository.findAll(
+                TypeSpecification.filterByTypeName(name), pageable);
+        return new PageImpl<>(types.getContent(), pageable, types.getTotalElements());
     }
 
-
-    @Override
-    public Page<TypeDto> findAll(Pageable pageable, String name) {
-            Page<Type> types = repository.findAll(Type.builder()
-                    .name(name)
-                    .category(Category.builder().name("").build())
-                    .build(), pageable);
-            List<TypeDto> typeDtoList = types
-                    .stream()
-                    .map(type -> modelMapper.map(type, TypeDto.class))
-                    .toList();
-            return new PageImpl<>(typeDtoList, pageable, types.getTotalElements());
+    
+    public Set<Type> findAll() {
+        return new HashSet<>(repository.findAll());
     }
 
-    @Override
-    public Set<TypeDto> findAll() {
-        return repository.findAll()
-                .stream()
-                .map(type -> modelMapper.map(type, TypeDto.class))
-                .collect(Collectors.toSet());
+    
+    public Type findById(Long id) {
+        return repository.findById(id).orElse(null);
     }
 
-    @Override
-    public TypeDto findById(Integer id) {
-        return repository.findById(id)
-                .stream()
-                .map(type -> modelMapper.map(type, TypeDto.class))
-                .findFirst()
-                .orElse(null);
-    }
-
-    @Override
+    
     @Transactional
-    public TypeDto save(TypeDto object) {
-        Type type = modelMapper.map(object, Type.class);
-        type = repository.save(type);
-        return modelMapper.map(type, TypeDto.class);
+    public Type save(Type type) {
+        if (type.getType() == null || type.getType().trim().isEmpty()) {
+            throw new IllegalArgumentException("Type name cannot be empty");
+        }
+        return repository.save(type);
     }
 
-    @Override
+    
     @Transactional
-    public void update(TypeDto object) {
-        repository.update(modelMapper.map(object, Type.class));
+    public void update(Type type) {
+        repository.save(type); // No need for a custom update method, since save will update existing records
     }
 
-    @Override
-    public void delete(Integer id) {
+    
+    public void delete(Long id) {
         repository.deleteById(id);
     }
 
-
-    @Override
+    
     @Transactional
-    public void update(Integer id, String name) {
+    public void update(Long id, String name) {
         Type type = repository.findById(id).orElse(null);
         if (type != null) {
-            type.setName(name);
-            repository.update(type);
+            type.setType(name);
+            repository.save(type); // Update the type name
         }
     }
 
-    @Override
+    
     @Transactional
-    public TypeDto save(String name) {
+    public Type save(String name) {
         Type type = new Type();
-        type.setName(name);
-        type = repository.save(type);
-        return modelMapper.map(type, TypeDto.class);
+        type.setType(name);
+        return repository.save(type);
     }
 }

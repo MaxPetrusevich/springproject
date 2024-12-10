@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="customer/layout :: head"></head>
+<body>
+<div th:replace="customer/layout :: layout(~{::main})">
+    <main>
+        <div class="container">
+            <div class="hero-section">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h1>История заявок</h1>
+                        <div class="hero-stats">
+                            <div class="hero-stat">
+                                <span>Всего заявок</span>
+                                <h2 th:text="${bids.totalElements}">0</h2>
+                            </div>
+                            <div class="hero-stat">
+                                <span>В обработке</span>
+                                <h2 th:text="${inProgressCount}">0</h2>
+                            </div>
+                            <div class="hero-stat">
+                                <span>Выполнено</span>
+                                <h2 th:text="${completedCount}">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto hero-button">
+                        <a th:href="@{/customer/services}" class="btn btn-lg">
+                            <i class="bi bi-plus-lg"></i> Новая заявка
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Фильтры -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Услуга</label>
+                            <select class="form-select" name="serviceId">
+                                <option value="">Все услуги</option>
+                                <option th:each="service : ${services}"
+                                        th:value="${service.id}"
+                                        th:text="${service.name}"
+                                        th:selected="${param.serviceId != null && param.serviceId[0] == service.id.toString()}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Статус</label>
+                            <select class="form-select" name="statusId">
+                                <option value="">Все статусы</option>
+                                <option th:each="status : ${statuses}"
+                                        th:value="${status.id}"
+                                        th:text="${status.status}"
+                                        th:selected="${param.statusId != null && param.statusId[0] == status.id.toString()}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="bi bi-search"></i> Применить фильтры
+                            </button>
+                            <a th:href="@{/customer/history}" class="btn btn-secondary">
+                                <i class="bi bi-x-lg"></i> Сброс
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Список заявок -->
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                <div th:each="bid : ${bids}" class="col">
+                    <div class="card h-100 bid-card">
+                        <div class="card-header bg-transparent">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <span class="badge"
+                                    th:text="${bid.status}"
+                                    th:classappend="${bid.status == 'НОВАЯ' ? 'bg-primary' :
+                      bid.status == 'В ОБРАБОТКЕ' ? 'bg-warning' :
+                      bid.status == 'ВЫПОЛНЕНА' ? 'bg-success' : 'bg-danger'}">
+                                    Статус
+                                </span>
+                                <small class="text-muted" th:text="${#temporals.format(bid.date, 'dd.MM.yyyy')}">
+                                    01.01.2024
+                                </small>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${bid.serviceName}">Название услуги</h5>
+                            <p class="card-text text-muted">
+                                <i class="bi bi-building me-2"></i>
+                                <span th:text="${bid.establishmentName}">Учреждение</span>
+                            </p>
+                            <div class="timeline" th:if="${not #lists.isEmpty(bid.statusTimeline)}">
+                                <div class="timeline-item"
+                                     th:each="status : ${bid.statusTimeline}"
+                                     th:classappend="${status.active ? 'active' : ''}">
+                                    <div class="timeline-badge">
+                                        <i class="bi"
+                                           th:classappend="${status.status == 'НОВАЯ' ? 'bi-file-earmark-plus' :
+                   status.status == 'В ОБРАБОТКЕ' ? 'bi-hourglass-split' :
+                   status.status == 'ВЫПОЛНЕНА' ? 'bi-check-lg' : 'bi-x-lg'}">
+                                        </i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <small class="text-muted d-block"
+                                               th:text="${#temporals.format(status.date, 'dd.MM.yyyy HH:mm')}">
+                                            01.01.2024 12:00
+                                        </small>
+                                        <span th:text="${status.comment}">Комментарий</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <a th:if="${bid.status == 'ВЫПОЛНЕНА'}"
+                                       th:href="@{/customer/documents(bidId=${bid.id})}"
+                                       class="btn btn-sm btn-success">
+                                        <i class="bi bi-file-earmark-text"></i> Документы
+                                    </a>
+                                </div>
+                                <span class="h5 mb-0 text-primary" th:text="${bid.amount + ' BYN'}">0.00 BYN</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Пагинация -->
+            <nav th:if="${bids.totalPages > 1}" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${bids.first ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{/customer/history(page=${bids.number - 1})}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, bids.totalPages - 1)}"
+                        th:classappend="${bids.number == i ? 'active' : ''}">
+                        <a class="page-link" th:href="@{/customer/history(page=${i})}" th:text="${i + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${bids.last ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{/customer/history(page=${bids.number + 1})}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </main>
+</div>
+
+<style>
+    /* Общее оформление карточек */
+    .bid-card {
+        border: 1px solid #e9ecef;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .bid-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+        padding: 0.75rem 1rem;
+    }
+
+    .card-footer {
+        background-color: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+        padding: 0.75rem 1rem;
+    }
+
+    /* Таймлайн */
+    .timeline {
+        position: relative;
+        margin-top: 1rem;
+        padding: 0;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #dee2e6;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .timeline-badge {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1.5rem;
+        height: 1.5rem;
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        color: #6c757d;
+        z-index: 1;
+        transition: all 0.3s ease;
+    }
+
+    .timeline-item.active .timeline-badge {
+        background: #0d6efd;
+        border-color: #0d6efd;
+        color: white;
+    }
+
+    .timeline-content {
+        background-color: #f8f9fa;
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .timeline-content small {
+        color: #6c757d;
+    }
+
+    /* Кнопки и бейджи */
+    .badge {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.375rem;
+    }
+
+    .badge.bg-primary {
+        background-color: #0d6efd !important;
+        color: white;
+    }
+
+    .badge.bg-warning {
+        background-color: #ffc107 !important;
+        color: #212529;
+    }
+
+    .badge.bg-success {
+        background-color: #28a745 !important;
+        color: white;
+    }
+
+    .badge.bg-danger {
+        background-color: #dc3545 !important;
+        color: white;
+    }
+
+    /* Пагинация */
+    .pagination {
+        margin-top: 1.5rem;
+    }
+
+    .pagination .page-item .page-link {
+        color: #0d6efd;
+        transition: all 0.3s ease;
+    }
+
+    .pagination .page-item.active .page-link,
+    .pagination .page-item:hover .page-link {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+    /* Анимация кнопок */
+    .btn:hover {
+        transform: scale(1.05);
+        transition: transform 0.2s ease;
+    }
+    .hero-section {
+        background: linear-gradient(90deg, #0d6efd, #0056b3);
+        color: white;
+        padding: 2rem 1rem;
+        margin-bottom: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-section h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: bold;
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .hero-stat {
+        text-align: center;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-stat span {
+        font-size: 0.9rem;
+        color: #cfe2ff;
+    }
+
+    .hero-stat h2 {
+        font-size: 1.5rem;
+        margin-top: 0.5rem;
+        color: white;
+    }
+
+    .hero-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero-button .btn {
+        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        background: white;
+        color: #0d6efd;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .hero-button .btn:hover {
+        background: #e9ecef;
+        color: #0056b3;
+    }
+</style>
+
+</body>
+</html>

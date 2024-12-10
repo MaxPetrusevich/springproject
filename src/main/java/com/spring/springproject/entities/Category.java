@@ -1,36 +1,29 @@
 package com.spring.springproject.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.*;
+
 import lombok.*;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
+@Entity
+@Table(name = "category")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Builder
-@Entity
-@Table
-public class Category implements Serializable {
-    @Id
-    @EqualsAndHashCode.Include
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
-    private Integer id;
+@EqualsAndHashCode(exclude = {"services"})
+@ToString(exclude = {"services"})
+public class Category {
 
-    @Column(name = "category_name")
-    @EqualsAndHashCode.Exclude
-    private String name;
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "category")
-    private Set<Type> types = new HashSet<Type>();
-    @ToString.Exclude
-    @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "category")
-    private Set<Technique> techniques = new HashSet<Technique>();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    private Long id;
+
+    @Column(name = "category", nullable = false)
+    private String category;
+
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<GovService> services;
 }

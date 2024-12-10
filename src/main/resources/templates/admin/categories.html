@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: head"></head>
+<body>
+    <div th:replace="admin/layout :: layout(~{::main})">
+        <main>
+            <div class="container-fluid py-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">Категории</h1>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal">
+                        <i class="bi bi-plus-lg"></i> Добавить категорию
+                    </button>
+                </div>
+
+                <!-- Фильтры -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Название</label>
+                                <input type="text" class="form-control" name="category" 
+                                       th:value="${param.category}">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="bi bi-search"></i> Поиск
+                                </button>
+                                <a th:href="@{/admin/categories}" class="btn btn-secondary">
+                                    <i class="bi bi-x-lg"></i> Сброс
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Таблица -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Название</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="category : ${categories}">
+                                        <td th:text="${category.id}"></td>
+                                        <td th:text="${category.category}"></td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-outline-primary"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#categoryModal"
+                                                        th:data-id="${category.id}"
+                                                        th:data-name="${category.category}"
+                                                        onclick="editCategory(this)">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        data-bs-toggle="modal"
+                                                        th:data-bs-target="'#deleteModal' + ${category.id}">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+
+                                            <!-- Модальное окно удаления -->
+                                            <div class="modal fade" th:id="'deleteModal' + ${category.id}">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Подтверждение удаления</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Вы действительно хотите удалить категорию?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                                            <form th:action="@{/admin/categories/{id}/delete(id=${category.id})}"
+                                                                  method="post">
+                                                                <input type="hidden" name="_method" value="DELETE">
+                                                                <button type="submit" class="btn btn-danger">Удалить</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Пагинация -->
+                        <nav th:if="${categories.totalPages > 1}">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${categories.first ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{/admin/categories(page=${categories.number - 1})}">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, categories.totalPages - 1)}"
+                                    th:classappend="${categories.number == i ? 'active' : ''}">
+                                    <a class="page-link" th:href="@{/admin/categories(page=${i})}" th:text="${i + 1}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${categories.last ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{/admin/categories(page=${categories.number + 1})}">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модальное окно создания/редактирования -->
+            <div class="modal fade" id="categoryModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTitle">Добавить категорию</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form id="categoryForm" method="post">
+                            <div class="modal-body">
+                                <input type="hidden" id="categoryId" name="id">
+                                <div class="mb-3">
+                                    <label for="categoryName" class="form-label">Название</label>
+                                    <input type="text" class="form-control" id="categoryName" name="category" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                <button type="submit" class="btn btn-primary">Сохранить</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Скрипт для работы с модальным окном -->
+    <script>
+        function editCategory(button) {
+            const id = button.getAttribute('data-id');
+            const name = button.getAttribute('data-name');
+            
+            document.getElementById('modalTitle').textContent = 'Редактировать категорию';
+            document.getElementById('categoryId').value = id;
+            document.getElementById('categoryName').value = name;
+            
+            const form = document.getElementById('categoryForm');
+            form.action = '/admin/categories/' + id;
+            
+            // Добавляем поле _method для PUT запроса
+            let methodInput = form.querySelector('input[name="_method"]');
+            if (!methodInput) {
+                methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                form.appendChild(methodInput);
+            }
+            methodInput.value = 'PUT';
+        }
+
+        // При открытии модального окна для создания
+        document.getElementById('categoryModal').addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            if (!button.hasAttribute('data-id')) {
+                // Если это создание новой категории
+                document.getElementById('modalTitle').textContent = 'Добавить категорию';
+                document.getElementById('categoryForm').reset();
+                document.getElementById('categoryId').value = '';
+                document.getElementById('categoryForm').action = '/admin/categories';
+                
+                // Удаляем поле _method если оно есть
+                const methodInput = document.querySelector('input[name="_method"]');
+                if (methodInput) methodInput.remove();
+            }
+        });
+    </script>
+</body>
+</html> 

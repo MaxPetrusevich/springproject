@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: head"></head>
+<body>
+    <div th:replace="admin/layout :: layout(~{::main})">
+        <main>
+            <div class="container-fluid py-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">Заявки</h1>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bidModal">
+                        <i class="bi bi-plus-lg"></i> Добавить заявку
+                    </button>
+                </div>
+
+                <!-- Статистика -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card border-start border-success border-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="text-success fw-bold text-uppercase small">В обработке</div>
+                                        <div class="h4 mb-0" th:text="${inProgressCount}">0</div>
+                                    </div>
+                                    <i class="bi bi-hourglass-split fs-1 text-success opacity-25"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-start border-primary border-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="text-primary fw-bold text-uppercase small">Выполнено</div>
+                                        <div class="h4 mb-0" th:text="${completedCount}">0</div>
+                                    </div>
+                                    <i class="bi bi-check-circle fs-1 text-primary opacity-25"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Фильтры -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Статус</label>
+                                <select class="form-select" name="statusId">
+                                    <option value="">Все статусы</option>
+                                    <option th:each="status : ${statuses}"
+                                            th:value="${status.id}"
+                                            th:text="${status.status}"
+                                            th:selected="${param.statusId != null && param.statusId[0] == status.id.toString()}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="bi bi-search"></i> Поиск
+                                </button>
+                                <a th:href="@{/admin/bids}" class="btn btn-secondary">
+                                    <i class="bi bi-x-lg"></i> Сброс
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Таблица -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Дата</th>
+                                        <th>Услуга</th>
+                                        <th>Гражданин</th>
+                                        <th>Статус</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="bid : ${bids}">
+                                        <td th:text="${bid.id}"></td>
+                                        <td th:text="${#temporals.format(bid.date, 'dd.MM.yyyy')}"></td>
+                                        <td th:text="${bid.service.name}"></td>
+                                        <td th:text="${bid.citizen.lastName + ' ' + bid.citizen.firstName}"></td>
+                                        <td>
+                                            <span class="badge" 
+                                                  th:classappend="${'bg-' + bid.status.color}"
+                                                  th:text="${bid.status.status}">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-outline-primary"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#bidModal"
+                                                        th:data-id="${bid.id}"
+                                                        th:data-service="${bid.service.id}"
+                                                        th:data-citizen="${bid.citizen.id}"
+                                                        th:data-status="${bid.status.id}"
+                                                        onclick="editBid(this)">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        data-bs-toggle="modal"
+                                                        th:data-bs-target="'#deleteModal' + ${bid.id}">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+
+                                            <!-- Модальное окно удаления -->
+                                            <div class="modal fade" th:id="'deleteModal' + ${bid.id}">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Подтверждение удаления</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Вы действительно хотите удалить заявку?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                                            <form th:action="@{/admin/bids/{id}/delete(id=${bid.id})}"
+                                                                  method="post">
+                                                                <button type="submit" class="btn btn-danger">Удалить</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Пагинация -->
+                        <nav th:if="${bids.totalPages > 1}">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${bids.first ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{/admin/bids(page=${bids.number - 1})}">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, bids.totalPages - 1)}"
+                                    th:classappend="${bids.number == i ? 'active' : ''}">
+                                    <a class="page-link" th:href="@{/admin/bids(page=${i})}" th:text="${i + 1}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${bids.last ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{/admin/bids(page=${bids.number + 1})}">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модальное окно создания/редактирования -->
+            <div class="modal fade" id="bidModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTitle">Добавить заявку</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form id="bidForm" method="post">
+                            <div class="modal-body">
+                                <input type="hidden" id="bidId" name="id">
+                                <div class="mb-3">
+                                    <label for="citizenId" class="form-label">Гражданин</label>
+                                    <select class="form-select" id="citizenId" name="citizenId" required>
+                                        <option value="">Выберите гражданина</option>
+                                        <option th:each="citizen : ${citizens}"
+                                                th:value="${citizen.id}"
+                                                th:text="${citizen.lastName + ' ' + citizen.firstName}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="serviceId" class="form-label">Услуга</label>
+                                    <select class="form-select" id="serviceId" name="serviceId" required>
+                                        <option value="">Выберите услугу</option>
+                                        <option th:each="service : ${services}"
+                                                th:value="${service.id}"
+                                                th:text="${service.name}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="statusId" class="form-label">Статус</label>
+                                    <select class="form-select" id="statusId" name="statusId" required>
+                                        <option value="">Выберите статус</option>
+                                        <option th:each="status : ${statuses}"
+                                                th:value="${status.id}"
+                                                th:text="${status.status}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                <button type="submit" class="btn btn-primary">Сохранить</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Скрипт для работы с модальным окном -->
+    <script>
+        function editBid(button) {
+            const id = button.getAttribute('data-id');
+            const serviceId = button.getAttribute('data-service');
+            const citizenId = button.getAttribute('data-citizen');
+            const statusId = button.getAttribute('data-status');
+            
+            document.getElementById('modalTitle').textContent = 'Редактировать заявку';
+            document.getElementById('bidId').value = id;
+            document.getElementById('serviceId').value = serviceId;
+            document.getElementById('citizenId').value = citizenId;
+            document.getElementById('statusId').value = statusId;
+            
+            const form = document.getElementById('bidForm');
+            form.action = '/admin/bids/' + id;
+            
+            // Добавляем поле _method для PUT запроса
+            let methodInput = form.querySelector('input[name="_method"]');
+            if (!methodInput) {
+                methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                form.appendChild(methodInput);
+            }
+            methodInput.value = 'PUT';
+        }
+
+        // При открытии модального окна для создания
+        document.getElementById('bidModal').addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            if (!button.hasAttribute('data-id')) {
+                // Если это создание новой заявки
+                document.getElementById('modalTitle').textContent = 'Добавить заявку';
+                document.getElementById('bidForm').reset();
+                document.getElementById('bidId').value = '';
+                document.getElementById('bidForm').action = '/admin/bids';
+                
+                // Удаляем поле _method если оно есть
+                const methodInput = document.querySelector('input[name="_method"]');
+                if (methodInput) methodInput.remove();
+            }
+        });
+    </script>
+</body>
+</html>
