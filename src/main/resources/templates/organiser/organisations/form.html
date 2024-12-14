@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/organiser :: head">
+    <title>Организация | Subscription Management</title>
+</head>
+<body>
+    <th:block th:replace="layout/organiser :: layout(~{::section})">
+        <section>
+            <div class="container">
+                <h2 class="mb-4" th:text="${organisation.id == null ? 'Создание организации' : 'Редактирование организации'}">
+                    Организация
+                </h2>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <form id="organisationForm" onsubmit="saveOrganisation(event)">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Название организации</label>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       th:value="${organisation.name}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Описание</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                          th:text="${organisation.description}"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <span th:text="${organisation.id == null ? 'Создать' : 'Сохранить'}">Сохранить</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function saveOrganisation(event) {
+                    event.preventDefault();
+                    
+                    const formData = {
+                        name: document.getElementById('name').value,
+                        description: document.getElementById('description').value
+                    };
+                    
+                    fetch('/api/organisations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData),
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'Ошибка при создании организации');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        window.location.href = '/organiser/organisations';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert(error.message);
+                    });
+                }
+            </script>
+        </section>
+    </th:block>
+</body>
+</html> 

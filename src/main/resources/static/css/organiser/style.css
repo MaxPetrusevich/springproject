@@ -1,0 +1,84 @@
+/* Карточки статистики */
+.stat-card {
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card .icon {
+    font-size: 2rem;
+    opacity: 0.3;
+}
+
+/* Графики */
+.chart-container {
+    position: relative;
+    min-height: 300px;
+}
+
+.chart-area {
+    height: 20rem;
+}
+
+.chart-pie {
+    height: 15rem;
+}
+
+/* Таблицы */
+.table-responsive {
+    margin: 0;
+}
+
+.table th {
+    background-color: #f8f9fc;
+    border-top: none;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Бейджи статусов */
+.badge-active {
+    background-color: #1cc88a;
+}
+
+.badge-inactive {
+    background-color: #e74a3b;
+}
+
+/* Анимации для карточек */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animated-card {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Кастомные стили для графиков */
+.custom-tooltip {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 4px;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 0.875rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .chart-area {
+        height: 15rem;
+    }
+    
+    .chart-pie {
+        height: 12rem;
+    }
+    
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+} 

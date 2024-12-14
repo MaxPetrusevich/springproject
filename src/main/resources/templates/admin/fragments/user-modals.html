@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Модальное окно создания пользователя -->
+    <div th:fragment="createUserModal" class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Создание пользователя</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createUserForm" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required
+                                   pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                            <div class="invalid-feedback">
+                                Пожалуйста, введите корректный email
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">Имя</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" required
+                                   minlength="2" maxlength="50">
+                            <div class="invalid-feedback">
+                                Имя должно содержать от 2 до 50 символов
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">Фамилия</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" required
+                                   minlength="2" maxlength="50">
+                            <div class="invalid-feedback">
+                                Фамилия должна содержать от 2 до 50 символов
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Пароль</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password" name="password" required
+                                       minlength="6" maxlength="100">
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">
+                                Пароль должен содержать минимум 6 символов
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Роль</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="">Выберите роль</option>
+                                <option value="USER">Пользователь</option>
+                                <option value="ORGANIZER">Организатор</option>
+                                <option value="ADMIN">Администратор</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Пожалуйста, выберите роль
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" onclick="createUser()">Создать</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования пользователя -->
+    <div th:fragment="editUserModal" class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Редактирование пользователя</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm" class="needs-validation" novalidate>
+                        <input type="hidden" name="id">
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editEmail" name="email" required
+                                   pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                            <div class="invalid-feedback">
+                                Пожалуйста, введите корректный email
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFirstName" class="form-label">Имя</label>
+                            <input type="text" class="form-control" id="editFirstName" name="firstName" required
+                                   minlength="2" maxlength="50">
+                            <div class="invalid-feedback">
+                                Имя должно содержать от 2 до 50 символов
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editLastName" class="form-label">Фамил��я</label>
+                            <input type="text" class="form-control" id="editLastName" name="lastName" required
+                                   minlength="2" maxlength="50">
+                            <div class="invalid-feedback">
+                                Фамилия должна содержать от 2 до 50 символов
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPassword" class="form-label">Новый пароль</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="editPassword" name="password"
+                                       minlength="6" maxlength="100"
+                                       placeholder="Оставьте пустым, чтобы не менять">
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('editPassword')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">
+                                Пароль должен соде��жать минимум 6 символов
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRole" class="form-label">Роль</label>
+                            <select class="form-select" id="editRole" name="role" required>
+                                <option value="">Выберите роль</option>
+                                <option value="USER">Пользователь</option>
+                                <option value="ORGANIZER">Организатор</option>
+                                <option value="ADMIN">Администратор</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Пожалуйста, выберите роль
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" onclick="updateUser()">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно удаления пользователя -->
+    <div th:fragment="deleteUserModal" class="modal fade" id="deleteUserModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Удаление пользователя</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Вы действительно хотите удалить пользователя <strong><span id="deleteUserEmail"></span></strong>?</p>
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        Это действие нельзя отменить. Все данные пользователя, включая подписки и платежи, будут удалены.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteUser()">
+                        <i class="bi bi-trash"></i> Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вспомогательные функции -->
+    <script th:fragment="modalScripts">
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        }
+    </script>
+</body>
+</html> 

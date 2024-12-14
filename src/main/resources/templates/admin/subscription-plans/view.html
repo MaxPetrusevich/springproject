@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/main :: head">
+    <title>Просмотр плана подписки</title>
+</head>
+<body>
+    <div th:replace="layout/main :: layout(~{::main})">
+        <main>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">План подписки #<span th:text="${plan.id}"></span></h1>
+                <div>
+                    <a th:href="@{/admin/subscription-plans/{id}/edit(id=${plan.id})}" 
+                       class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i> Редактировать
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Row -->
+            <div class="row">
+                <!-- Основная информация -->
+                <div class="col-xl-6 col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Основная информация</h6>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">Название</dt>
+                                <dd class="col-sm-8" th:text="${plan.name}"></dd>
+
+                                <dt class="col-sm-4">Продукт</dt>
+                                <dd class="col-sm-8">
+                                    <a th:href="@{/admin/products/{id}(id=${product.id})}" 
+                                       th:text="${product.name}"></a>
+                                </dd>
+
+                                <dt class="col-sm-4">Цена</dt>
+                                <dd class="col-sm-8" th:text="${plan.price + ' руб.'}"></dd>
+
+                                <dt class="col-sm-4">Период</dt>
+                                <dd class="col-sm-8" th:text="${plan.periodDays + ' дней'}"></dd>
+
+                                <dt class="col-sm-4">Статус</dt>
+                                <dd class="col-sm-8">
+                                    <span th:class="${'badge ' + (plan.active ? 'badge-success' : 'badge-danger')}"
+                                          th:text="${plan.active ? 'Активен' : 'Неактивен'}">
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-4">Описание</dt>
+                                <dd class="col-sm-8" th:text="${plan.description}"></dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Подписки -->
+                <div class="col-xl-6 col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Активные подписки</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Пользователь</th>
+                                            <th>Начало</th>
+                                            <th>Окончание</th>
+                                            <th>Статус</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="subscription : ${subscriptions}">
+                                            <td>
+                                                <a th:href="@{/admin/subscriptions/{id}(id=${subscription.id})}" 
+                                                   th:text="${subscription.id}"></a>
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/admin/users/{id}(id=${subscription.userId})}" 
+                                                   th:text="${subscription.userName + ' (' + subscription.userEmail + ')'}"></a>
+                                            </td>
+                                            <td th:text="${#temporals.format(subscription.startDate, 'dd.MM.yyyy')}"></td>
+                                            <td th:text="${#temporals.format(subscription.endDate, 'dd.MM.yyyy')}"></td>
+                                            <td>
+                                                <span th:class="${'badge ' + 
+                                                    (subscription.status.name() eq 'ACTIVE' ? 'badge-success' :
+                                                    (subscription.status.name() eq 'PENDING' ? 'badge-warning' :
+                                                    (subscription.status.name() eq 'CANCELLED' ? 'badge-danger' : 'badge-secondary')))}"
+                                                      th:text="${subscription.status.displayName}">
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/admin/subscriptions/{id}(id=${subscription.id})}" 
+                                                   class="btn btn-primary btn-sm" th:text="${'Просмотреть'}">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(subscriptions)}">
+                                            <td colspan="6" class="text-center">Подписки не найдены</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Page specific scripts -->
+    <script th:src="@{/js/admin/subscription-plans.js}"></script>
+</body>
+</html> 

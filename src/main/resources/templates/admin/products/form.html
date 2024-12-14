@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/main :: head">
+    <title>Продукт</title>
+</head>
+<body>
+    <div th:replace="layout/main :: layout(~{::main})">
+        <main>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800" 
+                    th:text="${product.id == null ? 'Создание продукта' : 'Редактирование продукта'}">
+                    Продукт
+                </h1>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <form th:action="@{/admin/products}" method="post" th:object="${product}">
+                                <!-- ID продукта если редактирование -->
+                                <input type="hidden" th:field="*{id}">
+                                
+                                <!-- ID организации если она уже назначена -->
+                                <input th:if="${product.organisationId != null}" 
+                                       type="hidden" 
+                                       th:field="*{organisationId}">
+                                
+                                <!-- Название -->
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Название *</label>
+                                    <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
+                                        Ошибка названия
+                                    </div>
+                                </div>
+
+                                <!-- Описание -->
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Описание</label>
+                                    <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+                                </div>
+
+                                <!-- Выбор организации только если она не назначена -->
+                                <div class="mb-3" th:if="${product.organisationId == null}">
+                                    <label for="organisationId" class="form-label">Организация *</label>
+                                    <select class="form-select" id="organisationId" th:field="*{organisationId}" required>
+                                        <option value="">Выберите организацию</option>
+                                        <option th:each="org : ${organisations}"
+                                                th:value="${org.id}"
+                                                th:text="${org.name}">
+                                            Организация
+                                        </option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('organisationId')}">
+                                        Выберите организацию
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="/admin/products" class="btn btn-secondary">Отмена</a>
+                                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Page specific scripts -->
+    <script th:src="@{/js/admin/products.js}"></script>
+    <script>
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!this.checkValidity()) {
+            e.stopPropagation();
+            this.classList.add('was-validated');
+            return;
+        }
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        
+        fetch(this.action, {
+            method: this.dataset.method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Ошибка при сохранении продукта');
+        })
+        .then(product => {
+            window.location.href = `/admin/products/${product.id}`;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message);
+        });
+    });
+    </script>
+</body>
+</html> 

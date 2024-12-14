@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/organiser :: head">
+    <title>Планы подписок</title>
+</head>
+<body>
+    <div th:replace="layout/organiser :: layout(~{::main})">
+        <main>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">Планы подписок</h1>
+                <a th:href="@{/organiser/subscription-plans/create}" class="btn btn-primary">
+                    <i class="bi bi-plus"></i> Создать план
+                </a>
+            </div>
+
+            <!-- Filters -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Фильтры</h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="search" th:value="${search}" 
+                                   placeholder="Поиск по названию...">
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" name="productId">
+                                <option value="">Все продукты</option>
+                                <option th:each="prod : ${products}"
+                                        th:value="${prod.id}"
+                                        th:text="${prod.name}"
+                                        th:selected="${prod.id == selectedProduct}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search"></i> Поиск
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <a th:href="@{/organiser/subscription-plans}" class="btn btn-secondary w-100">
+                                <i class="bi bi-x-circle"></i> Сбросить
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Plans List -->
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Продукт</th>
+                                    <th>Описание</th>
+                                    <th>Цена</th>
+                                    <th>Период (дней)</th>
+                                    <th>Активные подписки</th>
+                                    <th>Статус</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="plan : ${plans}">
+                                    <td th:text="${plan.name}"></td>
+                                    <td>
+                                        <a th:href="@{/organiser/products/{id}(id=${plan.productId})}" 
+                                           th:text="${plan.productName}"></a>
+                                    </td>
+                                    <td th:text="${plan.description}"></td>
+                                    <td th:text="${plan.price + ' ₽'}"></td>
+                                    <td th:text="${plan.periodDays}"></td>
+                                    <td th:text="${plan.activeSubscriptionsCount}"></td>
+                                    <td>
+                                        <span class="badge" 
+                                              th:classappend="${plan.statusBadgeClass}"
+                                              th:text="${plan.statusText}">
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a th:href="@{/organiser/subscription-plans/{id}/edit(id=${plan.id})}" 
+                                               class="btn btn-warning btn-sm" title="Редактировать">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form th:action="@{/organiser/subscription-plans/{id}/toggle(id=${plan.id})}" 
+                                                  method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-danger btn-sm" 
+                                                        th:title="${plan.active ? 'Деактивировать' : 'Активировать'}"
+                                                        onclick="return confirm('Вы уверены?')">
+                                                    <i class="bi" th:classappend="${plan.active ? 'bi-toggle-on' : 'bi-toggle-off'}"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(plans)}">
+                                    <td colspan="8" class="text-center">Планы подписок не найдены</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div th:if="${plans.totalPages > 1}" class="d-flex justify-content-center mt-4">
+                        <nav>
+                            <ul class="pagination">
+                                <li class="page-item" th:classappend="${plans.first ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{${plans.first ? '#' : ''}}">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, plans.totalPages - 1)}"
+                                    th:classappend="${i == plans.number ? 'active' : ''}">
+                                    <a class="page-link" th:href="@{/organiser/subscription-plans(page=${i}, size=${plans.size}, search=${search}, productId=${selectedProduct})}"
+                                       th:text="${i + 1}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${plans.last ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{${plans.last ? '#' : ''}}">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html> 

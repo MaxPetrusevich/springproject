@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/organiser :: head">
+    <title>План подписки | Subscription Management</title>
+</head>
+<body>
+    <th:block th:replace="layout/organiser :: layout(~{::section})">
+        <section>
+            <div class="container">
+                <h2 class="mb-4" th:text="${plan.id == null ? 'Создание плана' : 'Редактирование плана'}">
+                    План подписки
+                </h2>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <form id="planForm" onsubmit="savePlan(event)">
+                            <input type="hidden" id="planId" th:value="${plan.id}">
+                            <input type="hidden" id="productId" th:if="${productId != null}" th:value="${productId}">
+                            
+                            <div class="mb-3" th:if="${productId == null}">
+                                <label for="productSelect" class="form-label">Продукт</label>
+                                <select class="form-select" id="productSelect" required>
+                                    <option value="">Выберите продукт</option>
+                                    <option th:each="product : ${products}" 
+                                            th:value="${product.id}" 
+                                            th:text="${product.name}"
+                                            th:selected="${product.id == plan.productId}">
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Название плана</label>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       th:value="${plan.name}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Описание</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                          th:text="${plan.description}"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Цена</label>
+                                <input type="number" step="0.01" class="form-control" id="price" name="price" 
+                                       th:value="${plan.price}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="periodDays" class="form-label">Период (в днях)</label>
+                                <input type="number" class="form-control" id="periodDays" name="periodDays" 
+                                       th:value="${plan.periodDays}" required>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <span th:text="${plan.id == null ? 'Создать' : 'Сохранить'}">Сохранить</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function savePlan(event) {
+                    event.preventDefault();
+                    
+                    const planId = document.getElementById('planId').value;
+                    const productId = document.getElementById('productId')?.value || 
+                                    document.getElementById('productSelect')?.value;
+                    
+                    const formData = {
+                        name: document.getElementById('name').value,
+                        description: document.getElementById('description').value,
+                        price: parseFloat(document.getElementById('price').value),
+                        periodDays: parseInt(document.getElementById('periodDays').value),
+                        productId: productId
+                    };
+                    
+                    if (planId) {
+                        formData.id = planId;
+                    }
+                    
+                    const url = planId 
+                        ? `/api/subscription-plans/${planId}`
+                        : '/api/subscription-plans';
+                        
+                    const method = planId ? 'PUT' : 'POST';
+                    
+                    fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData),
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'Ошибка при сохранении плана');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        window.location.href = `/organiser/products/${productId}`;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert(error.message);
+                    });
+                }
+            </script>
+        </section>
+    </th:block>
+</body>
+</html> 

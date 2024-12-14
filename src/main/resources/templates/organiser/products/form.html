@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/organiser :: head">
+    <title>Продукт | Subscription Management</title>
+</head>
+<body>
+    <th:block th:replace="layout/organiser :: layout(~{::section})">
+        <section>
+            <div class="container">
+                <h2 class="mb-4" th:text="${product.id == null ? 'Создание продукта' : 'Редактирование продукта'}">
+                    Продукт
+                </h2>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <form id="productForm" onsubmit="saveProduct(event)">
+                            <input type="hidden" id="productId" th:value="${product.id}">
+                            
+                            <input type="hidden" id="organisationId" th:if="${organisationId != null}" th:value="${organisationId}">
+                            
+                            <div class="mb-3" th:if="${organisationId == null}">
+                                <label for="organisationSelect" class="form-label">Организация</label>
+                                <select class="form-select" id="organisationSelect" required>
+                                    <option value="">Выберите организацию</option>
+                                    <option th:each="org : ${organisations}" 
+                                            th:value="${org.id}" 
+                                            th:text="${org.name}"
+                                            th:selected="${org.id == product.organisationId}">
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Название продукта</label>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       th:value="${product.name}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Описание</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                          th:text="${product.description}"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Категория</label>
+                                <input type="text" class="form-control" id="category" name="category" 
+                                       th:value="${product.category}">
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <span th:text="${product.id == null ? 'Создать' : 'Сохранить'}">Сохранить</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function saveProduct(event) {
+                    event.preventDefault();
+                    
+                    const productId = document.getElementById('productId').value;
+                    
+                    const organisationId = document.getElementById('organisationId')?.value || 
+                                        document.getElementById('organisationSelect')?.value;
+                    
+                    const formData = {
+                        name: document.getElementById('name').value,
+                        description: document.getElementById('description').value,
+                        category: document.getElementById('category').value,
+                        organisationId: organisationId
+                    };
+                    
+                    if (productId) {
+                        formData.id = productId;
+                    }
+                    
+                    const url = productId 
+                        ? `/api/products/${productId}`
+                        : '/api/products';
+                        
+                    const method = productId ? 'PUT' : 'POST';
+                    
+                    fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData),
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'Ошибка при сохранении продукта');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        window.location.href = `/organiser/organisations/${organisationId}`;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert(error.message);
+                    });
+                }
+            </script>
+        </section>
+    </th:block>
+</body>
+</html> 

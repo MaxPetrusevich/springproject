@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/customer :: head">
+    <title>История подписок | Subscription Management</title>
+</head>
+<body>
+    <th:block th:replace="layout/customer :: layout(~{::section})">
+        <section>
+            <div class="container">
+                <h2 class="mb-4">История подписок</h2>
+
+                <!-- Фильтры -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <select id="statusFilter" class="form-select" onchange="applyFilters()">
+                            <option value="">Все статусы</option>
+                            <option value="ACTIVE">Активные</option>
+                            <option value="EXPIRED">Истекшие</option>
+                            <option value="CANCELLED">Отмененные</option>
+                            <option value="PENDING">В ожидании</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Таблиц�� подписок -->
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Продукт</th>
+                                <th>План</th>
+                                <th>Статус</th>
+                                <th>Дата начала</th>
+                                <th>Дата окончания</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="subscription : ${subscriptions}">
+                                <td th:text="${subscription.productName}">Название продукта</td>
+                                <td th:text="${subscription.planName}">Название плана</td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${subscription.status == T(com.example.enums.SubscriptionStatus).ACTIVE ? 'bg-success' : 
+                                                          subscription.status == T(com.example.enums.SubscriptionStatus).EXPIRED ? 'bg-danger' : 
+                                                          subscription.status == T(com.example.enums.SubscriptionStatus).CANCELLED ? 'bg-warning' : 'bg-secondary'}"
+                                          th:text="${subscription.status.displayName}">Статус</span>
+                                </td>
+                                <td th:text="${#temporals.format(subscription.startDate, 'dd.MM.yyyy')}">01.01.2024</td>
+                                <td th:text="${#temporals.format(subscription.endDate, 'dd.MM.yyyy')}">31.01.2024</td>
+                                <td>
+                                    <button th:if="${subscription.active}" 
+                                            class="btn btn-sm btn-danger"
+                                            th:onclick="'cancelSubscription(' + ${subscription.id} + ')'">
+                                        Отменить
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <script>
+                function applyFilters() {
+                    const status = document.getElementById('statusFilter').value;
+                    let url = '/customer/subscriptions';
+                    
+                    if (status) {
+                        url += '?status=' + status;
+                    }
+                    
+                    window.location.href = url;
+                }
+
+                function cancelSubscription(id) {
+                    if (confirm('Вы уверены, что хотите отменить подписку?')) {
+                        fetch('/api/subscriptions/' + id + '/cancel', {
+                            method: 'POST',
+                            credentials: 'same-origin'
+                        })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Ошибка при отмене подписки');
+                            window.location.reload();
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Ошибка при отмене подписки');
+                        });
+                    }
+                }
+
+                // Установка значения фильтра при загрузке страницы
+                document.addEventListener('DOMContentLoaded', function() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const status = urlParams.get('status');
+                    if (status) {
+                        document.getElementById('statusFilter').value = status;
+                    }
+                });
+            </script>
+        </section>
+    </th:block>
+</body>
+</html> 

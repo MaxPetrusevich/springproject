@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/main :: head">
+    <title>Просмотр пользователя</title>
+</head>
+<body>
+    <div th:replace="layout/main :: layout(~{::main})">
+        <main>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">Пользователь #<span th:text="${user.id}"></span></h1>
+                <div>
+                    <form th:if="${user.enabled}"
+                          th:action="@{/admin/users/{id}/block(id=${user.id})}"
+                          method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Вы уверены, что хотите заблокировать пользователя?')">
+                            <i class="fas fa-ban"></i> Заблокировать
+                        </button>
+                    </form>
+                    <form th:if="${!user.enabled}"
+                          th:action="@{/admin/users/{id}/unblock(id=${user.id})}"
+                          method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-success btn-sm"
+                                onclick="return confirm('Вы уверены, что хотите разблокировать пользователя?')">
+                            <i class="fas fa-check"></i> Разблокировать
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Content Row -->
+            <div class="row">
+                <!-- Основная информация -->
+                <div class="col-xl-6 col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Основная информация</h6>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">Email</dt>
+                                <dd class="col-sm-8" th:text="${user.email}"></dd>
+
+                                <dt class="col-sm-4">Имя</dt>
+                                <dd class="col-sm-8" th:text="${user.firstName}"></dd>
+
+                                <dt class="col-sm-4">Фамилия:</dt>
+                                <dd class="col-sm-8" th:text="${user.lastName}">Doe</dd>
+
+                                <dt class="col-sm-4">Роль:</dt>
+                                <dd class="col-sm-8" th:text="${user.role}">USER</dd>
+
+                                <dt class="col-sm-4">Статус</dt>
+                                <dd class="col-sm-8">
+                                    <span th:class="${'badge ' + (!user.enabled ? 'badge-danger' : 'badge-success')}"
+                                          th:text="${!user.enabled ? 'Заблокирован' : 'Активен'}">
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-4">Дата регистрации</dt>
+                                <dd class="col-sm-8" th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy HH:mm')}"></dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Подписки -->
+                <div class="col-xl-6 col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Подписки</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Продукт</th>
+                                            <th>План</th>
+                                            <th>Статус</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="subscription : ${subscriptions}">
+                                            <td th:text="${subscription.id}"></td>
+                                            <td>
+                                                <a th:href="@{/admin/products/{id}(id=${subscription.productId})}" 
+                                                   th:text="${subscription.productName}"></a>
+                                            </td>
+                                            <td th:text="${subscription.planName}"></td>
+                                            <td>
+                                                <span th:class="${'badge ' + 
+                                                    (subscription.status.name() eq 'ACTIVE' ? 'badge-success' :
+                                                    (subscription.status.name() eq 'PENDING' ? 'badge-warning' :
+                                                    (subscription.status.name() eq 'CANCELLED' ? 'badge-danger' : 'badge-secondary')))}"
+                                                      th:text="${subscription.status.displayName}">
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/admin/subscriptions/{id}(id=${subscription.id})}" 
+                                                   class="btn btn-primary btn-sm" th:text="${'Просмотреть подписку'}">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(subscriptions)}">
+                                            <td colspan="5" class="text-center">Подписки не найдены</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Платежи -->
+                <div class="col-xl-12 col-md-12 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">История платежей</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Дата</th>
+                                            <th>Подписка</th>
+                                            <th>Сумма</th>
+                                            <th>Статус</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="payment : ${payments}">
+                                            <td th:text="${payment.id}"></td>
+                                            <td th:text="${#temporals.format(payment.paymentDate, 'dd.MM.yyyy HH:mm')}"></td>
+                                            <td>
+                                                <a th:href="@{/admin/subscriptions/{id}(id=${payment.subscriptionId})}" 
+                                                   th:text="${'#' + payment.subscriptionId}"></a>
+                                            </td>
+                                            <td th:text="${payment.amount + ' руб.'}"></td>
+                                            <td>
+                                                <span th:class="${'badge ' + 
+                                                    (payment.status.name() eq 'COMPLETED' ? 'badge-success' :
+                                                    (payment.status.name() eq 'PENDING' ? 'badge-warning' :
+                                                    (payment.status.name() eq 'FAILED' ? 'badge-danger' : 'badge-secondary')))}"
+                                                      th:text="${payment.status}">
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(payments)}">
+                                            <td colspan="5" class="text-center">Платежи не найдены</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Page specific scripts -->
+    <script th:src="@{/js/admin/users.js}"></script>
+</body>
+</html> 

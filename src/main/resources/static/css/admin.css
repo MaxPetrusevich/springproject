@@ -1,0 +1,178 @@
+/* Общие стили */
+body {
+    background-color: #f8f9fc;
+}
+
+.sidebar {
+    min-height: 100vh;
+    background-color: #4e73df;
+    background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+    background-size: cover;
+}
+
+/* Карточки статистики */
+.card {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.card .card-header {
+    border-bottom: none;
+    background-color: #f8f9fc;
+}
+
+.card-header .heading {
+    margin: 0;
+    font-weight: 700;
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+/* Графики */
+.chart-area {
+    position: relative;
+    height: 20rem;
+    width: 100%;
+}
+
+.chart-pie {
+    position: relative;
+    height: 15rem;
+    width: 100%;
+}
+
+/* Таблицы */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table th {
+    background-color: #f8f9fc;
+    border-top: none;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Кнопки действий */
+.btn-circle {
+    border-radius: 100%;
+    height: 2.5rem;
+    width: 2.5rem;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.btn-circle.btn-sm {
+    height: 1.8rem;
+    width: 1.8rem;
+    font-size: 0.75rem;
+}
+
+/* Бейджи */
+.badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+}
+
+/* Пагинация */
+.pagination {
+    margin-bottom: 0;
+}
+
+.page-item.active .page-link {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+/* Формы */
+.form-control:focus {
+    border-color: #bac8f3;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+/* Модальные окна */
+.modal-header {
+    background-color: #f8f9fc;
+    border-bottom: none;
+}
+
+.modal-footer {
+    background-color: #f8f9fc;
+    border-top: none;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .chart-area {
+        height: 15rem;
+    }
+    
+    .chart-pie {
+        height: 12rem;
+    }
+    
+    .table-responsive {
+        margin-bottom: 1rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Анимации */
+.animated-card {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 20px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* Утилиты */
+.shadow-hover {
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.shadow-hover:hover {
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
+
+.text-xs {
+    font-size: .7rem;
+}
+
+.text-gray-300 {
+    color: #dddfeb!important;
+}
+
+.text-gray-800 {
+    color: #5a5c69!important;
+} 

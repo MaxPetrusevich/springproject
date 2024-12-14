@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/customer :: head">
+    <title>Продукты | Subscription Management</title>
+</head>
+<body>
+    <th:block th:replace="layout/customer :: layout(~{::section})">
+        <section>
+            <div class="container">
+                <h2 class="mb-4">Доступные продукты</h2>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <form th:action="@{/customer/products}" method="get" class="d-flex">
+                            <input type="text" name="search" th:value="${search}" class="form-control me-2" 
+                                   placeholder="Поиск по названию...">
+                            <button type="submit" class="btn btn-primary">Поиск</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-select" onchange="window.location.href=this.value">
+                            <option value="/customer/products" th:selected="${sort == null}">По умолчанию</option>
+                            <option value="/customer/products?sort=name" th:selected="${sort == 'name'}">По названию</option>
+                            <option value="/customer/products?sort=price" th:selected="${sort == 'price'}">По цене</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-4" th:each="product : ${products}">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${product.name}">Название продукта</h5>
+                                <p class="card-text" th:text="${product.description}">Описание продукта</p>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        Организация: <span th:text="${product.organisationName}">Название организации</span>
+                                    </small>
+                                </p>
+                                <p class="card-text">
+                                    Доступно планов: <span th:text="${product.availablePlansCount}">0</span>
+                                </p>
+                                <button type="button" class="btn btn-primary" 
+                                        data-bs-toggle="modal" 
+                                        th:data-bs-target="'#productModal' + ${product.id}">
+                                    Подробнее
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" th:id="'productModal' + ${product.id}" tabindex="-1">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" th:text="${product.name}">Название продукта</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6>Описание:</h6>
+                                                <p th:text="${product.description}">Описание продукта</p>
+                                                <p>
+                                                    <strong>Организация:</strong> 
+                                                    <span th:text="${product.organisationName}">Название организации</span>
+                                                </p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6>Доступные планы подписки:</h6>
+                                                <div class="list-group">
+                                                    <div class="list-group-item" th:each="plan : ${product.plans}">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <h6 class="mb-1" th:text="${plan.name}">План</h6>
+                                                                <p class="mb-1" th:text="${plan.description}">Описание плана</p>
+                                                                <small>
+                                                                    Период: <span th:text="${plan.periodDays}">30</span> дней
+                                                                </small>
+                                                            </div>
+                                                            <div class="text-end">
+                                                                <div class="h5 mb-0" th:text="${plan.price + ' ₽'}">100 ₽</div>
+                                                                <button class="btn btn-primary btn-sm mt-2"
+                                                                        th:onclick="'subscribe(' + ${plan.id} + ')'">
+                                                                    Подписаться
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <nav th:if="${products.totalPages > 1}">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${products.first} ? disabled">
+                            <a class="page-link" th:href="@{/customer/products(page=${products.number - 1})}">Предыдущая</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}"
+                            th:classappend="${products.number == i} ? active">
+                            <a class="page-link" th:href="@{/customer/products(page=${i})}" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${products.last} ? disabled">
+                            <a class="page-link" th:href="@{/customer/products(page=${products.number + 1})}">Следующая</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <script>
+                function subscribe(planId) {
+                    fetch('/api/subscriptions/subscribe?planId=' + planId, {
+                        method: 'POST'
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Ошибка подписки');
+                        return response.json();
+                    })
+                    .then(data => {
+                        window.location.href = '/customer/subscriptions';
+                    })
+                    .catch(error => {
+                        alert('Ошибка при оформлении подписки: ' + error.message);
+                    });
+                }
+            </script>
+        </section>
+    </th:block>
+</body>
+</html> 

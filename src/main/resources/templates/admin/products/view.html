@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/main :: head">
+    <title>Просмотр продукта</title>
+</head>
+<body>
+    <div th:replace="layout/main :: layout(~{::main})">
+        <main>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800" th:text="${product.name}">Продукт</h1>
+                <div>
+                    <a th:href="@{/admin/products/{id}/edit(id=${product.id})}" 
+                       class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit"></i> Редактировать
+                    </a>
+                    <button class="btn btn-danger btn-sm" 
+                            th:attr="data-id=${product.id}"
+                            onclick="confirmDelete(this.getAttribute('data-id'))">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Row -->
+            <div class="row">
+                <!-- Основная информация -->
+                <div class="col-xl-6 col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Основная информация</h6>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">Организация</dt>
+                                <dd class="col-sm-8">
+                                    <a th:href="@{/admin/organisations/{id}(id=${product.organisationId})}"
+                                       th:text="${product.organisationName}"></a>
+                                </dd>
+
+                                <dt class="col-sm-4">Описание</dt>
+                                <dd class="col-sm-8" th:text="${product.description}"></dd>
+
+                                <dt class="col-sm-4">Создан</dt>
+                                <dd class="col-sm-8" th:text="${#temporals.format(product.createdAt, 'dd.MM.yyyy')}"></dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Статистика -->
+                <div class="col-xl-6 col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Статистика планов</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-left-primary shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                        Всего планов</div>
+                                                    <div class="h5 mb-0 font-weight-bold text-gray-800" 
+                                                         th:text="${product.totalPlans}">0</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-left-success shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                        Активных планов</div>
+                                                    <div class="h5 mb-0 font-weight-bold text-gray-800" 
+                                                         th:text="${product.activePlans}">0</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Планы подписки -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Планы подписки</h6>
+                    <a th:href="@{/admin/products/{id}/plans/create(id=${product.id})}" 
+                       class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> Добавить план
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Название</th>
+                                    <th>Цена</th>
+                                    <th>Период (дней)</th>
+                                    <th>Статус</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="plan : ${product.plans}">
+                                    <td th:text="${plan.id}"></td>
+                                    <td th:text="${plan.name}"></td>
+                                    <td th:text="${plan.price}"></td>
+                                    <td th:text="${plan.periodDays}"></td>
+                                    <td>
+                                        <span th:if="${plan.active}" class="badge badge-success">Активен</span>
+                                        <span th:unless="${plan.active}" class="badge badge-danger">Неактивен</span>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/admin/subscription-plans/{id}/edit(id=${plan.id})}" 
+                                           class="btn btn-primary btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button class="btn btn-danger btn-sm" 
+                                                th:onclick="'confirmDeletePlan(' + ${plan.id} + ')'">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(product.plans)}">
+                                    <td colspan="6" class="text-center">Планы подписки не найдены</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Page specific scripts -->
+    <script th:src="@{/js/admin/products.js}"></script>
+    <script>
+    function confirmDelete(id) {
+        if (confirm('Вы уверены, что хотите удалить этот продукт?')) {
+            deleteProduct(id);
+        }
+    }
+
+    function confirmDeletePlan(id) {
+        if (confirm('Вы уверены, что хотите удалить этот план подписки?')) {
+            deletePlan(id);
+        }
+    }
+
+    function deleteProduct(id) {
+        fetch(`/api/products/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = '/admin/products';
+            } else {
+                alert('Ошибка при удалении продукта');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ошибка при удалении продукта');
+        });
+    }
+
+    function deletePlan(id) {
+        fetch(`/api/subscription-plans/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Ошибка при удалении плана подписки');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ошибка при удалении плана подписки');
+        });
+    }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/customer :: head">
+    <title>Профиль | Subscription Management</title>
+</head>
+<body>
+    <th:block th:replace="layout/customer :: layout(~{::section})">
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="text-center mb-4">
+                                    <div class="avatar-container">
+                                        <img th:if="${user.avatarUrl}" 
+                                             th:src="@{'/files/avatars/' + ${user.avatarUrl}}"
+                                             alt="Аватар пользователя"
+                                             class="rounded-circle img-fluid">
+                                        <img th:unless="${user.avatarUrl}" 
+                                             th:src="@{/images/avatars/default_avatar.jpg}"
+                                             alt="Аватар по умолчанию"
+                                             class="rounded-circle img-fluid">
+                                    </div>
+                                    <form id="avatarForm" enctype="multipart/form-data">
+                                        <input type="file" id="avatarFile" class="avatar-upload-btn" 
+                                               accept="image/*" name="file">
+                                        <label for="avatarFile" class="avatar-upload-label">
+                                            <i class="bi bi-camera"></i> Изменить фото
+                                        </label>
+                                    </form>
+                                </div>
+                                <h5 class="card-title text-center" th:text="${user.firstName + ' ' + user.lastName}">Имя Фамилия</h5>
+                                <p class="text-muted text-center" th:text="${user.email}">email@example.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Личные данные</h5>
+                                <form id="profileForm" onsubmit="updateProfile(event)">
+                                    <div class="mb-3">
+                                        <label for="firstName" class="form-label">Имя</label>
+                                        <input type="text" class="form-control" id="firstName" 
+                                               th:value="${user.firstName}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="lastName" class="form-label">Фамилия</label>
+                                        <input type="text" class="form-control" id="lastName" 
+                                               th:value="${user.lastName}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" 
+                                               th:value="${user.email}" readonly>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Изменить пароль</h5>
+                                <form id="passwordForm" onsubmit="changePassword(event)">
+                                    <div class="mb-3">
+                                        <label for="currentPassword" class="form-label">Текущий пароль</label>
+                                        <input type="password" class="form-control" id="currentPassword" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newPassword" class="form-label">Новый пароль</label>
+                                        <input type="password" class="form-control" id="newPassword" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="confirmPassword" class="form-label">Подтвердите пароль</label>
+                                        <input type="password" class="form-control" id="confirmPassword" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Изменить пароль</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // Обработка загрузки аватара
+                document.getElementById('avatarFile').addEventListener('change', function() {
+                    const formData = new FormData();
+                    formData.append('file', this.files[0]);
+                    
+                    fetch('/api/users/profile/avatar', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Ошибка при загрузке файла');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.avatarUrl) {
+                            const avatarImg = document.querySelector('.avatar-container img');
+                            avatarImg.src = '/files/avatars/' + data.avatarUrl;
+                        } else {
+                            throw new Error('Отсутствует URL аватара в ответе');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Ошибка при загрузке файла: ' + error.message);
+                    });
+                });
+
+                // Обновление профиля
+                function updateProfile(event) {
+                    event.preventDefault();
+                    
+                    const formData = {
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value
+                    };
+                    
+                    fetch('/api/users/profile', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData),
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'Ошибка при обновлении профиля');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert('Профиль успешно обновлен');
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert(error.message);
+                    });
+                }
+
+                // Смена пароля
+                function changePassword(event) {
+                    event.preventDefault();
+                    
+                    const formData = {
+                        currentPassword: document.getElementById('currentPassword').value,
+                        newPassword: document.getElementById('newPassword').value,
+                        confirmPassword: document.getElementById('confirmPassword').value
+                    };
+                    
+                    fetch('/api/users/profile/password', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData),
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'Ошибка при смене пароля');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert(data.message);
+                        document.getElementById('passwordForm').reset();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert(error.message);
+                    });
+                }
+            </script>
+        </section>
+    </th:block>
+</body>
+</html> 

@@ -1,0 +1,46 @@
+<form th:action="@{/admin/subscriptions}" method="post" th:object="${subscription}">
+    <!-- ID подписки если редактирование -->
+    <input type="hidden" th:field="*{id}">
+    
+    <!-- ID пользователя если он уже назначен -->
+    <input th:if="${subscription.userId != null}" 
+           type="hidden" 
+           th:field="*{userId}">
+           
+    <!-- ID плана если он уже назначен -->
+    <input th:if="${subscription.planId != null}" 
+           type="hidden" 
+           th:field="*{planId}">
+    
+    <!-- Выбор пользователя только если он не назначен -->
+    <div class="mb-3" th:if="${subscription.userId == null}">
+        <label for="userId" class="form-label">Пользователь *</label>
+        <select class="form-select" id="userId" th:field="*{userId}" required>
+            <option value="">Выберите пользователя</option>
+            <option th:each="user : ${users}"
+                    th:value="${user.id}"
+                    th:text="${user.email}">
+                Пользователь
+            </option>
+        </select>
+        <div class="invalid-feedback" th:if="${#fields.hasErrors('userId')}">
+            Выберите пользователя
+        </div>
+    </div>
+
+    <!-- Выбор плана только если он не назначен -->
+    <div class="mb-3" th:if="${subscription.planId == null}">
+        <label for="planId" class="form-label">План подписки *</label>
+        <select class="form-select" id="planId" th:field="*{planId}" required>
+            <option value="">Выберите план</option>
+            <option th:each="plan : ${plans}"
+                    th:value="${plan.id}"
+                    th:text="${plan.name + ' (' + plan.productName + ')'}">
+                План
+            </option>
+        </select>
+        <div class="invalid-feedback" th:if="${#fields.hasErrors('planId')}">
+            Выберите план подписки
+        </div>
+    </div>
+</form> 

@@ -1,0 +1,22 @@
+<div th:fragment="table(subscriptions)">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Пользователь</th>
+                    <th>План</th>
+                    <th>Сумма</th>
+                    <th>Дата</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="subscription : ${subscriptions}">
+                    <td th:text="${subscription.user.email}">user@example.com</td>
+                    <td th:text="${subscription.plan.name}">Базовый</td>
+                    <td th:text="${subscription.plan.price + ' BYN'}">100 BYN</td>
+                    <td th:text="${#temporals.format(subscription.startDate, 'dd.MM.yyyy')}">01.01.2024</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div> 

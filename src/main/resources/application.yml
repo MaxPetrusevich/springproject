@@ -1,0 +1,70 @@
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 30m
+spring:
+  liquibase:
+    enabled: false
+  # База данных
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sms
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  
+  # JPA/Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Email
+  mail:
+    host: smtp.gmail.com
+    port: 465
+    username: makspetrusevich04@gmail.com
+    password: thuw mgib gzkg bzsz
+
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+  # Загрузка файлов
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+  # Thymeleaf
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+
+# Настройки приложения
+app:
+  upload:
+    avatar-dir: uploads/avatars
+    avatar-url-prefix: /images/avatars
+# Логирование
+logging:
+  level:
+    com.example: DEBUG
+    org.springframework.security: DEBUG
