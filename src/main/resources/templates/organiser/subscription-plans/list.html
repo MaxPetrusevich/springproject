@@ -4,8 +4,8 @@
     <title>Планы подписок</title>
 </head>
 <body>
-    <div th:replace="layout/organiser :: layout(~{::main})">
-        <main>
+    <th:block th:replace="layout/organiser :: layout(~{::section})">
+        <section>
             <!-- Page Heading -->
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
                 <h1 class="h3 mb-0 text-gray-800">Планы подписок</h1>
@@ -67,20 +67,26 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="plan : ${plans}">
-                                    <td th:text="${plan.name}"></td>
+                                <tr th:each="plan : ${plans}" th:id="'plan-' + ${plan.id}">
+                                    <td>
+                                        <a th:href="@{/organiser/subscription-plans/{id}(id=${plan.id})}" 
+                                           th:text="${plan.name}"
+                                           class="text-decoration-none">
+                                        </a>
+                                    </td>
                                     <td>
                                         <a th:href="@{/organiser/products/{id}(id=${plan.productId})}" 
-                                           th:text="${plan.productName}"></a>
+                                           th:text="${plan.productName}"
+                                           class="text-decoration-none">
+                                        </a>
                                     </td>
                                     <td th:text="${plan.description}"></td>
                                     <td th:text="${plan.price + ' ₽'}"></td>
                                     <td th:text="${plan.periodDays}"></td>
                                     <td th:text="${plan.activeSubscriptionsCount}"></td>
                                     <td>
-                                        <span class="badge" 
-                                              th:classappend="${plan.statusBadgeClass}"
-                                              th:text="${plan.statusText}">
+                                        <span th:class="'badge ' + (${plan.active} ? 'bg-success' : 'bg-danger') + ' status-badge'"
+                                              th:text="${plan.active ? 'Активен' : 'Неактивен'}">
                                         </span>
                                     </td>
                                     <td>
@@ -89,14 +95,11 @@
                                                class="btn btn-warning btn-sm" title="Редактировать">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <form th:action="@{/organiser/subscription-plans/{id}/toggle(id=${plan.id})}" 
-                                                  method="post" style="display: inline;">
-                                                <button type="submit" class="btn btn-danger btn-sm" 
-                                                        th:title="${plan.active ? 'Деактивировать' : 'Активировать'}"
-                                                        onclick="return confirm('Вы уверены?')">
-                                                    <i class="bi" th:classappend="${plan.active ? 'bi-toggle-on' : 'bi-toggle-off'}"></i>
-                                                </button>
-                                            </form>
+                                            <button type="button"
+                                                    th:onclick="'togglePlanStatus(' + ${plan.id} + ')'"
+                                                    th:class="'btn btn-sm ' + (${plan.active} ? 'btn-danger' : 'btn-success') + ' toggle-status-btn'"
+                                                    th:text="${plan.active ? 'Деактивировать' : 'Активировать'}">
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -108,11 +111,25 @@
                     </div>
 
                     <!-- Pagination -->
-                    <div th:if="${plans.totalPages > 1}" class="d-flex justify-content-center mt-4">
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <!-- Items per page -->
+                        <div class="d-flex align-items-center">
+                            <span class="me-2">Показывать по:</span>
+                            <select class="form-select form-select-sm" style="width: auto"
+                                    onchange="window.location.href=this.value">
+                                <option th:each="size : ${#numbers.sequence(10, 100, 10)}"
+                                        th:value="@{/organiser/subscription-plans(page=0, size=${size}, search=${search}, productId=${selectedProduct})}"
+                                        th:text="${size}"
+                                        th:selected="${plans.size == size}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Page numbers -->
                         <nav>
                             <ul class="pagination">
                                 <li class="page-item" th:classappend="${plans.first ? 'disabled' : ''}">
-                                    <a class="page-link" th:href="@{${plans.first ? '#' : ''}}">
+                                    <a class="page-link" th:href="@{/organiser/subscription-plans(page=${plans.number - 1}, size=${plans.size}, search=${search}, productId=${selectedProduct})}">
                                         <i class="bi bi-chevron-left"></i>
                                     </a>
                                 </li>
@@ -122,7 +139,7 @@
                                        th:text="${i + 1}"></a>
                                 </li>
                                 <li class="page-item" th:classappend="${plans.last ? 'disabled' : ''}">
-                                    <a class="page-link" th:href="@{${plans.last ? '#' : ''}}">
+                                    <a class="page-link" th:href="@{/organiser/subscription-plans(page=${plans.number + 1}, size=${plans.size}, search=${search}, productId=${selectedProduct})}">
                                         <i class="bi bi-chevron-right"></i>
                                     </a>
                                 </li>
@@ -131,7 +148,12 @@
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+
+            <!-- Подключаем скрипты -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+            <script th:src="@{/js/admin/common.js(v=${#dates.createNow().getTime()})}"></script>
+            <script th:src="@{/js/organiser/subscription-plans.js(v=${#dates.createNow().getTime()})}"></script>
+        </section>
+    </th:block>
 </body>
 </html> 

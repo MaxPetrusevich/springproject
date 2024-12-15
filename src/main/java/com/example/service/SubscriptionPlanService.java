@@ -6,6 +6,7 @@ import com.example.repository.SubscriptionPlanRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ public class SubscriptionPlanService {
 
     private final SubscriptionPlanRepository subscriptionPlanRepository;
     private final ProductService productService;
+    private final UserService userService;
 
     @Transactional(readOnly = true)
     public List<SubscriptionPlan> findAll() {
@@ -37,6 +39,7 @@ public class SubscriptionPlanService {
         plan.setPrice(dto.getPrice());
         plan.setPeriodDays(dto.getPeriodDays());
         plan.setProduct(productService.findById(dto.getProductId()));
+        plan.setActive(true);
         plan.setActive(true);
         return subscriptionPlanRepository.save(plan);
     }
@@ -93,10 +96,10 @@ public class SubscriptionPlanService {
     }
 
     @Transactional
-    public void togglePlanStatus(Long id) {
+    public SubscriptionPlan togglePlanStatus(Long id) {
         SubscriptionPlan plan = getPlan(id);
         plan.setActive(!plan.isActive());
-        subscriptionPlanRepository.save(plan);
+        return subscriptionPlanRepository.save(plan);
     }
 
     @Transactional(readOnly = true)
@@ -142,5 +145,42 @@ public class SubscriptionPlanService {
     @Transactional(readOnly = true)
     public long countActiveByProductId(Long productId) {
         return subscriptionPlanRepository.countByProduct_IdAndActive(productId, true);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SubscriptionPlan> findAll(String search, Long productId, Pageable pageable) {
+        if (search != null && !search.isEmpty()) {
+            if (productId != null) {
+                return subscriptionPlanRepository.findByNameContainingAndProductIdAndProductOrganisationOwnerId(
+                    search, productId, getCurrentUserId(), pageable);
+            }
+            return subscriptionPlanRepository.findByNameContainingAndProductOrganisationOwnerId(
+                search, getCurrentUserId(), pageable);
+        }
+        if (productId != null) {
+            return subscriptionPlanRepository.findByProductIdAndProductOrganisationOwnerId(
+                productId, getCurrentUserId(), pageable);
+        }
+        return subscriptionPlanRepository.findByProductOrganisationOwnerId(getCurrentUserId(), pageable);
+    }
+
+    private Long getCurrentUserId() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.findByEmail(email).getId();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SubscriptionPlan> findByOrganiserId(Long userId, String search, Long productId, Pageable pageable) {
+        if (search != null && !search.isEmpty()) {
+            if (productId != null) {
+                return subscriptionPlanRepository.findByNameContainingAndProductIdAndProductOrganisationOwnerId(
+                    search, productId, userId, pageable);
+            }
+            return subscriptionPlanRepository.findByNameContainingAndProductOrganisationOwnerId(search, userId, pageable);
+        }
+        if (productId != null) {
+            return subscriptionPlanRepository.findByProductIdAndProductOrganisationOwnerId(productId, userId, pageable);
+        }
+        return subscriptionPlanRepository.findByProductOrganisationOwnerId(userId, pageable);
     }
 }

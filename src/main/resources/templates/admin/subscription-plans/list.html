@@ -41,7 +41,7 @@
         <main>
             <!-- Page Heading -->
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0 text-gray-800">Планы подписок</h1>
+                <h1 class="h3 mb-0 text-gray-800">Пла��ы подписок</h1>
                 <a href="/admin/subscription-plans/create" class="btn btn-primary btn-sm">
                     <i class="fas fa-plus"></i> Создать план
                 </a>
@@ -106,27 +106,38 @@
                                         </a>
                                         <span th:unless="${plan.productId != null}">-</span>
                                     </td>
-                                    <td th:text="${plan.price + ' руб.'}"></td>
-                                    <td th:text="${plan.periodDays}"></td>
                                     <td>
-                                        <span th:class="${'badge ' + (plan.active ? 'badge-success' : 'badge-danger')}"
-                                              th:text="${plan.active ? 'Активен' : 'Неактивен'}">
+                                        <span class="badge bg-info text-white">
+                                            <span th:text="${#numbers.formatDecimal(plan.price, 1, 'COMMA', 2, 'POINT')}"></span>₽
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary text-white">
+                                            <span th:text="${plan.periodDays}"></span> дней
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span th:class="${'badge ' + 
+                                            (plan.active ? 'bg-success text-white' : 'bg-danger text-white')}"
+                                              th:text="${plan.active ? 'Активен' : 'Заблокирован'}">
                                         </span>
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a th:href="@{/admin/subscription-plans/{id}/edit(id=${plan.id})}" 
-                                               class="btn btn-warning">
-                                                <i class="bi bi-pencil"></i>
-                                                <span>Изменить</span>
+                                            <a th:href="@{/admin/subscription-plans/{id}(id=${plan.id})}" 
+                                               class="btn btn-primary">
+                                                <i class="bi bi-eye me-1"></i>
+                                                <span>Просмотр</span>
                                             </a>
-                                            <form th:action="@{/admin/subscription-plans/{id}/toggle(id=${plan.id})}" 
-                                                  method="post" style="display: inline;">
-                                                <button type="submit" class="btn btn-danger">
-                                                    <i class="bi bi-power"></i>
-                                                    <span th:text="${plan.active ? 'Деактивировать' : 'Активировать'}">Статус</span>
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn"
+                                                th:classappend="${plan.active ? 'btn-danger' : 'btn-success'}"
+                                                th:onclick="'togglePlanStatus(' + ${plan.id} + ')'">
+                                                <i class="bi" 
+                                                    th:classappend="${plan.active ? 'bi-lock me-1' : 'bi-unlock me-1'}">
+                                                </i>
+                                                <span th:text="${plan.active ? 'Заблокировать' : 'Разблокировать'}">
+                                                </span>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>

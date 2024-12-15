@@ -21,7 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
                .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
         registry.addResourceHandler("/js/**")
                .addResourceLocations("classpath:/static/js/")
-               .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
+               .setCacheControl(CacheControl.noCache());
         registry.addResourceHandler("/images/**")
                .addResourceLocations("classpath:/static/images/")
                .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));

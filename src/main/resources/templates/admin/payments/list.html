@@ -1,0 +1,35 @@
+<!-- Исправляем отображение статусов -->
+<span th:class="${'badge ' + 
+    (payment.status == 'COMPLETED' ? 'bg-success text-white' : 
+    (payment.status == 'PENDING' ? 'bg-warning text-dark' : 
+    (payment.status == 'FAILED' ? 'bg-danger text-white' : 'bg-secondary text-white')))}"
+    th:text="${payment.status == 'COMPLETED' ? 'Выполнен' :
+             (payment.status == 'PENDING' ? 'В обработке' :
+             (payment.status == 'FAILED' ? 'Ошибка' : payment.status))}">
+</span>
+
+<!-- Исправляем отображение суммы -->
+<span class="badge bg-info text-white">
+    <span th:text="${#numbers.formatDecimal(payment.amount, 1, 'COMMA', 2, 'POINT')}"></span>₽
+</span>
+
+<!-- Исправляем кнопки действий -->
+<div class="action-buttons">
+    <a th:href="@{/admin/payments/{id}(id=${payment.id})}" 
+        class="btn btn-primary">
+        <i class="bi bi-eye me-1"></i>
+        <span>Просмотр</span>
+    </a>
+    <button th:if="${payment.status == 'PENDING'}" 
+        type="button" class="btn btn-success"
+        th:onclick="'completePayment(' + ${payment.id} + ')'">
+        <i class="bi bi-check-circle me-1"></i>
+        <span>Подтвердить</span>
+    </button>
+    <button th:if="${payment.status == 'PENDING'}" 
+        type="button" class="btn btn-danger"
+        th:onclick="'cancelPayment(' + ${payment.id} + ')'">
+        <i class="bi bi-x-circle me-1"></i>
+        <span>Отменить</span>
+    </button>
+</div> 

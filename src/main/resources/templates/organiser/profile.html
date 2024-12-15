@@ -4,34 +4,54 @@
     <title>Профиль | Subscription Management</title>
 </head>
 <body>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <!-- Текст уведомления будет добавлен динамически -->
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     <th:block th:replace="layout/organiser :: layout(~{::section})">
         <section>
             <div class="container">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card">
+                        <div class="card mb-4">
                             <div class="card-body">
-                                <div class="text-center mb-4">
-                                    <div class="avatar-container">
-                                        <img th:if="${user.avatarUrl}" 
-                                             th:src="@{'/files/avatars/' + ${user.avatarUrl}}"
-                                             alt="Аватар пользователя"
-                                             class="rounded-circle img-fluid">
-                                        <img th:unless="${user.avatarUrl}" 
-                                             th:src="@{/images/avatars/default_avatar.jpg}"
-                                             alt="Аватар по умолчанию"
-                                             class="rounded-circle img-fluid">
-                                    </div>
-                                    <form id="avatarForm" enctype="multipart/form-data">
-                                        <input type="file" id="avatarFile" class="avatar-upload-btn" 
-                                               accept="image/*" name="file">
-                                        <label for="avatarFile" class="avatar-upload-label">
-                                            <i class="bi bi-camera"></i> Изменить фото
+                                <h5 class="card-title">Фото профиля</h5>
+                                
+                                <div class="avatar-upload">
+                                    <div class="avatar-edit">
+                                        <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" />
+                                        <label for="imageUpload" class="btn btn-primary">
+                                            <i class="bi bi-pencil"></i>
                                         </label>
-                                    </form>
+                                    </div>
+                                    <div class="avatar-preview">
+                                        <div id="imagePreview" th:style="'background-image: url(' + ${user.avatarUrl != null ? user.avatarUrl : '/images/default-avatar.png'} + ');'">
+                                            <div class="avatar-overlay" id="dropZone">
+                                                <div class="upload-text">
+                                                    <i class="bi bi-cloud-upload"></i>
+                                                    <span>Перетащите фото сюда<br>или нажмите для выбора</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <h5 class="card-title text-center" th:text="${user.firstName + ' ' + user.lastName}">Имя Фамилия</h5>
-                                <p class="text-muted text-center" th:text="${user.email}">email@example.com</p>
+                                
+                                <div class="upload-info mt-3">
+                                    <small class="text-muted">
+                                        Допустимые форматы: PNG, JPG, JPEG<br>
+                                        Максимальный размер: 5MB
+                                    </small>
+                                    <div class="progress mt-2 d-none" id="uploadProgress">
+                                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -85,106 +105,295 @@
                 </div>
             </div>
 
+            <style>
+            .avatar-upload {
+                position: relative;
+                max-width: 200px;
+                margin: 20px auto;
+            }
+
+            .avatar-edit {
+                position: absolute;
+                right: 0;
+                z-index: 1;
+                bottom: 0;
+            }
+
+            .avatar-edit input {
+                display: none;
+            }
+
+            .avatar-edit label {
+                width: 34px;
+                height: 34px;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                cursor: pointer;
+            }
+
+            .avatar-preview {
+                position: relative;
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+                border: 6px solid #F8F8F8;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                overflow: hidden;
+            }
+
+            .avatar-preview > div {
+                width: 100%;
+                height: 100%;
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            .avatar-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            .avatar-preview:hover .avatar-overlay {
+                opacity: 1;
+            }
+
+            .upload-text {
+                color: white;
+                text-align: center;
+                font-size: 14px;
+            }
+
+            .upload-text i {
+                font-size: 24px;
+                margin-bottom: 8px;
+            }
+
+            .avatar-preview.drag-over .avatar-overlay {
+                opacity: 1;
+                background: rgba(0,123,255,0.7);
+            }
+
+            .progress {
+                height: 6px;
+                border-radius: 3px;
+            }
+
+            .toast-container {
+                z-index: 1060;
+                margin-bottom: 1rem;
+                margin-right: 1rem;
+            }
+            .toast {
+                min-width: 300px;
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            }
+            </style>
+
             <script>
-                // Обработка загрузки аватара
-                document.getElementById('avatarFile').addEventListener('change', function() {
-                    const formData = new FormData();
-                    formData.append('file', this.files[0]);
+            document.addEventListener('DOMContentLoaded', function() {
+                const imageUpload = document.getElementById('imageUpload');
+                const imagePreview = document.getElementById('imagePreview');
+                const dropZone = document.getElementById('dropZone');
+                const progressBar = document.getElementById('uploadProgress');
+                
+                // Обработка выбора файла
+                imageUpload.addEventListener('change', function() {
+                    handleFileSelect(this.files[0]);
+                });
+                
+                // Drag & Drop
+                dropZone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    imagePreview.classList.add('drag-over');
+                });
+                
+                dropZone.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    imagePreview.classList.remove('drag-over');
+                });
+                
+                dropZone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    imagePreview.classList.remove('drag-over');
                     
-                    fetch('/api/users/profile/avatar', {
+                    const file = e.dataTransfer.files[0];
+                    handleFileSelect(file);
+                });
+                
+                function handleFileSelect(file) {
+                    if (!file) return;
+                    
+                    // Проверка типа файла
+                    if (!file.type.match('image.*')) {
+                        showNotification('Пожалуйста, выберите изображение', 'error');
+                        return;
+                    }
+                    
+                    // Проверка размера файла (5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showNotification('Размер файла не должен превышать 5MB', 'error');
+                        return;
+                    }
+                    
+                    // Показываем превью
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.style.backgroundImage = `url(${e.target.result})`;
+                    }
+                    reader.readAsDataURL(file);
+                    
+                    // Загружаем файл
+                    uploadFile(file);
+                }
+                
+                function uploadFile(file) {
+                    const formData = new FormData();
+                    formData.append('avatar', file);
+                    
+                    progressBar.classList.remove('d-none');
+                    
+                    fetch('/api/user/avatar', {
                         method: 'POST',
                         body: formData,
                         credentials: 'same-origin'
                     })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Ошибка при загрузке файла');
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
-                        if (data.avatarUrl) {
-                            const avatarImg = document.querySelector('.avatar-container img');
-                            avatarImg.src = '/files/avatars/' + data.avatarUrl;
+                        if (data.success) {
+                            showNotification('Фото профиля успешно обновлено', 'success');
+                            progressBar.classList.add('d-none');
                         } else {
-                            throw new Error('Отсутствует URL аватара в ответе');
+                            throw new Error(data.message);
                         }
                     })
                     .catch(error => {
-                        console.error('Error:', error);
-                        alert('Ошибка при загрузке файла: ' + error.message);
+                        showNotification(error.message || 'Ошибка при загрузке фото', 'error');
+                        progressBar.classList.add('d-none');
                     });
+                }
+            });
+
+            // Обновление профиля
+            function updateProfile(event) {
+                event.preventDefault();
+                
+                const formData = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value
+                };
+                
+                fetch('/api/users/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData),
+                    credentials: 'same-origin'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'Ошибка при обновлении профиля');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Профиль успешно обновлен');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(error.message);
                 });
+            }
 
-                // Обновление профиля
-                function updateProfile(event) {
-                    event.preventDefault();
-                    
-                    const formData = {
-                        firstName: document.getElementById('firstName').value,
-                        lastName: document.getElementById('lastName').value
-                    };
-                    
-                    fetch('/api/users/profile', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(formData),
-                        credentials: 'same-origin'
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(data => {
-                                throw new Error(data.message || 'Ошибка при обновлении профиля');
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        alert('Профиль успешно обновлен');
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert(error.message);
-                    });
-                }
+            // Смена пароля
+            function changePassword(event) {
+                event.preventDefault();
+                
+                const formData = {
+                    currentPassword: document.getElementById('currentPassword').value,
+                    newPassword: document.getElementById('newPassword').value,
+                    confirmPassword: document.getElementById('confirmPassword').value
+                };
+                
+                fetch('/api/users/profile/password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData),
+                    credentials: 'same-origin'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'Ошибка при смене пароля');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message);
+                    document.getElementById('passwordForm').reset();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(error.message);
+                });
+            }
 
-                // Смена пароля
-                function changePassword(event) {
-                    event.preventDefault();
-                    
-                    const formData = {
-                        currentPassword: document.getElementById('currentPassword').value,
-                        newPassword: document.getElementById('newPassword').value,
-                        confirmPassword: document.getElementById('confirmPassword').value
-                    };
-                    
-                    fetch('/api/users/profile/password', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(formData),
-                        credentials: 'same-origin'
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(data => {
-                                throw new Error(data.message || 'Ошибка при смене пароля');
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        alert(data.message);
-                        document.getElementById('passwordForm').reset();
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert(error.message);
-                    });
+            function showNotification(message, type = 'info') {
+                const toast = document.getElementById('notificationToast');
+                const toastBody = toast.querySelector('.toast-body');
+                
+                // Удаляем предыдущие классы цвета
+                toast.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'text-white');
+                
+                // Добавляем соответствующий класс и иконку в зависимости от типа
+                switch(type) {
+                    case 'success':
+                        toast.classList.add('bg-success', 'text-white');
+                        message = `<i class="bi bi-check-circle me-2"></i>${message}`;
+                        break;
+                    case 'error':
+                        toast.classList.add('bg-danger', 'text-white');
+                        message = `<i class="bi bi-exclamation-circle me-2"></i>${message}`;
+                        break;
+                    case 'warning':
+                        toast.classList.add('bg-warning');
+                        message = `<i class="bi bi-exclamation-triangle me-2"></i>${message}`;
+                        break;
+                    default:
+                        toast.classList.add('bg-info', 'text-white');
+                        message = `<i class="bi bi-info-circle me-2"></i>${message}`;
                 }
+                
+                toastBody.innerHTML = message;
+                
+                // Создаем новый экземпляр Toast
+                const bsToast = new bootstrap.Toast(toast, {
+                    animation: true,
+                    autohide: true,
+                    delay: 3000
+                });
+                
+                bsToast.show();
+            }
             </script>
         </section>
     </th:block>

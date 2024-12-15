@@ -9,15 +9,18 @@
             <!-- Page Heading -->
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
                 <h1 class="h3 mb-0 text-gray-800" th:text="${organisation.name}">Организация</h1>
-                <div>
+                <div class="btn-group">
                     <a th:href="@{/admin/organisations/{id}/edit(id=${organisation.id})}" 
-                       class="btn btn-primary btn-sm">
-                        <i class="fas fa-edit"></i> Редактировать
+                       class="btn btn-warning">
+                        <i class="bi bi-pencil me-1"></i>
+                        <span>Редактировать</span>
                     </a>
-                    <button class="btn btn-danger btn-sm" 
-                            th:attr="data-id=${organisation.id}"
-                            onclick="confirmDelete(this.getAttribute('data-id'))">
-                        <i class="fas fa-trash"></i> Удалить
+                    <button type="button" class="btn"
+                            th:classappend="${organisation.active ? 'btn-danger' : 'btn-success'}"
+                            th:onclick="'toggleOrganisationStatus(' + ${organisation.id} + ')'"
+                            title="Изменить статус">
+                        <i class="bi" th:classappend="${organisation.active ? 'bi-toggle-off me-1' : 'bi-toggle-on me-1'}"></i>
+                        <span th:text="${organisation.active ? 'Деактивировать' : 'Активировать'}"></span>
                     </button>
                 </div>
             </div>
@@ -32,20 +35,22 @@
                         </div>
                         <div class="card-body">
                             <dl class="row">
-                                <dt class="col-sm-4">Статус</dt>
-                                <dd class="col-sm-8">
-                                    <span th:if="${organisation.active}" class="badge badge-success">Активна</span>
-                                    <span th:unless="${organisation.active}" class="badge badge-danger">Неактивна</span>
-                                </dd>
-
                                 <dt class="col-sm-4">Владелец</dt>
                                 <dd class="col-sm-8">
-                                    <a th:href="@{/admin/users/{id}(id=${organisation.ownerId})}" 
-                                       th:text="${organisation.ownerEmail}"></a>
+                                    <a th:href="@{/admin/users/{id}(id=${organisation.ownerId})}"
+                                       th:text="${organisation.ownerName}"></a>
                                 </dd>
 
                                 <dt class="col-sm-4">Описание</dt>
                                 <dd class="col-sm-8" th:text="${organisation.description}"></dd>
+
+                                <dt class="col-sm-4">Статус</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge"
+                                          th:classappend="${organisation.active ? 'bg-success' : 'bg-danger'}"
+                                          th:text="${organisation.active ? 'Активна' : 'Неактивна'}">
+                                    </span>
+                                </dd>
 
                                 <dt class="col-sm-4">Создана</dt>
                                 <dd class="col-sm-8" th:text="${#temporals.format(organisation.createdAt, 'dd.MM.yyyy')}"></dd>
@@ -58,91 +63,90 @@
                 <div class="col-xl-6 col-md-6 mb-4">
                     <div class="card shadow h-100">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Статистика продуктов</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Статистика</h6>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-4">
-                                    <div class="card border-left-primary shadow h-100 py-2">
-                                        <div class="card-body">
-                                            <div class="row no-gutters align-items-center">
-                                                <div class="col mr-2">
-                                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                        Всего продуктов</div>
-                                                    <div class="h5 mb-0 font-weight-bold text-gray-800" 
-                                                         th:text="${organisation.totalProducts}">0</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <dl class="row">
+                                <dt class="col-sm-8">Всего продуктов</dt>
+                                <dd class="col-sm-4" th:text="${organisation.productsCount}"></dd>
 
-                                <div class="col-md-6 mb-4">
-                                    <div class="card border-left-success shadow h-100 py-2">
-                                        <div class="card-body">
-                                            <div class="row no-gutters align-items-center">
-                                                <div class="col mr-2">
-                                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                        Активных продуктов</div>
-                                                    <div class="h5 mb-0 font-weight-bold text-gray-800" 
-                                                         th:text="${organisation.activeProducts}">0</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                <dt class="col-sm-8">Активных продуктов</dt>
+                                <dd class="col-sm-4" th:text="${organisation.activeProductsCount}"></dd>
+
+                                <dt class="col-sm-8">Активных подписок</dt>
+                                <dd class="col-sm-4" th:text="${organisation.activeSubscriptionsCount}"></dd>
+
+                                <dt class="col-sm-8">Всего подписок</dt>
+                                <dd class="col-sm-4" th:text="${organisation.totalSubscriptionsCount}"></dd>
+
+                                <dt class="col-sm-8">Доход за месяц</dt>
+                                <dd class="col-sm-4" th:text="${#numbers.formatDecimal(organisation.monthlyIncome, 1, 'COMMA', 2, 'POINT') + ' ₽'}"></dd>
+
+                                <dt class="col-sm-8">Общий доход</dt>
+                                <dd class="col-sm-4" th:text="${#numbers.formatDecimal(organisation.totalIncome, 1, 'COMMA', 2, 'POINT') + ' ₽'}"></dd>
+                            </dl>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Продукты -->
+            <!-- Список продуктов -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h6 class="m-0 font-weight-bold text-primary">Продукты</h6>
-                    <a th:href="@{/admin/organisations/{id}/products/create(id=${organisation.id})}" 
+                    <a th:href="@{/admin/products/create(organisationId=${organisation.id})}" 
                        class="btn btn-primary btn-sm">
-                        <i class="fas fa-plus"></i> Добавить продукт
+                        <i class="bi bi-plus me-1"></i>
+                        <span>Добавить продукт</span>
                     </a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Название</th>
                                     <th>Описание</th>
+                                    <th>Планов</th>
+                                    <th>Подписок</th>
                                     <th>Статус</th>
                                     <th>Действия</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="product : ${organisation.products}">
-                                    <td th:text="${product.id}"></td>
+                                <tr th:each="product : ${products}">
                                     <td>
                                         <a th:href="@{/admin/products/{id}(id=${product.id})}" 
                                            th:text="${product.name}"></a>
                                     </td>
                                     <td th:text="${product.description}"></td>
+                                    <td th:text="${product.subscriptionPlansCount}"></td>
+                                    <td th:text="${product.activeSubscriptionsCount}"></td>
                                     <td>
-                                        <span th:if="${product.active}" class="badge badge-success">Активен</span>
-                                        <span th:unless="${product.active}" class="badge badge-danger">Неактивен</span>
+                                        <span class="badge"
+                                              th:classappend="${product.active ? 'bg-success' : 'bg-danger'}"
+                                              th:text="${product.active ? 'Активен' : 'Неактивен'}">
+                                        </span>
                                     </td>
                                     <td>
-                                        <a th:href="@{/admin/products/{id}/edit(id=${product.id})}" 
-                                           class="btn btn-primary btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button class="btn btn-danger btn-sm" 
-                                                th:onclick="'confirmDeleteProduct(' + ${product.id} + ')'">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        <div class="btn-group">
+                                            <a th:href="@{/admin/products/{id}/edit(id=${product.id})}" 
+                                               class="btn btn-warning btn-sm">
+                                                <i class="bi bi-pencil me-1"></i>
+                                                <span>Редактировать</span>
+                                            </a>
+                                            <button type="button" class="btn btn-sm"
+                                                    th:classappend="${product.active ? 'btn-danger' : 'btn-success'}"
+                                                    th:onclick="'toggleProductStatus(' + ${product.id} + ')'"
+                                                    title="Изменить статус">
+                                                <i class="bi" th:classappend="${product.active ? 'bi-toggle-off me-1' : 'bi-toggle-on me-1'}"></i>
+                                                <span th:text="${product.active ? 'Деактивировать' : 'Активировать'}"></span>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
-                                <tr th:if="${#lists.isEmpty(organisation.products)}">
-                                    <td colspan="5" class="text-center">Продукты не найдены</td>
+                                <tr th:if="${#lists.isEmpty(products)}">
+                                    <td colspan="6" class="text-center">Продукты не найдены</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -154,58 +158,5 @@
 
     <!-- Page specific scripts -->
     <script th:src="@{/js/admin/organisations.js}"></script>
-    <script>
-    function confirmDelete(id) {
-        if (confirm('Вы уверены, что хотите удалить эту организацию?')) {
-            deleteOrganisation(id);
-        }
-    }
-
-    function confirmDeleteProduct(id) {
-        if (confirm('Вы уверены, что хотите удалить этот продукт?')) {
-            deleteProduct(id);
-        }
-    }
-
-    function deleteOrganisation(id) {
-        fetch(`/api/organisations/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                window.location.href = '/admin/organisations';
-            } else {
-                alert('Ошибка при удалении организации');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ошибка при удалении организации');
-        });
-    }
-
-    function deleteProduct(id) {
-        fetch(`/api/products/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                location.reload();
-            } else {
-                alert('Ошибка при удалении продукта');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ошибка при удалении продукта');
-        });
-    }
-    </script>
 </body>
 </html> 

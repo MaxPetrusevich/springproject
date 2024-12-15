@@ -22,7 +22,7 @@
                     </div>
                 </div>
 
-                <!-- Таблиц�� подписок -->
+                <!-- Таблиц подписок -->
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -40,11 +40,13 @@
                                 <td th:text="${subscription.productName}">Название продукта</td>
                                 <td th:text="${subscription.planName}">Название плана</td>
                                 <td>
-                                    <span class="badge" 
-                                          th:classappend="${subscription.status == T(com.example.enums.SubscriptionStatus).ACTIVE ? 'bg-success' : 
-                                                          subscription.status == T(com.example.enums.SubscriptionStatus).EXPIRED ? 'bg-danger' : 
-                                                          subscription.status == T(com.example.enums.SubscriptionStatus).CANCELLED ? 'bg-warning' : 'bg-secondary'}"
-                                          th:text="${subscription.status.displayName}">Статус</span>
+                                    <span class="badge" th:classappend="${
+                                        subscription.status != null ? 
+                                            (subscription.status.name() == 'ACTIVE' ? 'bg-success' :
+                                            (subscription.status.name() == 'EXPIRED' ? 'bg-danger' :
+                                            (subscription.status.name() == 'CANCELLED' ? 'bg-warning' : 'bg-secondary'))) : 'bg-secondary'}">
+                                        <span th:text="${subscription.status != null ? subscription.status : 'UNKNOWN'}"></span>
+                                    </span>
                                 </td>
                                 <td th:text="${#temporals.format(subscription.startDate, 'dd.MM.yyyy')}">01.01.2024</td>
                                 <td th:text="${#temporals.format(subscription.endDate, 'dd.MM.yyyy')}">31.01.2024</td>

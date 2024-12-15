@@ -18,7 +18,7 @@
                           method="post" style="display: inline;">
                         <button type="submit" class="btn" 
                                 th:classappend="${plan.active ? 'btn-danger' : 'btn-success'}"
-                                onclick="return confirm('Вы уверены?')">
+                                onclick="return confirm('����ы уверены?')">
                             <i class="bi" th:classappend="${plan.active ? 'bi-toggle-off' : 'bi-toggle-on'}"></i>
                             <span th:text="${plan.active ? 'Деактивировать' : 'Активировать'}"></span>
                         </button>
@@ -44,7 +44,8 @@
 
                                 <dt class="col-sm-4">Статус</dt>
                                 <dd class="col-sm-8">
-                                    <span th:class="${'badge ' + (plan.active ? 'badge-success' : 'badge-danger')}"
+                                    <span class="badge text-white" 
+                                          th:classappend="${plan.active ? 'bg-success' : 'bg-danger'}"
                                           th:text="${plan.active ? 'Активен' : 'Неактивен'}">
                                     </span>
                                 </dd>
@@ -73,98 +74,142 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
+                                <!-- Основные метрики -->
                                 <div class="col-md-3 mb-4">
                                     <div class="card border-left-primary shadow h-100 py-2">
                                         <div class="card-body">
-                                            <div class="row no-gutters align-items-center">
-                                                <div class="col mr-2">
-                                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                        Всего подписок</div>
-                                                    <div class="h5 mb-0 font-weight-bold text-gray-800" 
-                                                         th:text="${statistics.totalSubscriptions}">0</div>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <i class="bi bi-card-list fa-2x text-gray-300"></i>
-                                                </div>
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Активные подписки
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" 
+                                                 th:text="${statistics.activeSubscriptionsCount}">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="col-md-3 mb-4">
                                     <div class="card border-left-success shadow h-100 py-2">
                                         <div class="card-body">
-                                            <div class="row no-gutters align-items-center">
-                                                <div class="col mr-2">
-                                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                        Активные подписки</div>
-                                                    <div class="h5 mb-0 font-weight-bold text-gray-800" 
-                                                         th:text="${statistics.activeSubscriptions}">0</div>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <i class="bi bi-card-checklist fa-2x text-gray-300"></i>
-                                                </div>
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Месячный доход
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <span th:text="${#numbers.formatDecimal(statistics.monthlyIncome, 0, 'WHITESPACE', 2, 'POINT')}"></span> ₽
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="col-md-3 mb-4">
                                     <div class="card border-left-info shadow h-100 py-2">
                                         <div class="card-body">
-                                            <div class="row no-gutters align-items-center">
-                                                <div class="col mr-2">
-                                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                                        Доход за месяц</div>
-                                                    <div class="h5 mb-0 font-weight-bold text-gray-800" 
-                                                         th:text="${statistics.monthlyRevenue + ' ₽'}">0 ₽</div>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <i class="bi bi-currency-dollar fa-2x text-gray-300"></i>
-                                                </div>
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Общий доход
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <span th:text="${#numbers.formatDecimal(statistics.totalIncome, 0, 'WHITESPACE', 2, 'POINT')}"></span> ₽
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="col-md-3 mb-4">
                                     <div class="card border-left-warning shadow h-100 py-2">
                                         <div class="card-body">
-                                            <div class="row no-gutters align-items-center">
-                                                <div class="col mr-2">
-                                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                        Коэффициент продления</div>
-                                                    <div class="h5 mb-0 font-weight-bold text-gray-800" 
-                                                         th:text="${#numbers.formatPercent(statistics.renewalRate, 1, 1)}">0%</div>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <i class="bi bi-arrow-repeat fa-2x text-gray-300"></i>
-                                                </div>
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Коэффициент продления
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <span th:text="${#numbers.formatDecimal(statistics.renewalRate * 100, 1, 1)}"></span>%
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Дополнительная статистика -->
-                            <div class="row mt-4">
-                                <div class="col-md-6">
+                            <!-- Детальная статистика -->
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
                                     <div class="card shadow">
+                                        <div class="card-header py-3">
+                                            <h6 class="m-0 font-weight-bold text-primary">Подписки</h6>
+                                        </div>
                                         <div class="card-body">
-                                            <h6 class="font-weight-bold">Статус подписок</h6>
-                                            <div class="chart-pie pt-4">
-                                                <canvas id="subscriptionStatusChart"></canvas>
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <tr>
+                                                        <td>Всего подписок:</td>
+                                                        <td th:text="${statistics.totalSubscriptionsCount}"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Активные подписки:</td>
+                                                        <td th:text="${statistics.activeSubscriptionsCount}"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Завершенные подписки:</td>
+                                                        <td th:text="${statistics.completedSubscriptionsCount}"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Отмененные подписки:</td>
+                                                        <td th:text="${statistics.canceledSubscriptionsCount}"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Новых подписчиков за месяц:</td>
+                                                        <td th:text="${statistics.newSubscribersThisMonth}"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Средняя продолжительность (дней):</td>
+                                                        <td th:text="${#numbers.formatDecimal(statistics.averageSubscriptionDuration, 1, 1)}"></td>
+                                                    </tr>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 mb-4">
                                     <div class="card shadow">
+                                        <div class="card-header py-3">
+                                            <h6 class="m-0 font-weight-bold text-primary">Конверсия</h6>
+                                        </div>
                                         <div class="card-body">
-                                            <h6 class="font-weight-bold">Динамика подписок</h6>
-                                            <div class="chart-area">
-                                                <canvas id="subscriptionTrendChart"></canvas>
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <tr>
+                                                        <td>Коэффициент конверсии:</td>
+                                                        <td>
+                                                            <span th:text="${#numbers.formatDecimal(statistics.conversionRate * 100, 1, 1)}"></span>%
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Коэффициент продления:</td>
+                                                        <td>
+                                                            <span th:text="${#numbers.formatDecimal(statistics.renewalRate * 100, 1, 1)}"></span>%
+                                                        </td>
+                                                    </tr>
+                                                </table>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Графики -->
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card shadow">
+                                        <div class="card-header py-3">
+                                            <h6 class="m-0 font-weight-bold text-primary">Динамика подписчиков</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="subscriberChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card shadow">
+                                        <div class="card-header py-3">
+                                            <h6 class="m-0 font-weight-bold text-primary">Динамика дохода</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="revenueChart"></canvas>
                                         </div>
                                     </div>
                                 </div>
@@ -176,56 +221,59 @@
         </main>
     </div>
 
-    <!-- Chart Scripts -->
+    <!-- Скрипты для графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script th:inline="javascript">
-        // Данные для круговой диаграммы статусов подписок
-        const statusData = {
-            labels: ['Активные', 'Завершенные', 'Отмененные'],
-            datasets: [{
-                data: [
-                    [[${statistics.activeSubscriptionsCount}]],
-                    [[${statistics.completedSubscriptionsCount}]],
-                    [[${statistics.canceledSubscriptionsCount}]]
-                ],
-                backgroundColor: ['#1cc88a', '#4e73df', '#e74a3b']
-            }]
-        };
+        // Данные для графика подписчиков
+        const subscriberData = /*[[${statistics.subscriberGrowth}]]*/ {};
+        const subscriberLabels = Object.keys(subscriberData);
+        const subscriberValues = Object.values(subscriberData);
 
-        // Функция форматирования белорусских рублей
-        function formatBYN(value) {
-            return new Intl.NumberFormat('ru-BY', {
-                style: 'currency',
-                currency: 'BYN',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(value);
-        }
-
-        // Настройка и отрисовка диаграмм
-        document.addEventListener('DOMContentLoaded', function() {
-            // Круговая диаграмма статусов
-            new Chart(document.getElementById('subscriptionStatusChart'), {
-                type: 'pie',
-                data: statusData,
-                options: {
-                    maintainAspectRatio: false,
-                    legend: {
-                        display: true,
-                        position: 'bottom'
-                    },
-                    tooltips: {
-                        callbacks: {
-                            label: function(tooltipItem, data) {
-                                const dataset = data.datasets[tooltipItem.datasetIndex];
-                                const total = dataset.data.reduce((acc, val) => acc + val, 0);
-                                const value = dataset.data[tooltipItem.index];
-                                const percentage = ((value / total) * 100).toFixed(1);
-                                return `${data.labels[tooltipItem.index]}: ${value} (${percentage}%)`;
-                            }
-                        }
+        new Chart(document.getElementById('subscriberChart'), {
+            type: 'line',
+            data: {
+                labels: subscriberLabels,
+                datasets: [{
+                    label: 'Новые подписчики',
+                    data: subscriberValues,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
+            }
+        });
+
+        // Данные для графика дохода
+        const revenueData = /*[[${statistics.revenueGrowth}]]*/ {};
+        const revenueLabels = Object.keys(revenueData);
+        const revenueValues = Object.values(revenueData);
+
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'line',
+            data: {
+                labels: revenueLabels,
+                datasets: [{
+                    label: 'Доход',
+                    data: revenueValues,
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
         });
     </script>
 </body>

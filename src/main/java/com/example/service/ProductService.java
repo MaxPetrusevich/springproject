@@ -152,10 +152,10 @@ public class ProductService {
     }
     
     @Transactional
-    public void toggleStatus(Long id) {
+    public Product toggleStatus(Long id) {
         Product product = findById(id);
         product.setActive(!product.isActive());
-        productRepository.save(product);
+        return productRepository.save(product);
     }
     
     @Transactional(readOnly = true)
@@ -274,5 +274,20 @@ public class ProductService {
             dto.setOrganisationName(product.getOrganisation().getName());
             return dto;
         });
+    }
+    
+    @Transactional(readOnly = true)
+    public Page<Product> findByOrganiserId(Long userId, String search, Long organisationId, Pageable pageable) {
+        if (search != null && !search.isEmpty()) {
+            if (organisationId != null) {
+                return productRepository.findByNameContainingAndOrganisationIdAndOrganisationOwnerId(
+                    search, organisationId, userId, pageable);
+            }
+            return productRepository.findByNameContainingAndOrganisationOwnerId(search, userId, pageable);
+        }
+        if (organisationId != null) {
+            return productRepository.findByOrganisationIdAndOrganisationOwnerId(organisationId, userId, pageable);
+        }
+        return productRepository.findByOrganisationOwnerId(userId, pageable);
     }
 } 

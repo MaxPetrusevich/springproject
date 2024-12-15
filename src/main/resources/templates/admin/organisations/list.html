@@ -35,33 +35,33 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr th:each="organis : ${organisations}">
-                                        <td th:text="${organis.id}"></td>
-                                        <td th:text="${organis.name}"></td>
-                                        <td th:text="${organis.description}"></td>
+                                    <tr th:each="organisation : ${organisations}">
+                                        <td th:text="${organisation.id}"></td>
+                                        <td th:text="${organisation.name}"></td>
+                                        <td th:text="${organisation.description}"></td>
                                         <td>
-                                            <span th:if="${organis.active}" class="badge badge-success">Активна</span>
-                                            <span th:unless="${organis.active}" class="badge badge-danger">Неактивна</span>
+                                            <span th:class="${'badge ' + 
+                                                (organisation.active ? 'bg-success text-white' : 'bg-danger text-white')}"
+                                                th:text="${organisation.active ? 'Активна' : 'Заблокирована'}">
+                                            </span>
                                         </td>
-                                        <td th:text="${organis.subscribersCount}"></td>
+                                        <td th:text="${organisation.subscribersCount}"></td>
                                         <td>
                                             <div class="action-buttons">
-                                                <a th:href="@{/admin/organisations/{id}/edit(id=${organis.id})}" 
-                                                   class="btn btn-warning">
-                                                    <i class="bi bi-pencil"></i>
-                                                    <span>Изменить</span>
+                                                <a th:href="@{/admin/organisations/{id}(id=${organisation.id})}" 
+                                                    class="btn btn-primary">
+                                                    <i class="bi bi-eye me-1"></i>
+                                                    <span>Просмотр</span>
                                                 </a>
-                                                <form th:action="@{/api/admin/organisations/{id}/toggle(id=${organis.id})}" 
-                                                      onsubmit="handleTableAction(event, 
-                                                        '/api/admin/organisations/' + [[${organis.id}]] + '/toggle', 
-                                                        'POST', 
-                                                        'Вы уверены, что хотите изменить статус организации?')" 
-                                                      style="display: inline;">
-                                                    <button type="submit" class="btn btn-danger">
-                                                        <i class="bi bi-power"></i>
-                                                        <span th:text="${organis.active ? 'Деактивировать' : 'Активировать'}">Статус</span>
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="btn"
+                                                    th:classappend="${organisation.active ? 'btn-danger' : 'btn-success'}"
+                                                    th:onclick="'toggleOrganisationStatus(' + ${organisation.id} + ')'">
+                                                    <i class="bi" 
+                                                        th:classappend="${organisation.active ? 'bi-lock me-1' : 'bi-unlock me-1'}">
+                                                    </i>
+                                                    <span th:text="${organisation.active ? 'Заблокировать' : 'Разблокировать'}">
+                                                    </span>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>

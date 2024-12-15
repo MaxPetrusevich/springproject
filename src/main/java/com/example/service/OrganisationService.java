@@ -62,8 +62,10 @@ public class OrganisationService {
     @Transactional(readOnly = true)
     public Page<Organisation> findAll(String search, Boolean active, Pageable pageable) {
         if (search != null && !search.isEmpty()) {
-            return organisationRepository.findByNameContainingOrDescriptionContaining(
-                search, search, pageable);
+            if (active != null) {
+                return organisationRepository.findByNameContainingAndActive(search, active, pageable);
+            }
+            return organisationRepository.findByNameContaining(search, pageable);
         }
         if (active != null) {
             return organisationRepository.findByActive(active, pageable);
@@ -72,10 +74,10 @@ public class OrganisationService {
     }
     
     @Transactional
-    public void toggleStatus(Long id) {
-        Organisation organisation = findById(id);
-        organisation.setActive(!organisation.getActive());
-        organisationRepository.save(organisation);
+    public Organisation toggleStatus(Long id) {
+        Organisation org = findById(id);
+        org.setActive(!org.getActive());
+        return organisationRepository.save(org);
     }
     
     @Transactional(readOnly = true)
@@ -89,5 +91,25 @@ public class OrganisationService {
     
     public boolean isOwner(Long organisationId, Long userId) {
         return organisationRepository.existsByIdAndOwnerId(organisationId, userId);
+    }
+    
+    @Transactional(readOnly = true)
+    public Page<Organisation> findByOwnerId(Long userId, String search, Boolean active, Pageable pageable) {
+        try {
+            if (search != null && !search.isEmpty()) {
+                if (active != null) {
+                    return organisationRepository.findByNameContainingAndActiveAndOwnerId(search, active, userId, pageable);
+                }
+                return organisationRepository.findByNameContainingAndOwnerId(search, userId, pageable);
+            }
+            if (active != null) {
+                return organisationRepository.findByActiveAndOwnerId(active, userId, pageable);
+            }
+            return organisationRepository.findByOwnerId(userId, pageable);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Возвращаем пустую страницу в случае ошибки
+            return Page.empty(pageable);
+        }
     }
 } 

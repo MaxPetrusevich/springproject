@@ -8,6 +8,7 @@ import com.example.entity.User;
 import com.example.entity.Payment;
 import com.example.enums.SubscriptionStatus;
 import com.example.mapper.EntityMapper;
+import com.example.repository.SubscriptionPlanRepository;
 import com.example.repository.SubscriptionRepository;
 import com.example.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final PaymentRepository paymentRepository;
     private final SubscriptionPlanService subscriptionPlanService;
+    private final SubscriptionPlanRepository subscriptionPlanRepository;
     private final UserService userService;
     private final EmailService emailService;
     private final EntityMapper entityMapper;
@@ -170,7 +172,7 @@ public class SubscriptionService {
 
     @Transactional(readOnly = true)
     public long countActiveByPlanId(Long planId) {
-        return subscriptionRepository.countByPlanIdAndActive(planId, true);
+        return subscriptionRepository.countActiveByPlanId(planId);
     }
 
     @Transactional(readOnly = true)
@@ -282,4 +284,74 @@ public class SubscriptionService {
             .map(entityMapper::toSubscriptionDto)
             .collect(Collectors.toList());
     }
+
+    @Transactional
+    public Subscription toggleStatus(Long id) {
+        Subscription subscription = findById(id);
+        subscription.setActive(!subscription.isActive());
+        return subscriptionRepository.save(subscription);
+    }
+
+    @Transactional(readOnly = true)
+    public double getAveragePeriodByProductId(Long productId) {
+        return subscriptionRepository.findByPlanProductId(productId).stream()
+            .mapToDouble(subscription -> subscription.getPlan().getPeriodDays())
+            .average()
+            .orElse(30.0); // Возвращаем 30 дней как значение по умолчанию
+    }
+
+    @Transactional(readOnly = true)
+    public double getConversionRateByProductId(Long productId) {
+        long totalSubscriptions = subscriptionRepository.countByPlanProductId(productId);
+        long renewedSubscriptions = subscriptionRepository.countByPlanProductIdAndRenewedAtIsNotNull(productId);
+        return totalSubscriptions > 0 ? (double) renewedSubscriptions / totalSubscriptions : 0.0;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SubscriptionPlan> findMostSuccessfulPlansByProductId(Long productId) {
+        // Получаем все планы продукта
+        List<SubscriptionPlan> plans = subscriptionPlanRepository.findByProductId(productId);
+        
+        // Сортируем планы по количеству активных подписок и доходу
+        return plans.stream()
+            .sorted((p1, p2) -> {
+                long activeSubs1 = countActiveByPlanId(p1.getId());
+                long activeSubs2 = countActiveByPlanId(p2.getId());
+                if (activeSubs1 != activeSubs2) {
+                    return Long.compare(activeSubs2, activeSubs1);
+                }
+                return p2.getPrice().compareTo(p1.getPrice());
+            })
+            .limit(3) // Берем топ-3 плана
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public double getConversionRateByPlanId(Long planId) {
+        long totalSubscriptions = subscriptionRepository.countByPlanId(planId);
+        if (totalSubscriptions == 0) {
+            return 0.0;
+        }
+        long renewedSubscriptions = subscriptionRepository.countByPlanIdAndRenewedAtIsNotNull(planId);
+        return (double) renewedSubscriptions / totalSubscriptions;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SubscriptionPlan> findByProductId(Long productId) {
+        return subscriptionPlanRepository.findByProductId(productId).stream()
+            .filter(SubscriptionPlan::isActive)  // Берем только активные планы
+            .sorted((p1, p2) -> {
+                // Сортируем по успешности (количество активных подписок и доход)
+                long activeSubs1 = countActiveByPlanId(p1.getId());
+                long activeSubs2 = countActiveByPlanId(p2.getId());
+                if (activeSubs1 != activeSubs2) {
+                    return Long.compare(activeSubs2, activeSubs1);
+                }
+                // При равном количестве подписок сортируем по цене
+                return p2.getPrice().compareTo(p1.getPrice());
+            })
+            .collect(Collectors.toList());
+    }
+
+
 } 

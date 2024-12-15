@@ -9,15 +9,24 @@
             <!-- Page Heading -->
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
                 <h1 class="h3 mb-0 text-gray-800" th:text="${product.name}">Продукт</h1>
-                <div>
+                <div class="btn-group">
                     <a th:href="@{/admin/products/{id}/edit(id=${product.id})}" 
-                       class="btn btn-primary btn-sm">
-                        <i class="fas fa-edit"></i> Редактировать
+                       class="btn btn-warning">
+                        <i class="bi bi-pencil me-1"></i>
+                        <span>Редактировать</span>
                     </a>
-                    <button class="btn btn-danger btn-sm" 
-                            th:attr="data-id=${product.id}"
-                            onclick="confirmDelete(this.getAttribute('data-id'))">
-                        <i class="fas fa-trash"></i> Удалить
+                    <button type="button" class="btn"
+                            th:classappend="${product.active ? 'btn-danger' : 'btn-success'}"
+                            th:onclick="'toggleProductStatus(' + ${product.id} + ')'"
+                            title="Изменить статус">
+                        <i class="bi" th:classappend="${product.active ? 'bi-toggle-off me-1' : 'bi-toggle-on me-1'}"></i>
+                        <span th:text="${product.active ? 'Деактивировать' : 'Активировать'}"></span>
+                    </button>
+                    <button type="button" class="btn btn-danger"
+                            th:onclick="'confirmDelete(' + ${product.id} + ')'"
+                            title="Удалить продукт">
+                        <i class="bi bi-trash me-1"></i>
+                        <span>Удалить</span>
                     </button>
                 </div>
             </div>
@@ -102,11 +111,11 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Название</th>
+                                    <th>Описание</th>
                                     <th>Цена</th>
                                     <th>Период (дней)</th>
                                     <th>Статус</th>
@@ -115,27 +124,41 @@
                             </thead>
                             <tbody>
                                 <tr th:each="plan : ${product.plans}">
-                                    <td th:text="${plan.id}"></td>
                                     <td th:text="${plan.name}"></td>
-                                    <td th:text="${plan.price}"></td>
+                                    <td th:text="${plan.description}"></td>
+                                    <td th:text="${plan.price + ' ₽'}"></td>
                                     <td th:text="${plan.periodDays}"></td>
                                     <td>
-                                        <span th:if="${plan.active}" class="badge badge-success">Активен</span>
-                                        <span th:unless="${plan.active}" class="badge badge-danger">Неактивен</span>
+                                        <span class="badge"
+                                              th:classappend="${plan.active ? 'bg-success' : 'bg-danger'}"
+                                              th:text="${plan.active ? 'Активен' : 'Неактивен'}">
+                                        </span>
                                     </td>
                                     <td>
-                                        <a th:href="@{/admin/subscription-plans/{id}/edit(id=${plan.id})}" 
-                                           class="btn btn-primary btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button class="btn btn-danger btn-sm" 
-                                                th:onclick="'confirmDeletePlan(' + ${plan.id} + ')'">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        <div class="btn-group">
+                                            <a th:href="@{/admin/subscription-plans/{id}/edit(id=${plan.id})}"
+                                               class="btn btn-warning btn-sm">
+                                                <i class="bi bi-pencil me-1"></i>
+                                                <span>Редактировать</span>
+                                            </a>
+                                            <button type="button" class="btn btn-sm"
+                                                    th:classappend="${plan.active ? 'btn-danger' : 'btn-success'}"
+                                                    th:onclick="'togglePlanStatus(' + ${plan.id} + ')'"
+                                                    title="Изменить статус">
+                                                <i class="bi" th:classappend="${plan.active ? 'bi-toggle-off me-1' : 'bi-toggle-on me-1'}"></i>
+                                                <span th:text="${plan.active ? 'Деактивировать' : 'Активировать'}"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                    th:onclick="'deletePlan(' + ${plan.id} + ')'"
+                                                    title="Удалить план">
+                                                <i class="bi bi-trash me-1"></i>
+                                                <span>Удалить</span>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(product.plans)}">
-                                    <td colspan="6" class="text-center">Планы подписки не найдены</td>
+                                    <td colspan="6" class="text-center">Планы подписок не найдены</td>
                                 </tr>
                             </tbody>
                         </table>

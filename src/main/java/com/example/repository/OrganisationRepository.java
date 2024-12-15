@@ -67,4 +67,21 @@ public interface OrganisationRepository extends JpaRepository<Organisation, Long
     
     @Query("SELECT COUNT(o) FROM Organisation o WHERE o.owner.id = :ownerId")
     long countByOwnerId(@Param("ownerId") Long ownerId);
+    
+    Page<Organisation> findByNameContainingAndActive(String name, Boolean active, Pageable pageable);
+    Page<Organisation> findByActive(Boolean active, Pageable pageable);
+    
+    Page<Organisation> findByOwnerId(Long userId, Pageable pageable);
+    
+    Page<Organisation> findByNameContainingAndOwnerId(String name, Long userId, Pageable pageable);
+    
+    Page<Organisation> findByActiveAndOwnerId(Boolean active, Long userId, Pageable pageable);
+    
+    @Query("SELECT o FROM Organisation o WHERE o.name LIKE %:name% AND o.active = :active AND o.owner.id = :userId")
+    Page<Organisation> findByNameContainingAndActiveAndOwnerId(
+        @Param("name") String name, 
+        @Param("active") Boolean active, 
+        @Param("userId") Long userId, 
+        Pageable pageable
+    );
 } 

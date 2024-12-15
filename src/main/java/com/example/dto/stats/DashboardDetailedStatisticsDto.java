@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Data
 @Builder
-public class DashboardStatisticsDto {
+public class DashboardDetailedStatisticsDto {
     private Map<String, Long> userGrowth;
     private Map<String, BigDecimal> revenueGrowth;
     private Map<String, Long> subscriptionGrowth;

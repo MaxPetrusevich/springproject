@@ -12,14 +12,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductStatisticsDto {
-    private Long id;
-    private String name;
-    private long subscriptionPlansCount;
-    private long activeSubscriptionPlansCount;
-    private long activeSubscriptionsCount;
-    private long totalSubscriptionsCount;
-    private double monthlyIncome;
-    private double totalIncome;
+    private BigDecimal monthlyRevenue;
+    private BigDecimal totalRevenue;
+    private long activeSubscriptions;
+    private long totalSubscriptions;
     private double renewalRate;
-    private long newSubscriptionsThisMonth;
 }

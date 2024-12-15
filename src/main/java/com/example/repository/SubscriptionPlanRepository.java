@@ -101,4 +101,6 @@ public interface SubscriptionPlanRepository extends JpaRepository<SubscriptionPl
 
     @Query("SELECT COUNT(sp) FROM SubscriptionPlan sp WHERE sp.product.id = :productId AND sp.active = :active")
     long countByProduct_IdAndActive(@Param("productId") Long productId, @Param("active") boolean active);
+
+
 } 

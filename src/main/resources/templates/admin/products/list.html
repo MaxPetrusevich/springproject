@@ -117,22 +117,20 @@
                                     <td th:text="${product.category}"></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a th:href="@{/admin/products/{id}/edit(id=${product.id})}" 
-                                               class="btn btn-warning">
-                                                <i class="bi bi-pencil"></i>
-                                                <span>Изменить</span>
+                                            <a th:href="@{/admin/products/{id}(id=${product.id})}" 
+                                               class="btn btn-primary">
+                                                <i class="bi bi-eye me-1"></i>
+                                                <span>Просмотр</span>
                                             </a>
-                                            <form th:action="@{/api/admin/products/{id}/toggle(id=${product.id})}" 
-                                                  onsubmit="handleTableAction(event, 
-                                                    '/api/admin/products/' + [[${product.id}]] + '/toggle', 
-                                                    'POST', 
-                                                    'Вы уверены, что хотите изменить статус продукта?')" 
-                                                  style="display: inline;">
-                                                <button type="submit" class="btn btn-danger">
-                                                    <i class="bi bi-power"></i>
-                                                    <span th:text="${product.active ? 'Деактивировать' : 'Активировать'}">Статус</span>
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn"
+                                                th:classappend="${product.active ? 'btn-danger' : 'btn-success'}"
+                                                th:onclick="'toggleProductStatus(' + ${product.id} + ')'">
+                                                <i class="bi" 
+                                                    th:classappend="${product.active ? 'bi-lock me-1' : 'bi-unlock me-1'}">
+                                                </i>
+                                                <span th:text="${product.active ? 'Заблокировать' : 'Разблокировать'}">
+                                                </span>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>

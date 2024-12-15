@@ -41,6 +41,33 @@
             font-size: 12px;
             font-weight: normal;
         }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .action-buttons .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            white-space: nowrap;
+        }
+        
+        .action-buttons .btn i {
+            font-size: 1rem;
+        }
+        
+        .badge {
+            padding: 0.5em 0.8em;
+            font-weight: 500;
+        }
+        
+        /* Убираем белый текст из warning бейджа */
+        .badge.bg-warning.text-dark {
+            color: #212529 !important;
+        }
     </style>
 </head>
 <body>
@@ -139,9 +166,9 @@
                                     <td th:text="${subscription.planName}"></td>
                                     <td>
                                      <span th:class="${'badge ' + 
-                                          (subscription.status == 'ACTIVE' ? 'badge-success' : 
-                                          (subscription.status == 'EXPIRED' ? 'badge-warning' : 
-                                          (subscription.status == 'CANCELLED' ? 'badge-danger' : 'badge-secondary')))}"
+                                          (subscription.status == 'ACTIVE' ? 'bg-success text-white' : 
+                                          (subscription.status == 'EXPIRED' ? 'bg-warning text-dark' : 
+                                          (subscription.status == 'CANCELLED' ? 'bg-danger text-white' : 'bg-secondary text-white')))}"
                                         th:text="${subscription.status == 'ACTIVE' ? 'Активна' :
                                                  (subscription.status == 'EXPIRED' ? 'Завершена' :
                                                  (subscription.status == 'CANCELLED' ? 'Отменена' : subscription.status))}">
@@ -165,7 +192,7 @@
                                                             'Вы уверены, что хотите отменить эту подписку?')" 
                                                   style="display: inline;">
                                                 <button type="submit" class="btn btn-danger">
-                                                    <i class="bi bi-x-circle"></i>
+                                                    <i class="bi bi-x-circle me-1"></i>
                                                     <span>Отменить</span>
                                                 </button>
                                             </form>
@@ -176,7 +203,7 @@
                                                   onsubmit="return confirm('Вы уверены, что хотите возобновить эту подписку?')"
                                                   style="display: inline;">
                                                 <button type="submit" class="btn btn-success">
-                                                    <i class="bi bi-arrow-clockwise"></i>
+                                                    <i class="bi bi-arrow-clockwise me-1"></i>
                                                     <span>Возобновить</span>
                                                 </button>
                                             </form>

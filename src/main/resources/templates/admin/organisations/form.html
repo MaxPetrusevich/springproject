@@ -7,73 +7,14 @@
     <div th:replace="layout/main :: layout(~{::main})">
         <main>
             <div class="container-fluid py-4">
-                <!-- Page Heading -->
-                <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800" 
-                        th:text="${organisation.id == null ? 'Создание организации' : 'Редактирование организации'}">
-                        Организация
-                    </h1>
-                </div>
-
+                <!-- Форма -->
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <div class="card shadow">
                             <div class="card-body">
-                                <form th:action="@{/admin/organisations}" 
-                                      method="post" 
-                                      th:object="${organisation}">
-                                    
-                                    <!-- ID организации если редактирование -->
-                                    <input type="hidden" th:field="*{id}">
-                                    
-                                    <!-- ID организатора если он уже назначен -->
-                                    <input th:if="${organisation.ownerId != null}"
-                                           type="hidden" 
-                                           th:field="*{ownerId}">
-                                    
-                                    <!-- Название -->
-                                    <div class="mb-3">
-                                        <label for="name" class="form-label">Название *</label>
-                                        <input type="text" class="form-control" id="name" th:field="*{name}" required>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
-                                            Ошибка названия
-                                        </div>
-                                    </div>
-
-                                    <!-- Описание -->
-                                    <div class="mb-3">
-                                        <label for="description" class="form-label">Описание</label>
-                                        <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">
-                                            Ошибка описания
-                                        </div>
-                                    </div>
-
-                                    <!-- Выбор организатора только если он не назначен -->
-                                    <div class="mb-3" th:if="${organisation.ownerId == null}">
-                                        <label for="ownerId" class="form-label">Организатор *</label>
-                                        <select class="form-select" id="ownerId" th:field="*{ownerId}" required>
-                                            <option value="">Выберите организатора</option>
-                                            <option th:each="user : ${users}"
-                                                    th:value="${user.id}"
-                                                    th:text="${user.firstName + ' ' + user.lastName + ' (' + user.email + ')'}">
-                                                Организатор
-                                            </option>
-                                        </select>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('ownerId')}" th:errors="*{ownerId}">
-                                            Выберите организатора
-                                        </div>
-                                    </div>
-
-                                    <!-- Кнопки -->
-                                    <div class="d-flex justify-content-between">
-                                        <a th:href="@{/admin/organisations}" class="btn btn-secondary">
-                                            <i class="bi bi-arrow-left"></i> Назад
-                                        </a>
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="bi bi-check2"></i> Сохранить
-                                        </button>
-                                    </div>
+                                <!-- Форма редактирования -->
+                                <form th:action="@{/admin/organisations}" method="post">
+                                    <!-- Поля формы -->
                                 </form>
                             </div>
                         </div>

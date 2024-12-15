@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +50,7 @@ public class PaymentService {
         
         payment = paymentRepository.save(payment);
         
-        // Отправляем уведомление
+        // Отправля��м уведомление
         emailService.sendPaymentConfirmation(payment.getUser().getEmail(), payment);
         
         return payment;
@@ -154,5 +155,33 @@ public class PaymentService {
             .withSecond(0)
             .withNano(0);
         return paymentRepository.sumByOrganisationOwnerIdAndCreatedAtAfter(userId, startOfMonth);
+    }
+
+    @Transactional(readOnly = true)
+    public double getAveragePriceByProductId(Long productId) {
+        return paymentRepository.findBySubscriptionPlanProductId(productId).stream()
+            .mapToDouble(payment -> payment.getAmount().doubleValue())
+            .average()
+            .orElse(0.0);
+    }
+
+    @Transactional(readOnly = true)
+    public double getAverageRevenueByProductId(Long productId) {
+        List<Payment> payments = paymentRepository.findBySubscriptionPlanProductId(productId);
+        if (payments.isEmpty()) {
+            return 0.0;
+        }
+        return payments.stream()
+            .mapToDouble(payment -> payment.getAmount().doubleValue())
+            .average()
+            .orElse(0.0);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Double> getMonthlyRevenueHistory(Long productId) {
+        LocalDateTime startDate = LocalDateTime.now().minusMonths(12); // За последний год
+        return paymentRepository.findMonthlyRevenueByProductId(productId, startDate).stream()
+            .map(BigDecimal::doubleValue)
+            .collect(Collectors.toList());
     }
 } 

@@ -2,6 +2,7 @@ package com.example.config;
 
 import com.example.security.CustomAuthenticationSuccessHandler;
 import com.example.service.CustomUserDetailsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -12,8 +13,16 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -21,7 +30,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig  {
 
     private final CustomUserDetailsService userDetailsService;
-    private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -31,17 +40,7 @@ public class SecurityConfig  {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception{
         return authConfig.getAuthenticationManager();
     }
-   /* @Bean
-    public AuthenticationFilter authenticationFilter(AuthenticationManager authenticationManager, AuthenticationConverter authenticationConverter) {
-        AuthenticationFilter filter = new AuthenticationFilter(authenticationManager,authenticationConverter);
-        filter.setSuccessHandler(authenticationSuccessHandler);
-        filter.setFailureHandler((request, response, exception) -> {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"message\":\"Invalid credentials\"}");
-        });
-        return filter;
-    }*/
+
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -52,55 +51,63 @@ public class SecurityConfig  {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter();
-        customAuthenticationFilter.setAuthenticationManager(authenticationManager);
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        CustomAuthenticationFilter customAuthenticationFilter =
+                new CustomAuthenticationFilter(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), objectMapper);
         customAuthenticationFilter.setFilterProcessesUrl("/api/auth/login");
-        customAuthenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);// URL для обработки логина
 
         http
                 .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/", "/home", "/error/**").permitAll()
-                .antMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-                .antMatchers("/login", "/register", "/api/auth/**").permitAll()
-                .antMatchers("/files/avatars/**", "/api/users/profile/avatar").authenticated()
-                .antMatchers("/organiser/**", "/api/organisations/**", "/api/**").hasRole("ORGANIZER")
-                .antMatchers("/customer/**", "/api/**").hasRole("USER")
-                .antMatchers("/**").hasRole("ADMIN")
-                .and()
-                .sessionManagement()
-                .invalidSessionUrl("/login?invalid-session") // Перенаправление при невалидной сессии
-                .sessionFixation().newSession() // Создание новой сессии при логине
-                .and()
-                .addFilterAt(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Заменяем стандартный фильтр
-                .formLogin().disable() // Отключаем стандартную обработку формы логина
-                .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout");
+                .authenticationProvider(authenticationProvider())
+                .securityContext(context -> context
+                        .securityContextRepository(new HttpSessionSecurityContextRepository())
+                )
+                .authorizeRequests(auth -> auth
+                        .antMatchers("/api/auth/**", "/", "/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
+                        .antMatchers("/admin/**").hasRole("ADMIN")
+                        .antMatchers("/organiser/**").hasRole("ORGANIZER")
+                        .antMatchers("/customer/**").hasRole("USER")
+                        .antMatchers("/organiser/subscription-plans/recommendation").hasRole("ORGANIZER")
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/api/auth/login")
+                        .defaultSuccessUrl("/")
+                        .failureUrl("/login?error")
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .clearAuthentication(true)
+                        .permitAll()
+                )
+                .exceptionHandling(exc -> exc
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            if (request.getContentType() != null && request.getContentType().contains("application/json")) {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                response.setContentType("application/json");
+                                response.getWriter().write("{\"message\":\"Unauthorized\"}");
+                            } else {
+                                response.sendRedirect("/login");
+                            }
+                        })
+                )
+                .addFilter(customAuthenticationFilter)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .invalidSessionUrl("/login")
+                        .maximumSessions(1)
+                        .expiredUrl("/login?expired")
+                );
 
         return http.build();
     }
 
 
-    /* @Bean
-    public AuthenticationConverter authenticationConverter() {
-        return new CustomAuthenticationConverter();
-    }
-    @Bean
-    public HttpSessionListener httpSessionListener() {
-        return new HttpSessionListener() {
-            @Override
-            public void sessionCreated(HttpSessionEvent se) {
-                System.out.println("Session created: " + se.getSession().getId());
-            }
-
-            @Override
-            public void sessionDestroyed(HttpSessionEvent se) {
-                System.out.println("Session destroyed: " + se.getSession().getId());
-            }
-        };
-    }*/
     @Bean
     public FilterRegistrationBean<InvalidSessionIdFilter> invalidSessionIdFilter() {
         FilterRegistrationBean<InvalidSessionIdFilter> filter = new FilterRegistrationBean<>();

@@ -186,5 +186,28 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
         """, nativeQuery = true)
     BigDecimal sumRevenueByProductId(@Param("productId") Long productId);
     
+    @Query("SELECT p FROM Payment p WHERE p.subscription.plan.product.id = :productId")
+    List<Payment> findBySubscriptionPlanProductId(@Param("productId") Long productId);
+    
+    @Query("SELECT COUNT(p) FROM Payment p WHERE p.subscription.plan.id = :planId")
+    long countBySubscriptionPlanId(@Param("planId") Long planId);
+    
+    @Query("SELECT COUNT(p) FROM Payment p WHERE p.subscription.plan.id = :planId AND p.status = 'COMPLETED'")
+    long countSuccessfulBySubscriptionPlanId(@Param("planId") Long planId);
+    
+    @Query(value = """
+        SELECT COALESCE(SUM(p.amount), 0)
+        FROM payments p
+        JOIN subscriptions s ON s.id = p.subscription_id
+        JOIN subscription_plans sp ON sp.id = s.plan_id
+        WHERE sp.product_id = :productId
+        AND p.created_at >= :startDate
+        GROUP BY DATE_TRUNC('month', p.created_at)
+        ORDER BY DATE_TRUNC('month', p.created_at)
+        """, nativeQuery = true)
+    List<BigDecimal> findMonthlyRevenueByProductId(
+        @Param("productId") Long productId,
+        @Param("startDate") LocalDateTime startDate
+    );
 
 } 

@@ -35,68 +35,69 @@
                         </div>
                         <div class="col-md-3">
                             <select class="form-select" name="enabled">
-                                <option value="">Любой статус</option>
-                                <option value="true" th:selected="${enabled != null && enabled}">Активные</option>
-                                <option value="false" th:selected="${enabled != null && !enabled}">Заблокированные</option>
+                                <option value="">Все статусы</option>
+                                <option value="true" th:selected="${enabled == true}">Активные</option>
+                                <option value="false" th:selected="${enabled == false}">Заблокированные</option>
                             </select>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-2">
                             <button type="submit" class="btn btn-primary w-100">
-                                <i class="bi bi-search"></i>
+                                <i class="bi bi-search"></i> Поиск
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Users List -->
+            <!-- Users Table -->
             <div class="card shadow mb-4">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Email</th>
                                     <th>Имя</th>
                                     <th>Роль</th>
                                     <th>Статус</th>
-                                    <th>Дата создания</th>
+                                    <th>Дата регистрации</th>
                                     <th>Действия</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="user : ${users}">
-                                    <td th:text="${user.id}">1</td>
-                                    <td th:text="${user.email}">user@example.com</td>
+                                    <td th:text="${user.email}"></td>
+                                    <td th:text="${user.firstName + ' ' + user.lastName}"></td>
                                     <td>
-                                        <span th:text="${user.firstName + ' ' + user.lastName}">John Doe</span>
+                                        <span th:class="${'badge ' + 
+                                            (user.role.name() == 'ADMIN' ? 'bg-danger' :
+                                            (user.role.name() == 'ORGANIZER' ? 'bg-success' : 'bg-primary'))}"
+                                              th:text="${user.role}">
+                                        </span>
                                     </td>
-                                    <td th:text="${user.role}">USER</td>
                                     <td>
-                                        <span th:if="${user.enabled}" class="badge badge-success">Активен</span>
-                                        <span th:unless="${user.enabled}" class="badge badge-danger">Заблокирован</span>
+                                        <span th:class="${'badge ' + (user.enabled ? 'bg-success' : 'bg-danger')}"
+                                              th:text="${user.enabled ? 'Активен' : 'Заблокирован'}">
+                                        </span>
                                     </td>
-                                    <td th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2024</td>
+                                    <td th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy')}"></td>
                                     <td>
-                                        <a th:href="@{/admin/users/{id}(id=${user.id})}" 
-                                           class="btn btn-sm btn-info">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <form th:if="${user.enabled}" 
-                                              th:action="@{/admin/users/{id}/block(id=${user.id})}" 
-                                              method="post" style="display: inline;">
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                <i class="bi bi-lock"></i>
+                                        <div class="action-buttons">
+                                            <a th:href="@{/admin/users/{id}(id=${user.id})}" 
+                                                class="btn btn-primary">
+                                                <i class="bi bi-eye me-1"></i>
+                                                <span>Просмотр</span>
+                                            </a>
+                                            <button type="button" class="btn"
+                                                th:classappend="${user.enabled ? 'btn-danger' : 'btn-success'}"
+                                                th:onclick="'toggleUserStatus(' + ${user.id} + ')'">
+                                                <i class="bi" 
+                                                    th:classappend="${user.enabled ? 'bi-lock me-1' : 'bi-unlock me-1'}">
+                                                </i>
+                                                <span th:text="${user.enabled ? 'Заблокировать' : 'Разблокировать'}">
+                                                </span>
                                             </button>
-                                        </form>
-                                        <form th:unless="${user.enabled}" 
-                                              th:action="@{/admin/users/{id}/unblock(id=${user.id})}" 
-                                              method="post" style="display: inline;">
-                                            <button type="submit" class="btn btn-sm btn-success">
-                                                <i class="bi bi-unlock"></i>
-                                            </button>
-                                        </form>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(users)}">

@@ -6,6 +6,7 @@ import com.example.dto.AdminStatisticsDto;
 import com.example.dto.OrganiserStatisticsDto;
 import com.example.dto.SubscriptionStatisticsDto;
 import com.example.dto.stats.OrganiserStatisticsDetailedDto;
+import com.example.dto.stats.SubscriptionPlanStatisticsDto;
 import com.example.entity.Subscription;
 import com.example.enums.SubscriptionStatus;
 import com.example.repository.PaymentRepository;
@@ -48,51 +49,121 @@ public class StatisticsService {
     }
 
     @Transactional(readOnly = true)
-    public PlanStatisticsDto getPlanStatistics(Long planId) {
-        PlanStatisticsDto stats = new PlanStatisticsDto();
-        
-        // Основные метрики
-        stats.setActiveSubscriptions(subscriptionPlanService.countActiveSubscriptions(planId));
-        stats.setTotalSubscriptions(subscriptionPlanService.countTotalSubscriptions(planId));
-        stats.setAverageSubscriptionDays(subscriptionPlanService.getAverageSubscriptionDays(planId));
-        stats.setRenewalRate(subscriptionPlanService.getRenewalRate(planId));
-        
-        // Доход за месяц
-        LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
-        BigDecimal monthlyRevenue = paymentRepository.sumRevenueByPlanIdAndPeriod(planId, monthAgo);
-        stats.setMonthlyRevenue(monthlyRevenue);
-        
-        // Конверсия (процент успешных платежей)
-        long totalPayments = paymentRepository.countByPlanIdAndPeriod(planId, monthAgo);
-        long successfulPayments = paymentRepository.countSuccessfulByPlanIdAndPeriod(planId, monthAgo);
-        stats.setConversionRate(totalPayments > 0 ? (double) successfulPayments / totalPayments : 0);
-        
-        // Динамика подписчиков по дням
+    public SubscriptionPlanStatisticsDto getPlanStatistics(Long planId) {
+        try {
+            SubscriptionPlanStatisticsDto stats = new SubscriptionPlanStatisticsDto();
+            LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
+
+            // Подписки
+            stats.setActiveSubscriptions(subscriptionRepository.countActiveByPlanId(planId));
+            stats.setTotalSubscriptions(subscriptionRepository.countByPlanId(planId));
+            stats.setActiveSubscriptionsCount(stats.getActiveSubscriptions());
+            stats.setTotalSubscriptionsCount(stats.getTotalSubscriptions());
+            stats.setCompletedSubscriptionsCount(subscriptionRepository.countByPlanIdAndStatus(planId, SubscriptionStatus.EXPIRED));
+            stats.setCanceledSubscriptionsCount(subscriptionRepository.countByPlanIdAndStatus(planId, SubscriptionStatus.CANCELLED));
+            
+            // Доходы
+            BigDecimal monthlyRevenue = paymentRepository.getMonthlyRevenueByPlanId(planId);
+            stats.setMonthlyRevenue(monthlyRevenue != null ? monthlyRevenue : BigDecimal.ZERO);
+            stats.setMonthlyIncome(stats.getMonthlyRevenue().doubleValue());
+            
+            BigDecimal totalRevenue = paymentRepository.getTotalRevenueByPlanId(planId);
+            stats.setTotalRevenue(totalRevenue != null ? totalRevenue : BigDecimal.ZERO);
+            stats.setTotalIncome(stats.getTotalRevenue().doubleValue());
+
+            // Средняя продолжительность подписки
+            Double avgDuration = subscriptionRepository.getAverageSubscriptionDuration(planId);
+            stats.setAverageSubscriptionDuration(avgDuration != null ? avgDuration : 0.0);
+
+            // Новые подписчики
+            stats.setNewSubscribersThisMonth(subscriptionRepository.countNewSubscribersByPlanId(planId, monthAgo));
+            stats.setTotalSubscribers((int) stats.getTotalSubscriptions());
+
+            // Коэффициент конверсии
+            long totalPayments = paymentRepository.countBySubscriptionPlanId(planId);
+            long successfulPayments = paymentRepository.countSuccessfulBySubscriptionPlanId(planId);
+            double conversionRate = totalPayments > 0 ? (double) successfulPayments / totalPayments : 0;
+            stats.setConversionRate(conversionRate);
+            stats.setRenewalRate(conversionRate); // Используем тот же показатель для renewal rate
+
+            // Динамика
+            stats.setSubscriberGrowth(getSubscriberGrowth(planId, monthAgo));
+            stats.setRevenueGrowth(getRevenueGrowth(planId, monthAgo));
+
+            return stats;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new SubscriptionPlanStatisticsDto();
+        }
+    }
+
+    private Map<String, Integer> getSubscriberGrowth(Long planId, LocalDateTime startDate) {
         Map<String, Integer> subscriberGrowth = new LinkedHashMap<>();
-        subscriptionRepository.findSubscriberGrowthByPlanId(planId, monthAgo)
-            .forEach(data -> subscriberGrowth.put(
-                ((Timestamp) data[0]).toLocalDateTime().toString(),
-                ((Number) data[1]).intValue()
-            ));
-        stats.setSubscriberGrowth(subscriberGrowth);
-        
-        // Динамика дохода по дням
-        List<Object[]> revenueGrowthData = paymentRepository.findRevenueGrowthByPlanId(planId, monthAgo);
-        stats.setRevenueGrowth(convertRevenueGrowthData(revenueGrowthData));
-        
-        return stats;
+        subscriptionRepository.findSubscriberGrowthByPlanId(planId, startDate)
+            .forEach(data -> {
+                if (data[0] != null && data[1] != null) {
+                    subscriberGrowth.put(
+                        ((Timestamp) data[0]).toLocalDateTime().toString(),
+                        ((Number) data[1]).intValue()
+                    );
+                }
+            });
+        return subscriberGrowth;
+    }
+
+    private Map<String, BigDecimal> getRevenueGrowth(Long planId, LocalDateTime startDate) {
+        Map<String, BigDecimal> revenueGrowth = new LinkedHashMap<>();
+        paymentRepository.findRevenueGrowthByPlanId(planId, startDate)
+            .forEach(data -> {
+                if (data[0] != null && data[1] != null) {
+                    revenueGrowth.put(
+                        ((Timestamp) data[0]).toLocalDateTime().toString(),
+                        new BigDecimal(data[1].toString())
+                    );
+                }
+            });
+        return revenueGrowth;
     }
 
     @Transactional(readOnly = true)
     public ProductStatisticsDto getProductStatistics(Long productId) {
+        LocalDateTime startOfMonth = LocalDateTime.now()
+            .withDayOfMonth(1)
+            .withHour(0)
+            .withMinute(0)
+            .withSecond(0)
+            .withNano(0);
+
+        // Используем BigDecimal.ZERO вместо null
+        BigDecimal monthlyRevenue = paymentRepository.sumRevenueByProductIdAndPeriod(productId, startOfMonth);
+        if (monthlyRevenue == null) {
+            monthlyRevenue = BigDecimal.ZERO;
+        }
+
+        BigDecimal totalRevenue = paymentRepository.sumRevenueByProductId(productId);
+        if (totalRevenue == null) {
+            totalRevenue = BigDecimal.ZERO;
+        }
+
+        // Получаем количество активных подписок
+        long activeSubscriptions = subscriptionRepository.countActiveByProductId(productId);
+        
+        // Получаем общее количество подписок
+        long totalSubscriptions = subscriptionRepository.countByProductId(productId);
+        
+        // Вычисляем коэффициент продления
+        double renewalRate = 0.0;
+        if (totalSubscriptions > 0) {
+            long renewedSubscriptions = subscriptionRepository.countByPlanProductIdAndRenewedAtIsNotNull(productId);
+            renewalRate = (double) renewedSubscriptions / totalSubscriptions;
+        }
+
         return ProductStatisticsDto.builder()
-            .id(productId)
-            .subscriptionPlansCount(subscriptionPlanService.countByProductId(productId))
-            .activeSubscriptionPlansCount(subscriptionPlanService.countActiveByProductId(productId))
-            .activeSubscriptionsCount(subscriptionRepository.countActiveByProductId(productId))
-            .totalSubscriptionsCount(subscriptionRepository.countByProductId(productId))
-            .monthlyIncome(paymentRepository.sumRevenueByProductIdAndPeriod(productId, LocalDateTime.now().minusMonths(1)).doubleValue())
-            .totalIncome(paymentRepository.sumRevenueByProductId(productId).doubleValue())
+            .monthlyRevenue(monthlyRevenue)
+            .totalRevenue(totalRevenue)
+            .activeSubscriptions(activeSubscriptions)
+            .totalSubscriptions(totalSubscriptions)
+            .renewalRate(renewalRate)
             .build();
     }
 
