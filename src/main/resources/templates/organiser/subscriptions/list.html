@@ -1,0 +1,13 @@
+<td>
+    <div class="btn-group">
+        <a th:href="@{/organiser/subscriptions/{id}/edit(id=${subscription.id})}" 
+           class="btn btn-warning btn-sm" title="Редактировать">
+            <i class="bi bi-pencil"></i>
+        </a>
+        <button type="button"
+                th:onclick="'toggleSubscriptionStatus(' + ${subscription.id} + ')'"
+                th:class="'btn btn-sm ' + (${subscription.active} ? 'btn-danger' : 'btn-success') + ' toggle-status-btn'"
+                th:text="${subscription.active ? 'Деактивировать' : 'Активировать'}">
+        </button>
+    </div>
+</td> 

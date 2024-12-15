@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="error/error-layout :: head">
+    <title>Доступ запрещен</title>
+</head>
+<body th:replace="error/error-layout :: body(
+    title='Доступ запрещен',
+    heading='Доступ запрещен',
+    message='У вас нет прав для доступа к этой странице.',
+    iconClass='bi bi-shield-lock'
+)">
+</body>
+</html> 

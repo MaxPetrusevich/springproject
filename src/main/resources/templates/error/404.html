@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="error/error-layout :: head">
+    <title>Страница не найдена</title>
+</head>
+<body th:replace="error/error-layout :: body(
+    title='Страница не найдена',
+    heading='Страница не найдена',
+    message='Запрашиваемая страница не существует.',
+    iconClass='bi bi-question-circle'
+)">
+</body>
+</html> 
